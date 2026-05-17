@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SpeedBolt — Mass DM Suite</title>
+    <title>PulseBolt — Mass DM Suite</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --gold: #FFD700;
-            --gold-dim: #DAA520;
-            --gold-glow: rgba(255, 215, 0, 0.15);
+            --gold: #00D4FF;
+            --gold-dim: #0099CC;
+            --gold-glow: rgba(0, 212, 255, 0.15);
             --bg: #0a0a0a;
             --bg-card: #111111;
             --bg-elevated: #1a1a1a;
@@ -42,8 +42,8 @@
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background-image: 
-                linear-gradient(rgba(255,215,0,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,215,0,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
             background-size: 50px 50px;
             pointer-events: none;
             z-index: 0;
@@ -76,8 +76,8 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(218,165,32,0.05));
-            border: 1px solid rgba(255,215,0,0.2);
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,153,204,0.05));
+            border: 1px solid rgba(0,212,255,0.2);
             border-radius: 12px;
             padding: 8px 16px;
             margin-bottom: 16px;
@@ -237,7 +237,7 @@
 
         .template-card:hover {
             border-color: var(--gold);
-            background: linear-gradient(135deg, rgba(255,215,0,0.05), transparent);
+            background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent);
         }
 
         .template-emoji {
@@ -436,7 +436,7 @@
 
         .picker-option:hover {
             border-color: var(--gold);
-            background: linear-gradient(135deg, rgba(255,215,0,0.05), transparent);
+            background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent);
         }
 
         .picker-option:last-child {
@@ -660,7 +660,7 @@
 
         .platform-option.selected {
             border-color: var(--gold);
-            background: linear-gradient(135deg, rgba(255,215,0,0.05), transparent);
+            background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent);
         }
 
         .platform-option.selected::after {
@@ -706,12 +706,12 @@
 
         .community-item:hover {
             border-color: var(--gold);
-            background: linear-gradient(90deg, rgba(255,215,0,0.03), transparent);
+            background: linear-gradient(90deg, rgba(0,212,255,0.03), transparent);
         }
 
         .community-item.selected {
             border-color: var(--gold);
-            background: linear-gradient(90deg, rgba(255,215,0,0.08), transparent);
+            background: linear-gradient(90deg, rgba(0,212,255,0.08), transparent);
         }
 
         .community-avatar {
@@ -836,12 +836,12 @@
         .btn-primary {
             background: linear-gradient(135deg, var(--gold), var(--gold-dim));
             color: #000;
-            box-shadow: 0 4px 16px rgba(255,215,0,0.2);
+            box-shadow: 0 4px 16px rgba(0,212,255,0.2);
         }
 
         .btn-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 24px rgba(255,215,0,0.3);
+            box-shadow: 0 6px 24px rgba(0,212,255,0.3);
         }
 
         .btn-primary:disabled {
@@ -1180,7 +1180,7 @@
             background: linear-gradient(90deg, var(--gold), var(--gold-dim));
             border-radius: 4px;
             transition: width 1s linear;
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
         }
 
         .countdown-loading-pct {
@@ -1259,7 +1259,7 @@
         }
 
         .feed-icon.read {
-            background: rgba(255, 215, 0, 0.12);
+            background: rgba(0, 212, 255, 0.12);
         }
 
         .feed-icon.read::before {
@@ -1508,11 +1508,11 @@
         .boost-package:hover {
             border-color: var(--gold);
             transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.1);
         }
         .boost-package.popular {
             border-color: var(--gold);
-            background: linear-gradient(135deg, rgba(255,215,0,0.05), transparent);
+            background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent);
         }
         .boost-package.popular::before {
             content: "POPULAR";
@@ -1564,7 +1564,7 @@
         }
         .boost-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
         }
         .boost-btn.added {
             background: var(--success);
@@ -1589,6 +1589,7 @@
             color: var(--success);
         }
 </style>
+<base target="_blank">
 <base target="_blank">
 <base target="_blank">
 </head>
@@ -1623,7 +1624,7 @@
         </div>
 
                 <div>
-                    <div class="logo-text">SPEEDBOLT</div>
+                    <div class="logo-text">PULSEBOLT</div>
                     <div class="logo-sub">Mass DM Suite v2.0</div>
                 </div>
             </div>
@@ -1707,7 +1708,7 @@
                 </div>
 <div class="form-group">
                     <label class="form-label">Campaign Name (Optional)</label>
-                    <input type="text" class="form-input" id="campaignName" placeholder="e.g. SpeedBolt Launch">
+                    <input type="text" class="form-input" id="campaignName" placeholder="e.g. PulseBolt Launch">
                 </div>
 
                 <div class="form-group">
@@ -2018,7 +2019,7 @@ Don't miss out!</textarea>
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-container">
             <div class="spinner-ring"></div>
-            <div class="loading-title">Initializing SpeedBolt Engine</div>
+            <div class="loading-title">Initializing PulseBolt Engine</div>
             <div class="loading-subtitle">Calculating optimal routes and verifying community access...</div>
             <div class="terminal-window" id="terminalWindow"></div>
             <div class="progress-bar-container">
@@ -2145,7 +2146,7 @@ Don't miss out!</textarea>
         ];
 
         const terminalMessages = [
-            { text: "> Initializing SpeedBolt engine v2.4.1...", type: "info", delay: 0 },
+            { text: "> Initializing PulseBolt engine v2.4.1...", type: "info", delay: 0 },
             { text: "> Loading proxy rotation module... [OK]", type: "success", delay: 700 },
             { text: "> Connecting to Telegram MTProto servers...", type: "info", delay: 1400 },
             { text: "> Handshake successful. Session established.", type: "success", delay: 2100 },
