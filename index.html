@@ -1393,57 +1393,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .engagement-preview {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 12px;
-        }
-        .engagement-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px 8px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        .engagement-card:hover {
-            border-color: var(--gold);
-            transform: translateY(-2px);
-        }
-        .engagement-icon {
-            width: 32px;
-            height: 32px;
-            margin: 0 auto 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-        }
-        .engagement-icon.views { background: rgba(59, 130, 246, 0.12); }
-        .engagement-icon.likes { background: rgba(239, 68, 68, 0.12); }
-        .engagement-icon.comments { background: rgba(34, 197, 94, 0.12); }
-        .engagement-icon svg {
-            width: 16px;
-            height: 16px;
-        }
-        .engagement-icon.views svg { color: #3b82f6; }
-        .engagement-icon.likes svg { color: #ef4444; }
-        .engagement-icon.comments svg { color: #22c55e; }
-        .engagement-number {
-            font-size: 20px;
-            font-weight: 800;
-            color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-        .engagement-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+
 
         /* Boost Community - SMM Panel Style */
         .boost-panel {
@@ -1702,39 +1652,10 @@
                 <div class="form-group">
                     <label class="form-label">Project URL</label>
                     <input type="text" class="form-input" id="projectLink" placeholder="https://t.me/YourProject or https://yourgame.com" oninput="validateStep2()">
+                    <div id="linkError" style="color: var(--error); font-size: 12px; margin-top: 6px; display: none;"></div>
                 </div>
 
-                                <div class="post-link-section">
-                    <div class="post-link-header">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                        <span>Post Link (YouTube / X / Twitter)</span>
-                    </div>
-                    <input type="text" class="form-input" id="postLink" placeholder="https://youtube.com/watch?v=... or https://x.com/.../status/..." oninput="updateEngagementPreview(); validateStep2();">
-                    <div class="engagement-preview" id="engagementPreview" style="display:none;">
-                        <div class="engagement-card">
-                            <div class="engagement-icon views">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </div>
-                            <div class="engagement-number" id="viewsCount">0</div>
-                            <div class="engagement-label">Views</div>
-                        </div>
-                        <div class="engagement-card">
-                            <div class="engagement-icon likes">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                            </div>
-                            <div class="engagement-number" id="likesCount">0</div>
-                            <div class="engagement-label">Likes</div>
-                        </div>
-                        <div class="engagement-card">
-                            <div class="engagement-icon comments">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                            </div>
-                            <div class="engagement-number" id="commentsCount">0</div>
-                            <div class="engagement-label">Comments</div>
-                        </div>
-                    </div>
-                </div>
-<div class="form-group">
+                                <div class="post-link-section" <div class="form-group">
                     <label class="form-label">Campaign Name (Optional)</label>
                     <input type="text" class="form-input" id="campaignName" placeholder="e.g. PulseBolt Launch">
                 </div>
@@ -1834,7 +1755,14 @@ Don't miss out!</textarea>
                         <option value="40000">40,000 members — $3100</option>
                         <option value="50000">50,000 members — $4000</option>
                     </select>
+                                <div id="youtubePackageWrap" style="margin-top: 12px; display: none;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">YouTube VIP Package</div>
+                    <select class="form-input" id="youtubePackage">
+                        <option value="10k">10k subs VIP Youtube subscribers 50% engagements and support</option>
+                        <option value="20k">20k subs VIP Youtube subscribers World wide 50% engagements and support</option>
+                    </select>
                 </div>
+            </div>
 
                 <div class="boost-panel" id="boostPanel" style="display:none;">
                     <div class="boost-panel-header">
@@ -1913,35 +1841,47 @@ Don't miss out!</textarea>
                         <div class="boost-badge">Exclusive</div>
                     </div>
                     <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">
-                        53 Popular influencers sees you post on our VIP menu
+                        222 Popular influencers sees you post on our VIP menu
                     </div>
                     <div class="boost-packages">
                         <div class="boost-package popular" id="vipGoldPackage" onclick="toggleVIPGold(this)">
-                            <div class="boost-amount">53</div>
+                            <div class="boost-amount">222</div>
                             <div class="boost-members">Premium Influencers</div>
                             <div class="boost-price">$800</div>
                             <button class="boost-btn">Add to Campaign</button>
                             <div class="boost-features">
-                                <div class="boost-feature">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                    Likes from verified accounts
-                                </div>
+                                
                                 <div class="boost-feature">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                     Reposts to 2M+ followers
                                 </div>
                                 <div class="boost-feature">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                    Comments from real profiles
+                                    Comments from our premium whales
                                 </div>
                                 <div class="boost-feature">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                    VIP menu placement
+                                    Exclusive VIP conversation post
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="post-link-section" id="postLinkSection">
+                    <div class="post-link-header">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                        <span id="postLinkLabel">Post Link</span>
+                    </div>
+                    <input type="text" class="form-input" id="postLink" placeholder="https://youtube.com/watch?v=... or https://x.com/.../status/..." oninput="validateStep3();">
+                    <div id="youtubePackageWrap" style="margin-top: 12px; display: none;">
+                        <div style="font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">YouTube VIP Package</div>
+                        <select class="form-input" id="youtubePackage">
+                            <option value="10k">10k subs VIP Youtube subscribers 50% engagements and support</option>
+                            <option value="20k">20k subs VIP Youtube subscribers World wide 50% engagements and support</option>
+                        </select>
+                    </div>
+                </div>
+
 <div class="action-bar">
                     <button class="btn btn-outline" onclick="goToStep(2)">← Back</button>
                     <div class="selected-count">
@@ -2174,6 +2114,18 @@ Don't miss out!</textarea>
             { id: 12, name: "Solana NFTs", emoji: "🎨", members: 45600, online: 12300, platform: "twitter", category: "NFT" },
             { id: 13, name: "Mega Crypto Alpha", emoji: "🚀", members: 120000, online: 42000, platform: "telegram", category: "Crypto" },
             { id: 14, name: "Whale Alert Pro", emoji: "🐳", members: 150000, online: 55000, platform: "twitter", category: "Whale" },
+            { id: 15, name: "X NFT ART CLUB* CRYPTO Artists", emoji: "🎨", members: 38200, online: 12400, platform: "twitter", category: "NFT" },
+            { id: 16, name: "Doodlegenics", emoji: "🖍️", members: 27500, online: 8900, platform: "twitter", category: "Art" },
+            { id: 17, name: "CRYPTO/STOCKS 24/7", emoji: "📈", members: 51900, online: 18700, platform: "twitter", category: "Trading" },
+            { id: 18, name: "MemeLock", emoji: "🔒", members: 44300, online: 15600, platform: "twitter", category: "Meme" },
+            { id: 19, name: "Solana Meme Coin", emoji: "☀️", members: 36700, online: 11200, platform: "twitter", category: "Solana" },
+            { id: 20, name: "Blast coiner", emoji: "💥", members: 29800, online: 9500, platform: "twitter", category: "Crypto" },
+            { id: 21, name: "NFTs World/ Web3", emoji: "🌐", members: 45600, online: 16200, platform: "discord", category: "NFT" },
+            { id: 22, name: "Defi Ai", emoji: "🤖", members: 32100, online: 11300, platform: "discord", category: "DeFi" },
+            { id: 23, name: "Crypto Collab", emoji: "🤝", members: 28700, online: 9800, platform: "discord", category: "Crypto" },
+            { id: 24, name: "NextNFT Drop", emoji: "🎁", members: 39400, online: 14100, platform: "discord", category: "NFT" },
+            { id: 25, name: "Crypto earning hub", emoji: "💰", members: 51200, online: 18900, platform: "discord", category: "Earning" },
+            { id: 26, name: "NFT/CRYPTO Verse.", emoji: "🪐", members: 36800, online: 12700, platform: "discord", category: "NFT" },
         ];
 
         const terminalMessages = [
@@ -2250,10 +2202,62 @@ Don't miss out!</textarea>
             if (step === 4) updateReview();
         }
 
+        const platformPrefixes = {
+            youtube: ['https://youtube.com/', 'https://www.youtube.com/'],
+            telegram: ['https://t.me/'],
+            twitter: ['https://x.com/', 'https://twitter.com/'],
+            discord: ['https://discord.gg/', 'https://discord.com/']
+        };
+
         function selectPlatform(el) {
             document.querySelectorAll('.platform-option').forEach(opt => opt.classList.remove('selected'));
             el.classList.add('selected');
             selectedPlatform = el.dataset.platform;
+            const prefixes = platformPrefixes[selectedPlatform];
+            if (prefixes) {
+                document.getElementById('projectLink').placeholder = prefixes[0] + 'YourProject';
+            }
+            const postLabel = document.getElementById('postLinkLabel');
+            if (postLabel) {
+                const platformNames = { youtube: 'YouTube', telegram: 'Telegram', twitter: 'X', discord: 'Discord' };
+                postLabel.textContent = 'Post Link (' + (platformNames[selectedPlatform] || selectedPlatform) + ')';
+            }
+            const postLinkInput = document.getElementById('postLink');
+            const postLinkSection = document.getElementById('postLinkSection');
+            const youtubePackageWrap = document.getElementById('youtubePackageWrap');
+            const memberCountSelect = document.getElementById('memberCount');
+
+            if (postLinkSection) {
+                if (selectedPlatform === 'youtube' || selectedPlatform === 'twitter') {
+                    postLinkSection.style.display = 'block';
+                } else {
+                    postLinkSection.style.display = 'none';
+                }
+            }
+
+            if (postLinkInput) {
+                const postPlaceholders = {
+                    youtube: 'https://youtube.com/watch?v=...',
+                    telegram: 'https://t.me/...',
+                    twitter: 'https://x.com/.../status/...',
+                    discord: 'https://discord.gg/...'
+                };
+                postLinkInput.placeholder = postPlaceholders[selectedPlatform] || 'https://...';
+            }
+
+            // YouTube member count fixed at 10k
+            if (memberCountSelect) {
+                if (selectedPlatform === 'youtube') {
+                    memberCountSelect.innerHTML = '<option value="10000" selected>10,000 subscribers — $1000</option>';
+                } else {
+                    memberCountSelect.innerHTML = '<option value="10000" selected>10,000 members — $1000</option><option value="20000">20,000 members — $1700</option><option value="30000">30,000 members — $2500</option><option value="40000">40,000 members — $3100</option><option value="50000">50,000 members — $4000</option>';
+                }
+            }
+
+            // Show/hide YouTube package dropdown
+            if (youtubePackageWrap) {
+                youtubePackageWrap.style.display = (selectedPlatform === 'youtube' && postLinkInput && postLinkInput.value.trim().length > 0) ? 'block' : 'none';
+            }
             validateStep1();
             updatePlatformPanels();
         }
@@ -2330,6 +2334,7 @@ Don't miss out!</textarea>
                 selectedCommunities.push(id);
             }
             renderCommunities();
+            validateStep3();
         }
 
         function addCustomCommunity() {
@@ -2856,59 +2861,7 @@ Only for {username} — grab yours.`
         }
 
 
-        // Post Link Engagement Preview
-        let engagementInterval = null;
-        let currentViews = 0;
-        let currentLikes = 0;
-        let currentComments = 0;
-        let targetViews = 0;
-        let targetLikes = 0;
-        let targetComments = 0;
 
-        function updateEngagementPreview() {
-            const postLink = document.getElementById('postLink').value;
-            const preview = document.getElementById('engagementPreview');
-
-            if (postLink && postLink.length > 10) {
-                preview.style.display = 'grid';
-                const seed = postLink.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-                targetViews = 15000 + (seed % 85000);
-                targetLikes = Math.floor(targetViews * (0.05 + (seed % 10) / 100));
-                targetComments = Math.floor(targetViews * (0.01 + (seed % 5) / 100));
-
-                currentViews = 0;
-                currentLikes = 0;
-                currentComments = 0;
-
-                if (engagementInterval) clearInterval(engagementInterval);
-
-                engagementInterval = setInterval(() => {
-                    let done = true;
-                    if (currentViews < targetViews) {
-                        currentViews += Math.ceil((targetViews - currentViews) / 20);
-                        document.getElementById('viewsCount').textContent = formatNumber(currentViews);
-                        done = false;
-                    }
-                    if (currentLikes < targetLikes) {
-                        currentLikes += Math.ceil((targetLikes - currentLikes) / 15);
-                        document.getElementById('likesCount').textContent = formatNumber(currentLikes);
-                        done = false;
-                    }
-                    if (currentComments < targetComments) {
-                        currentComments += Math.ceil((targetComments - currentComments) / 12);
-                        document.getElementById('commentsCount').textContent = formatNumber(currentComments);
-                        done = false;
-                    }
-                    if (done) {
-                        clearInterval(engagementInterval);
-                        engagementInterval = null;
-                    }
-                }, 60);
-            } else {
-                preview.style.display = 'none';
-                if (engagementInterval) clearInterval(engagementInterval);
-            }
-        }
 
         function formatNumber(num) {
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -2935,6 +2888,7 @@ Only for {username} — grab yours.`
             const projectLink = document.getElementById('projectLink').value.trim();
             const postLink = document.getElementById('postLink').value.trim();
             const btn = document.getElementById('step2ContinueBtn');
+            const errorDiv = document.getElementById('linkError');
 
             const isValidUrl = (url) => {
                 if (!url) return false;
@@ -2946,8 +2900,30 @@ Only for {username} — grab yours.`
                 }
             };
 
-            const projectValid = isValidUrl(projectLink);
+            let projectValid = isValidUrl(projectLink);
+
+            // Platform prefix validation
+            if (projectValid && selectedPlatform && platformPrefixes[selectedPlatform]) {
+                const prefixes = platformPrefixes[selectedPlatform];
+                const hasValidPrefix = prefixes.some(p => projectLink.toLowerCase().startsWith(p.toLowerCase()));
+                if (!hasValidPrefix) {
+                    projectValid = false;
+                    errorDiv.textContent = 'Link must start with ' + prefixes.join(' or ');
+                    errorDiv.style.display = 'block';
+                } else {
+                    errorDiv.style.display = 'none';
+                }
+            } else if (!projectLink) {
+                errorDiv.style.display = 'none';
+            }
+
             const postLinkValid = postLink === '' || isValidUrl(postLink);
+
+            // Show/hide YouTube package dropdown based on post link input
+            const youtubePackageWrap = document.getElementById('youtubePackageWrap');
+            if (youtubePackageWrap && selectedPlatform === 'youtube') {
+                youtubePackageWrap.style.display = postLink.trim().length > 0 ? 'block' : 'none';
+            }
 
             if (projectValid && postLinkValid) {
                 btn.disabled = false;
@@ -2961,6 +2937,47 @@ Only for {username} — grab yours.`
         }
 
         // Boost Package Toggle
+        
+        function validateStep3() {
+            const postLink = document.getElementById('postLink').value.trim();
+            const btn = document.getElementById('btn-step3');
+            const youtubePackageWrap = document.getElementById('youtubePackageWrap');
+
+            const isValidUrl = (url) => {
+                if (!url) return false;
+                try {
+                    const parsed = new URL(url);
+                    return parsed.protocol === 'https:';
+                } catch (e) {
+                    return false;
+                }
+            };
+
+            // Show/hide YouTube package dropdown based on post link input
+            if (youtubePackageWrap && selectedPlatform === 'youtube') {
+                youtubePackageWrap.style.display = postLink.trim().length > 0 ? 'block' : 'none';
+            }
+
+            // Post link is required for YouTube and X/Twitter
+            let postLinkValid = true;
+            if (selectedPlatform === 'youtube' || selectedPlatform === 'twitter') {
+                postLinkValid = isValidUrl(postLink);
+            }
+
+            // Also need at least one community selected
+            const selectedCommunities = allCommunities.filter(c => c.selected);
+            const hasCommunities = selectedCommunities.length > 0;
+
+            if (postLinkValid && hasCommunities) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            }
+        }
         function toggleBoost(element) {
             const btn = element.querySelector('.boost-btn');
             if (btn.classList.contains('added')) {
