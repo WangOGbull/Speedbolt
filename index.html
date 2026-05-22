@@ -22,9 +22,7 @@
             min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
         }
 
-        /* ══════════════════════════════════════ */
-        /* LOCK SCREEN — SCROLLABLE */
-        /* ══════════════════════════════════════ */
+        /* LOCK SCREEN */
         #lockScreen {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: #060606; z-index: 9999;
@@ -38,27 +36,16 @@
             justify-content: center; padding: 40px 20px; margin: 0 auto;
         }
         .lock-logo { margin-bottom: 10px; position: relative; }
-        .lock-logo-3d { width: 80px; height: 80px; perspective: 600px; }
-        .lock-logo-cube {
-            width: 80px; height: 80px; position: relative; transform-style: preserve-3d;
-            animation: rotateCube 6s linear infinite;
+        .lock-logo img {
+            width: 120px;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(0,212,255,0.3);
+            animation: breatheGlow 3s ease-in-out infinite;
         }
-        .lock-logo-cube .face {
-            position: absolute; width: 80px; height: 80px;
-            border: 2px solid var(--blue); background: rgba(0,212,255,0.05);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px; font-weight: 900; color: var(--blue);
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .lock-logo-cube .front { transform: translateZ(40px); }
-        .lock-logo-cube .back { transform: rotateY(180deg) translateZ(40px); }
-        .lock-logo-cube .right { transform: rotateY(90deg) translateZ(40px); }
-        .lock-logo-cube .left { transform: rotateY(-90deg) translateZ(40px); }
-        .lock-logo-cube .top { transform: rotateX(90deg) translateZ(40px); }
-        .lock-logo-cube .bottom { transform: rotateX(-90deg) translateZ(40px); }
-        @keyframes rotateCube {
-            0% { transform: rotateX(15deg) rotateY(0deg); }
-            100% { transform: rotateX(375deg) rotateY(360deg); }
+        @keyframes breatheGlow {
+            0%, 100% { box-shadow: 0 0 60px rgba(0,212,255,0.3); transform: scale(1); }
+            50% { box-shadow: 0 0 100px rgba(0,212,255,0.6); transform: scale(1.02); }
         }
         .lock-title {
             font-size: 32px; font-weight: 900; letter-spacing: 1px;
@@ -141,9 +128,9 @@
         .trending-change.down { color: var(--error); }
 
         /* Password Input */
-        .lock-pass-container { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+        .lock-pass-container { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 8px; width: 100%; max-width: 400px; }
         .lock-pass-input {
-            width: 280px; padding: 14px 18px; background: var(--bg-elevated);
+            width: 100%; padding: 14px 18px; background: var(--bg-elevated);
             border: 2px solid var(--border); border-radius: 10px;
             color: #fff; font-size: 15px; font-family: 'JetBrains Mono', monospace;
             text-align: center; letter-spacing: 3px; transition: all 0.3s;
@@ -151,12 +138,24 @@
         .lock-pass-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px var(--blue-glow); }
         .lock-pass-input::placeholder { color: var(--text-muted); letter-spacing: 1px; }
         .lock-pass-btn {
-            padding: 14px 24px; background: linear-gradient(135deg, var(--blue), var(--blue-dim));
+            width: 100%; padding: 14px; background: linear-gradient(135deg, var(--blue), var(--blue-dim));
             color: #000; border: none; border-radius: 10px; font-weight: 700; font-size: 14px;
             cursor: pointer; transition: all 0.2s;
         }
         .lock-pass-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,212,255,0.3); }
         .lock-error { color: var(--error); font-size: 12px; margin-top: 8px; display: none; text-align: center; }
+        .lock-contact {
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-dim);
+            text-align: center;
+        }
+        .lock-contact a {
+            color: var(--blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .lock-contact a:hover { text-decoration: underline; }
 
         /* 3D Orb Animations */
         .orb {
@@ -175,9 +174,7 @@
             75% { transform: translate(-50px,-15px) scale(1.1); }
         }
 
-        /* ══════════════════════════════════════ */
-        /* MAIN SITE (hidden until unlocked) */
-        /* ══════════════════════════════════════ */
+        /* MAIN SITE */
         #mainSite { display: none; }
         #mainSite.visible { display: block; }
 
@@ -198,7 +195,13 @@
             background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,85,255,0.05));
             border: 1px solid rgba(0,212,255,0.2); border-radius: 16px; padding: 8px 18px; margin-bottom: 16px;
         }
-        .logo-svg { width: 42px; height: 42px; flex-shrink: 0; }
+        .logo-badge img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
         .logo-text {
             font-weight: 800; font-size: 16px;
             background: linear-gradient(135deg, #fff, var(--blue));
@@ -661,9 +664,7 @@
 </head>
 <body>
 
-    <!-- ══════════════════════════════════════ -->
-    <!-- LOCK SCREEN — NOW SCROLLABLE -->
-    <!-- ══════════════════════════════════════ -->
+    <!-- LOCK SCREEN -->
     <div id="lockScreen">
         <canvas class="lock-bg-canvas" id="lockCanvas"></canvas>
         <div class="orb orb-1"></div>
@@ -673,23 +674,14 @@
         <div class="orb orb-5"></div>
         <div class="lock-content">
             <div class="lock-logo">
-                <div class="lock-logo-3d">
-                    <div class="lock-logo-cube">
-                        <div class="face front">PB</div>
-                        <div class="face back">PB</div>
-                        <div class="face right">PB</div>
-                        <div class="face left">PB</div>
-                        <div class="face top">PB</div>
-                        <div class="face bottom">PB</div>
-                    </div>
-                </div>
+                <img src="https://i.postimg.cc/xdm60TGF/photo-2026-05-20-17-55-42.jpg" alt="PulseBolt Logo">
             </div>
             <div class="lock-title">PULSEBOLT ANALYTICS</div>
             <div class="lock-subtitle">Live Market Intelligence & Campaign Command Center</div>
 
-            <!-- Ticker Bar — SOL, ETH, BNB first -->
+            <!-- Ticker Bar -->
             <div class="ticker-bar" id="tickerBar">
-                <div class="ticker-item" data-coin="SOL"><div class="ticker-dot" style="background:#9945FF;color:#9945FF;"></div><div class="ticker-info"><div class="ticker-name">Solana</div><div class="ticker-price" id="tickerSOL">$142.80</div><div class="ticker-change down" id="tickerSOLChange">-0.6%</div></div></div>
+                <div class="ticker-item" data-coin="SOL"><div class="ticker-dot" style="background:#9945FF;color:#9945FF;"></div><div class="ticker-info"><div class="ticker-name">Solana</div><div class="ticker-price" id="tickerSOL">$142.80</div><div class="ticker-change up" id="tickerSOLChange">+0.6%</div></div></div>
                 <div class="ticker-item" data-coin="ETH"><div class="ticker-dot" style="background:#627EEA;color:#627EEA;"></div><div class="ticker-info"><div class="ticker-name">Ethereum</div><div class="ticker-price" id="tickerETH">$3,521</div><div class="ticker-change up" id="tickerETHChange">+1.8%</div></div></div>
                 <div class="ticker-item" data-coin="BNB"><div class="ticker-dot" style="background:#F3BA2F;color:#F3BA2F;"></div><div class="ticker-info"><div class="ticker-name">BNB</div><div class="ticker-price" id="tickerBNB">$582.30</div><div class="ticker-change up" id="tickerBNBChange">+0.9%</div></div></div>
                 <div class="ticker-item" data-coin="BTC"><div class="ticker-dot" style="background:#F7931A;color:#F7931A;"></div><div class="ticker-info"><div class="ticker-name">Bitcoin</div><div class="ticker-price" id="tickerBTC">$67,452</div><div class="ticker-change up" id="tickerBTCChange">+2.4%</div></div></div>
@@ -708,13 +700,18 @@
             <!-- Trending Section -->
             <div class="trending-section">
                 <div class="trending-header">Trending — DexScreener Top 10</div>
-                <div class="trending-grid" id="trendingGrid"></div>
+                <div class="trending-grid" id="trendingGrid">
+                    <div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);">Loading live data...</div>
+                </div>
             </div>
 
             <!-- Password Input -->
             <div class="lock-pass-container">
                 <input type="password" class="lock-pass-input" id="lockPassInput" placeholder="Enter Passcode" onkeydown="if(event.key==='Enter')checkPasscode()">
                 <button class="lock-pass-btn" onclick="checkPasscode()">Unlock</button>
+                <div class="lock-contact">
+                    Forgot passcode? <a href="https://t.me/PulseBoltadmin" target="_blank">Contact @PulseBoltadmin on Telegram</a>
+                </div>
             </div>
             <div class="lock-error" id="lockError">Invalid passcode. Access denied.</div>
         </div>
@@ -726,23 +723,13 @@
         <div class="unlock-text">Initializing PulseBolt Engine...</div>
     </div>
 
-    <!-- ══════════════════════════════════════ -->
     <!-- MAIN SITE -->
-    <!-- ══════════════════════════════════════ -->
     <div id="mainSite">
         <div class="bg-grid"></div>
         <div class="container">
             <div class="header">
                 <div class="logo-badge">
-                    <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="50" r="48" fill="none" stroke="#00D4FF" stroke-width="2"/>
-                        <circle cx="50" cy="50" r="44" fill="#0a0a0a"/>
-                        <path d="M35 35 L65 35 L55 50 L65 65 L35 65 L45 50 Z" fill="none" stroke="#00D4FF" stroke-width="4" stroke-linejoin="round"/>
-                        <path d="M40 40 L60 40 L50 50 L60 60 L40 60 L50 50 Z" fill="#00D4FF" opacity="0.3"/>
-                        <path d="M48 35 L52 35 L48 65 L44 65 Z" fill="#00D4FF"/>
-                        <path d="M42 30 L58 30 L50 50 L42 30 Z" fill="#00D4FF" opacity="0.6"/>
-                        <text x="50" y="92" font-family="Inter, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="800">PULSEBOLT</text>
-                    </svg>
+                    <img src="https://i.postimg.cc/xdm60TGF/photo-2026-05-20-17-55-42.jpg" alt="PulseBolt Logo">
                     <div><div class="logo-text">PULSEBOLT</div><div class="logo-sub">Mass DM & Outreach Suite v4.0</div></div>
                 </div>
                 <div class="dashboard-bar">
@@ -903,22 +890,103 @@ Don't miss out.</textarea></div>
 
     <script>
         const CORRECT_PASSCODE = 'PulseBoltTool';
-        const trendingData = [
-            { pair: 'PULSE/SOL', chain: 'Solana', price: '$0.0042', change: '+124.5%', up: true },
-            { pair: 'BOLT/ETH', chain: 'Ethereum', price: '$0.0018', change: '+89.3%', up: true },
-            { pair: 'NEURO/USDT', chain: 'BNB', price: '$0.032', change: '+56.2%', up: true },
-            { pair: 'QUANT/ETH', chain: 'Ethereum', price: '$0.0075', change: '-12.4%', up: false },
-            { pair: 'VECTOR/SOL', chain: 'Solana', price: '$0.0012', change: '+234.1%', up: true },
-            { pair: 'SYNAPSE/ETH', chain: 'Base', price: '$0.0056', change: '+45.7%', up: true },
-            { pair: 'ORBIT/USDT', chain: 'Arbitrum', price: '$0.022', change: '-8.9%', up: false },
-            { pair: 'NOVA/SOL', chain: 'Solana', price: '$0.0009', change: '+312.6%', up: true },
-            { pair: 'FUSION/ETH', chain: 'Polygon', price: '$0.0034', change: '+67.8%', up: true },
-            { pair: 'APEX/USDT', chain: 'BNB', price: '$0.015', change: '-3.2%', up: false }
-        ];
 
-        function renderTrending() {
+        // ─── LIVE CRYPTO PRICES (Binance) ──────────────────────────────────────
+        const BINANCE_COINS = {
+            SOL: 'SOLUSDT', ETH: 'ETHUSDT', BNB: 'BNBUSDT', BTC: 'BTCUSDT',
+            MATIC: 'MATICUSDT', ARB: 'ARBUSDT', BASE: 'BASEUSDT'
+        };
+        let tickerPrices = {};
+
+        async function fetchBinancePrices() {
+            try {
+                const symbols = Object.values(BINANCE_COINS).join(',');
+                const resp = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=[${symbols}]`);
+                const data = await resp.json();
+                data.forEach(item => {
+                    const coin = Object.keys(BINANCE_COINS).find(k => BINANCE_COINS[k] === item.symbol);
+                    if (coin) {
+                        tickerPrices[coin] = {
+                            price: parseFloat(item.lastPrice),
+                            change: parseFloat(item.priceChangePercent)
+                        };
+                    }
+                });
+                updateTickerUI();
+            } catch (e) {
+                console.warn('Binance API error:', e);
+            }
+        }
+
+        function updateTickerUI() {
+            Object.keys(tickerPrices).forEach(coin => {
+                const data = tickerPrices[coin];
+                const priceEl = document.getElementById('ticker' + coin);
+                const changeEl = document.getElementById('ticker' + coin + 'Change');
+                if (priceEl) {
+                    const formatted = coin === 'BTC' ? '$' + data.price.toFixed(2) :
+                        coin === 'ETH' || coin === 'BNB' ? '$' + data.price.toFixed(2) :
+                        '$' + data.price.toFixed(4);
+                    priceEl.textContent = formatted;
+                }
+                if (changeEl) {
+                    changeEl.textContent = (data.change >= 0 ? '+' : '') + data.change.toFixed(2) + '%';
+                    changeEl.className = 'ticker-change ' + (data.change >= 0 ? 'up' : 'down');
+                }
+            });
+        }
+
+        // ─── DEXSCREENER TRENDING (via CORS proxy with fallback) ──────────────
+        async function fetchTrendingData() {
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const dexscreenerUrl = 'https://api.dexscreener.com/latest/dex/search?q=trending';
+            const geckoTerminalUrl = 'https://api.geckoterminal.com/api/v2/trending_pools';
+
+            try {
+                // Try DexScreener first
+                const resp = await fetch(proxyUrl + encodeURIComponent(dexscreenerUrl));
+                const data = await resp.json();
+                if (data && data.pairs && data.pairs.length > 0) {
+                    return data.pairs.slice(0, 10).map(p => ({
+                        pair: p.baseToken.symbol + '/' + p.quoteToken.symbol,
+                        chain: p.chainId,
+                        price: '$' + parseFloat(p.priceUsd).toFixed(4),
+                        change: (p.priceChangeH24 || 0).toFixed(2) + '%',
+                        up: (p.priceChangeH24 || 0) >= 0
+                    }));
+                }
+            } catch (e) {
+                console.warn('DexScreener failed, trying GeckoTerminal...');
+            }
+
+            try {
+                // Fallback to GeckoTerminal
+                const resp = await fetch(proxyUrl + encodeURIComponent(geckoTerminalUrl));
+                const data = await resp.json();
+                if (data && data.data && data.data.length > 0) {
+                    return data.data.slice(0, 10).map(p => ({
+                        pair: p.attributes.base_token_symbol + '/' + p.attributes.quote_token_symbol,
+                        chain: p.attributes.network,
+                        price: '$' + parseFloat(p.attributes.price_usd).toFixed(4),
+                        change: (p.attributes.price_change_percentage_24h || 0).toFixed(2) + '%',
+                        up: (p.attributes.price_change_percentage_24h || 0) >= 0
+                    }));
+                }
+            } catch (e) {
+                console.warn('GeckoTerminal also failed.');
+            }
+
+            // Fallback: show unavailable message
+            return null;
+        }
+
+        function renderTrending(pairs) {
             const grid = document.getElementById('trendingGrid');
-            grid.innerHTML = trendingData.map(t => `
+            if (!pairs || pairs.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);">Trending data unavailable — check back soon</div>`;
+                return;
+            }
+            grid.innerHTML = pairs.map(t => `
                 <div class="trending-card">
                     <div class="trending-pair">${t.pair}</div>
                     <div class="trending-chain">${t.chain}</div>
@@ -928,89 +996,27 @@ Don't miss out.</textarea></div>
             `).join('');
         }
 
-        const tickerPrices = {
-            SOL: { price: 142.80, change: -0.6 },
-            ETH: { price: 3521, change: 1.8 },
-            BNB: { price: 582.30, change: 0.9 },
-            BTC: { price: 67452, change: 2.4 },
-            BASE: { price: 1.24, change: 5.2 },
-            MATIC: { price: 0.72, change: -1.1 },
-            ARB: { price: 0.89, change: 3.7 }
-        };
-
-        function updateTickers() {
-            Object.keys(tickerPrices).forEach(coin => {
-                const data = tickerPrices[coin];
-                const oldPrice = data.price;
-                const fluctuation = (Math.random() - 0.5) * data.price * 0.003;
-                data.price += fluctuation;
-                data.change += (Math.random() - 0.5) * 0.2;
-                data.change = Math.max(-8, Math.min(15, data.change));
-                const priceEl = document.getElementById('ticker' + coin);
-                const changeEl = document.getElementById('ticker' + coin + 'Change');
-                const tickerItem = priceEl ? priceEl.closest('.ticker-item') : null;
-                if (priceEl) {
-                    const newPrice = coin === 'BTC' ? '$' + Math.round(data.price).toLocaleString() :
-                        coin === 'ETH' || coin === 'BNB' ? '$' + data.price.toFixed(coin === 'ETH' ? 0 : 2) :
-                        '$' + data.price.toFixed(2);
-                    priceEl.textContent = newPrice;
-                    if (data.price > oldPrice) {
-                        priceEl.classList.add('flash-up');
-                        setTimeout(() => priceEl.classList.remove('flash-up'), 400);
-                    } else if (data.price < oldPrice) {
-                        priceEl.classList.add('flash-down');
-                        setTimeout(() => priceEl.classList.remove('flash-down'), 400);
-                    }
-                }
-                if (changeEl) {
-                    changeEl.textContent = (data.change >= 0 ? '+' : '') + data.change.toFixed(1) + '%';
-                    changeEl.className = 'ticker-change ' + (data.change >= 0 ? 'up' : 'down');
-                }
-                if (tickerItem) {
-                    if (data.change >= 0 && Math.abs(data.change) > 0.3) {
-                        tickerItem.classList.add('updating');
-                        setTimeout(() => tickerItem.classList.remove('updating'), 500);
-                    } else if (data.change < 0 && Math.abs(data.change) > 0.3) {
-                        tickerItem.classList.add('dropping');
-                        setTimeout(() => tickerItem.classList.remove('dropping'), 500);
-                    }
-                }
-            });
-            const rev = 47000 + Math.floor(Math.random() * 3000);
-            const revEl = document.getElementById('lockRevenue');
-            revEl.textContent = '$' + rev.toLocaleString();
-            revEl.classList.add('pulse-stat');
-            setTimeout(() => revEl.classList.remove('pulse-stat'), 400);
-            document.getElementById('lockCampaigns').textContent = (1240 + Math.floor(Math.random() * 20)).toLocaleString();
-            document.getElementById('lockReach').textContent = (8.3 + Math.random() * 0.4).toFixed(1) + 'M';
-        }
-
-        function checkPasscode() {
-            const input = document.getElementById('lockPassInput').value;
-            const error = document.getElementById('lockError');
-            if (input === CORRECT_PASSCODE) {
-                error.style.display = 'none';
-                document.getElementById('unlockOverlay').classList.add('active');
-                setTimeout(() => {
-                    document.getElementById('lockScreen').classList.add('hidden');
-                    document.getElementById('unlockOverlay').classList.remove('active');
-                    document.getElementById('mainSite').classList.add('visible');
-                }, 2000);
-            } else {
-                error.style.display = 'block';
-                document.getElementById('lockPassInput').value = '';
-                document.getElementById('lockPassInput').style.borderColor = 'var(--error)';
-                setTimeout(() => { document.getElementById('lockPassInput').style.borderColor = 'var(--border)'; }, 1500);
+        // ─── DEX CHART (PulseBolt branded) ─────────────────────────────────────
+        function updateDexChart() {
+            const ca = document.getElementById('contractAddress').value.trim();
+            const chain = document.getElementById('dexChain')?.value || 'ethereum';
+            const iframe = document.getElementById('dexIframe');
+            if (ca && iframe) {
+                // Use TradingView widget with PulseBolt branding
+                iframe.src = `https://dexscreener.com/${chain}/${encodeURIComponent(ca)}?embed=1&theme=dark&info=0`;
+            } else if (iframe) {
+                iframe.src = 'about:blank';
             }
         }
 
+        // ─── LOCK SCREEN CANVAS ──────────────────────────────────────────────
         function initLockCanvas() {
             const canvas = document.getElementById('lockCanvas');
             const ctx = canvas.getContext('2d');
             function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
             resize(); window.addEventListener('resize', resize);
             const particles = [];
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 80; i++) {
                 particles.push({
                     x: Math.random() * canvas.width, y: Math.random() * canvas.height,
                     r: Math.random() * 2 + 0.5,
@@ -1030,9 +1036,9 @@ Don't miss out.</textarea></div>
                 for (let i = 0; i < particles.length; i++) {
                     for (let j = i + 1; j < particles.length; j++) {
                         const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
-                        if (dist < 120) {
+                        if (dist < 150) {
                             ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(0,212,255,${0.04 * (1 - dist / 120)})`; ctx.lineWidth = 0.5; ctx.stroke();
+                            ctx.strokeStyle = `rgba(0,212,255,${0.06 * (1 - dist / 150)})`; ctx.lineWidth = 0.5; ctx.stroke();
                         }
                     }
                 }
@@ -1041,24 +1047,62 @@ Don't miss out.</textarea></div>
             draw();
         }
 
-        renderTrending();
-        initLockCanvas();
-        setInterval(updateTickers, 3000);
-        updateTickers();
+        // ─── PASSCODE ──────────────────────────────────────────────────────────
+        function checkPasscode() {
+            const input = document.getElementById('lockPassInput').value;
+            const error = document.getElementById('lockError');
+            if (input === CORRECT_PASSCODE) {
+                error.style.display = 'none';
+                document.getElementById('unlockOverlay').classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('lockScreen').classList.add('hidden');
+                    document.getElementById('unlockOverlay').classList.remove('active');
+                    document.getElementById('mainSite').classList.add('visible');
+                }, 2000);
+            } else {
+                error.style.display = 'block';
+                document.getElementById('lockPassInput').value = '';
+                document.getElementById('lockPassInput').style.borderColor = 'var(--error)';
+                setTimeout(() => { document.getElementById('lockPassInput').style.borderColor = 'var(--border)'; }, 1500);
+            }
+        }
 
-        // ══════════════════════════════════════
-        // MAIN SITE LOGIC
-        // ══════════════════════════════════════
-        let currentStep=1,selectedPlatform=null,selectedCommunities=[],customCommunities=[],activeService=null;
-        const TOTAL_PROCESSING_SECONDS=2400;
-        const cryptoNicknames=["SatoshiWhale","MoonBoy_99","DegenApe","HODL_King","CryptoBull","BearSlayer","DiamondHands","PaperHands","RugPullSurvivor","FOMO_Master","AltcoinGambler","NFT_Degenerate","SolanaMaxi","ETH_Believer","BTC_Stacker","AirdropFarmer","YieldHunter","LeverageKing","Liquidated_Again","PumpChaser","DumpDumper","VitalikFan","CZ_Army","ElonMusket","MemeCoinMillionaire","ShitcoinSurfer","Web3_Wizard","DAO_Voter","GasFeeVictim"];
-        const maleNames=["James","Michael","Robert","David","William","Richard","Thomas","Daniel","Matthew","Anthony","Mark","Steven","Paul","Andrew","Joshua","Kenneth","Kevin","Brian","George","Edward","Alex","Chris","Nick","Sam","Ben","Jake","Ryan","Nathan","Ethan","Brandon"];
-        const femaleNames=["Sarah","Jessica","Ashley","Emily","Amanda","Megan","Rachel","Laura","Kimberly","Stephanie","Jennifer","Nicole","Michelle","Heather","Rebecca","Amber","Melissa","Danielle","Elizabeth","Hannah","Sophia","Olivia","Emma","Ava","Mia","Isabella","Charlotte","Amelia","Evelyn","Abigail"];
-        const communityNamesList=["Crypto Moonshots","DeFi Alpha Leaks","NFT Whales","Solana Ecosystem","GameFi Legends","P2E Gaming Hub","Web3 Builders","Meme Coin Army","Bitcoin Maxis","Airdrop Hunters"];
-        const youtubeCountries=["United States","United Kingdom","Germany","Canada","Australia","Brazil","France","India","Japan","South Korea","Netherlands","Singapore","Sweden","UAE","Nigeria","Mexico","Italy","Spain","Poland","Turkey"];
-        const influencerNames=["CryptoMaxi","DeFiDegen","NFTWhale","SolanaKing","AlphaHunter","MoonShotChris","BlockchainBabe","Web3Wizard","TradingTitan","CoinBureau","YieldFarmer","AirdropSensei","MemeCoinLord","EthBuilder","SolSniper","P2E_Gamer","MetaVerseMike","TokenTrends","ChainAnalyst","DegenSpartan"];
-        const communities=[{id:1,name:"Crypto Moonshots",members:45200,online:12800,platform:"telegram",category:"Crypto"},{id:2,name:"DeFi Alpha Leaks",members:28900,online:9400,platform:"telegram",category:"DeFi"},{id:3,name:"NFT Whales",members:67100,online:21300,platform:"telegram",category:"NFT"},{id:4,name:"Solana Ecosystem",members:83400,online:31200,platform:"telegram",category:"Solana"},{id:5,name:"GameFi Legends",members:15600,online:5200,platform:"telegram",category:"Gaming"},{id:6,name:"P2E Gaming Hub",members:42300,online:18700,platform:"telegram",category:"Gaming"},{id:7,name:"Web3 Builders",members:23800,online:6100,platform:"telegram",category:"Web3"},{id:8,name:"Meme Coin Army",members:56700,online:24500,platform:"telegram",category:"Meme"},{id:9,name:"Bitcoin Maxis",members:91200,online:34800,platform:"telegram",category:"Bitcoin"},{id:10,name:"Airdrop Hunters",members:34500,online:15600,platform:"telegram",category:"Airdrops"},{id:11,name:"Crypto Twitter",members:128000,online:45600,platform:"twitter",category:"Crypto"},{id:12,name:"Solana NFTs",members:45600,online:12300,platform:"twitter",category:"NFT"},{id:13,name:"Mega Crypto Alpha",members:120000,online:42000,platform:"telegram",category:"Crypto"},{id:14,name:"Whale Alert Pro",members:150000,online:55000,platform:"twitter",category:"Whale"},{id:15,name:"X NFT ART CLUB",members:38200,online:12400,platform:"twitter",category:"NFT"},{id:16,name:"Doodlegenics",members:27500,online:8900,platform:"twitter",category:"Art"},{id:17,name:"CRYPTO/STOCKS 24/7",members:51900,online:18700,platform:"twitter",category:"Trading"},{id:18,name:"MemeLock",members:44300,online:15600,platform:"twitter",category:"Meme"},{id:19,name:"Solana Meme Coin",members:36700,online:11200,platform:"twitter",category:"Solana"},{id:20,name:"Blast coiner",members:29800,online:9500,platform:"twitter",category:"Crypto"}];
-        const platformPrefixes={youtube:['https://youtube.com/','https://www.youtube.com/'],telegram:['https://t.me/'],twitter:['https://x.com/','https://twitter.com/']};
+        // ─── MAIN SITE LOGIC ──────────────────────────────────────────────────
+        let currentStep = 1, selectedPlatform = null, selectedCommunities = [], customCommunities = [], activeService = null;
+        const TOTAL_PROCESSING_SECONDS = 2400;
+        const cryptoNicknames = ["SatoshiWhale","MoonBoy_99","DegenApe","HODL_King","CryptoBull","BearSlayer","DiamondHands","PaperHands","RugPullSurvivor","FOMO_Master","AltcoinGambler","NFT_Degenerate","SolanaMaxi","ETH_Believer","BTC_Stacker","AirdropFarmer","YieldHunter","LeverageKing","Liquidated_Again","PumpChaser","DumpDumper","VitalikFan","CZ_Army","ElonMusket","MemeCoinMillionaire","ShitcoinSurfer","Web3_Wizard","DAO_Voter","GasFeeVictim"];
+        const maleNames = ["James","Michael","Robert","David","William","Richard","Thomas","Daniel","Matthew","Anthony","Mark","Steven","Paul","Andrew","Joshua","Kenneth","Kevin","Brian","George","Edward","Alex","Chris","Nick","Sam","Ben","Jake","Ryan","Nathan","Ethan","Brandon"];
+        const femaleNames = ["Sarah","Jessica","Ashley","Emily","Amanda","Megan","Rachel","Laura","Kimberly","Stephanie","Jennifer","Nicole","Michelle","Heather","Rebecca","Amber","Melissa","Danielle","Elizabeth","Hannah","Sophia","Olivia","Emma","Ava","Mia","Isabella","Charlotte","Amelia","Evelyn","Abigail"];
+        const communityNamesList = ["Crypto Moonshots","DeFi Alpha Leaks","NFT Whales","Solana Ecosystem","GameFi Legends","P2E Gaming Hub","Web3 Builders","Meme Coin Army","Bitcoin Maxis","Airdrop Hunters"];
+        const youtubeCountries = ["United States","United Kingdom","Germany","Canada","Australia","Brazil","France","India","Japan","South Korea","Netherlands","Singapore","Sweden","UAE","Nigeria","Mexico","Italy","Spain","Poland","Turkey"];
+        const influencerNames = ["CryptoMaxi","DeFiDegen","NFTWhale","SolanaKing","AlphaHunter","MoonShotChris","BlockchainBabe","Web3Wizard","TradingTitan","CoinBureau","YieldFarmer","AirdropSensei","MemeCoinLord","EthBuilder","SolSniper","P2E_Gamer","MetaVerseMike","TokenTrends","ChainAnalyst","DegenSpartan"];
+        const communities = [
+            {id:1,name:"Crypto Moonshots",members:45200,online:12800,platform:"telegram",category:"Crypto"},
+            {id:2,name:"DeFi Alpha Leaks",members:28900,online:9400,platform:"telegram",category:"DeFi"},
+            {id:3,name:"NFT Whales",members:67100,online:21300,platform:"telegram",category:"NFT"},
+            {id:4,name:"Solana Ecosystem",members:83400,online:31200,platform:"telegram",category:"Solana"},
+            {id:5,name:"GameFi Legends",members:15600,online:5200,platform:"telegram",category:"Gaming"},
+            {id:6,name:"P2E Gaming Hub",members:42300,online:18700,platform:"telegram",category:"Gaming"},
+            {id:7,name:"Web3 Builders",members:23800,online:6100,platform:"telegram",category:"Web3"},
+            {id:8,name:"Meme Coin Army",members:56700,online:24500,platform:"telegram",category:"Meme"},
+            {id:9,name:"Bitcoin Maxis",members:91200,online:34800,platform:"telegram",category:"Bitcoin"},
+            {id:10,name:"Airdrop Hunters",members:34500,online:15600,platform:"telegram",category:"Airdrops"},
+            {id:11,name:"Crypto Twitter",members:128000,online:45600,platform:"twitter",category:"Crypto"},
+            {id:12,name:"Solana NFTs",members:45600,online:12300,platform:"twitter",category:"NFT"},
+            {id:13,name:"Mega Crypto Alpha",members:120000,online:42000,platform:"telegram",category:"Crypto"},
+            {id:14,name:"Whale Alert Pro",members:150000,online:55000,platform:"twitter",category:"Whale"},
+            {id:15,name:"X NFT ART CLUB",members:38200,online:12400,platform:"twitter",category:"NFT"},
+            {id:16,name:"Doodlegenics",members:27500,online:8900,platform:"twitter",category:"Art"},
+            {id:17,name:"CRYPTO/STOCKS 24/7",members:51900,online:18700,platform:"twitter",category:"Trading"},
+            {id:18,name:"MemeLock",members:44300,online:15600,platform:"twitter",category:"Meme"},
+            {id:19,name:"Solana Meme Coin",members:36700,online:11200,platform:"twitter",category:"Solana"},
+            {id:20,name:"Blast coiner",members:29800,online:9500,platform:"twitter",category:"Crypto"}
+        ];
+        const platformPrefixes = {
+            youtube: ['https://youtube.com/','https://www.youtube.com/'],
+            telegram: ['https://t.me/'],
+            twitter: ['https://x.com/','https://twitter.com/']
+        };
 
         function formatNumber(num){if(num>=1e6)return(num/1e6).toFixed(1)+'M';if(num>=1e3)return(num/1e3).toFixed(1)+'K';return num.toString();}
         function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
@@ -1098,28 +1142,28 @@ Don't miss out.</textarea></div>
         function addCustomCommunity(){if(activeService==='boost'||activeService==='vipGold')return;const inp=document.getElementById('customCommunity');const link=inp.value.trim();if(!link)return;customCommunities.push({name:link.replace(/^https?:\/\//,'').split('/').pop()||'Custom',link,members:rand(5000,50000),platform:selectedPlatform});inp.value='';renderCommunities();}
         function removeCustomCommunity(idx){customCommunities.splice(idx,1);renderCommunities();}
         function updateSelectedCount(){const all=[...communities.filter(c=>selectedCommunities.includes(c.id)),...customCommunities];document.getElementById('selectedCount').textContent=all.length;const targetMembers=parseInt(document.getElementById('memberCount')?.value)||0;document.getElementById('totalReach').textContent=formatNumber(targetMembers);document.getElementById('btn-step3').disabled=!(all.length>0||activeService);}
-        function getTargetMembers(){return parseInt(document.getElementById('memberCount')?.value)||10000;}
+        function getTargetMembers(){const el=document.getElementById('memberCount');if(el&&el.value)return parseInt(el.value)||10000;return 10000;}
         function updateReview(){document.getElementById('reviewProject').textContent=(document.getElementById('projectLink').value||'Not set').substring(0,35);document.getElementById('reviewPlatform').textContent={telegram:'Telegram',twitter:'X / Twitter',youtube:'YouTube'}[selectedPlatform]||'-';document.getElementById('reviewMessage').textContent=document.getElementById('messageTemplate').value;if(activeService==='youtubeSub'){document.getElementById('reviewService').textContent='YouTube Subscriber Growth';document.getElementById('reviewReach').textContent='1,000 Subscribers';}else if(activeService==='vipGold'){document.getElementById('reviewService').textContent='VIP GOLD Premium Influencers';document.getElementById('reviewReach').textContent='222 Influencers';}else if(activeService==='boost'){const sz=document.getElementById('boost1k')?.classList.contains('added')?'1K':document.getElementById('boost2k')?.classList.contains('added')?'2K':'3K';document.getElementById('reviewService').textContent='Telegram Boost - '+sz;document.getElementById('reviewReach').textContent=sz+' Members';}else{const target=getTargetMembers();document.getElementById('reviewService').textContent='Mass DM — '+(selectedCommunities.length+customCommunities.length)+' communities';document.getElementById('reviewReach').textContent=formatNumber(target)+' members';}updateCostSummary();}
         function updateCostSummary(){let tp=0,tr=0;if(activeService==='youtubeSub'){tp=1000;tr=1000;}else if(activeService==='vipGold'){tp=1700;tr=222;}else if(activeService==='boost'){if(document.getElementById('boost1k')?.classList.contains('added')){tp=999;tr=1000;}else if(document.getElementById('boost2k')?.classList.contains('added')){tp=1999;tr=2000;}else{tp=2999;tr=3000;}}else{tr=getTargetMembers();tp=tr/10;}document.getElementById('costMembers').textContent=tr.toLocaleString();document.getElementById('costPerMember').textContent='$'+(tr>0?Math.round(tp/tr):0);document.getElementById('costTotal').textContent='$'+tp.toLocaleString();document.getElementById('costETA').textContent=getRandomETA();document.getElementById('costBadge').textContent=tp>0?'READY':'PENDING';document.getElementById('totalReach').textContent=formatNumber(tr)+(activeService==='youtubeSub'?' subscribers':activeService==='vipGold'?' influencers':' members');}
         function validateStep1(){const b=document.getElementById('btn-step1');b.disabled=!selectedPlatform;b.style.opacity=selectedPlatform?'1':'0.5';b.style.cursor=selectedPlatform?'pointer':'not-allowed';}
         function validateStep2(){const link=document.getElementById('projectLink').value.trim();const btn=document.getElementById('step2ContinueBtn');const err=document.getElementById('linkError');let valid=false;try{const u=new URL(link);valid=u.protocol==='https:';}catch(e){}if(valid&&selectedPlatform&&platformPrefixes[selectedPlatform]){const hp=platformPrefixes[selectedPlatform].some(p=>link.toLowerCase().startsWith(p.toLowerCase()));if(!hp){valid=false;err.textContent='Link must start with '+platformPrefixes[selectedPlatform].join(' or ');err.style.display='block';}else err.style.display='none';}btn.disabled=!valid;btn.style.opacity=valid?'1':'0.5';btn.style.cursor=valid?'pointer':'not-allowed';}
         function validateStep3(){const total=selectedCommunities.length+customCommunities.length;const btn=document.getElementById('btn-step3');btn.disabled=!(total>0||activeService);btn.style.opacity=(total>0||activeService)?'1':'0.5';btn.style.cursor=(total>0||activeService)?'pointer':'not-allowed';}
 
-        function updateDexChart(){const ca=document.getElementById('contractAddress').value.trim();const chain=document.getElementById('dexChain')?.value||'ethereum';const iframe=document.getElementById('dexIframe');if(ca&&iframe){iframe.src='https://dexscreener.com/'+chain+'/'+encodeURIComponent(ca)+'?embed=1&theme=dark&info=0';}else iframe.src='about:blank';}
-
+        // ─── PAYMENT ───────────────────────────────────────────────────────────
         function showPaymentModal(){const m=document.getElementById('paymentModal');m.classList.add('active');m.style.display='flex';document.body.style.overflow='hidden';}
         function closePaymentModal(){const m=document.getElementById('paymentModal');m.classList.remove('active');m.style.display='none';document.body.style.overflow='';document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));document.getElementById('paymentAddressBox').classList.remove('active');}
         function selectPayment(el){document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');if(el.dataset.coin==='usdc'){document.getElementById('paymentAddressBox').classList.remove('active');return;}document.getElementById('paymentAddressValue').textContent=el.dataset.addr;document.getElementById('paymentAddressBox').classList.add('active');const b=document.getElementById('paymentCopyBtn');b.textContent='Copy Address';b.classList.remove('copied');}
         function copyPaymentAddress(){const addr=document.getElementById('paymentAddressValue').textContent;if(addr&&navigator.clipboard){navigator.clipboard.writeText(addr).then(()=>{const b=document.getElementById('paymentCopyBtn');b.textContent='Copied';b.classList.add('copied');setTimeout(()=>{b.textContent='Copy Address';b.classList.remove('copied');},2000);});}}
         function showUsdcChains(){document.getElementById('usdcChainMenu').style.display='block';}
         function selectUsdcChain(el){document.querySelectorAll('.usdc-chain-option').forEach(o=>{o.style.borderColor='var(--border)';o.style.background='var(--bg-card)';});el.style.borderColor='var(--blue)';el.style.background='linear-gradient(135deg, rgba(0,212,255,0.08), transparent)';document.getElementById('paymentAddressValue').textContent=el.dataset.addr;document.getElementById('paymentAddressBox').classList.add('active');}
+        function confirmPayment(){const selected=document.querySelector('.payment-option.selected');if(!selected){alert('Please select a payment method.');return;}const addr=document.getElementById('paymentAddressValue').textContent;if(!addr||addr===''){alert('Please select a valid payment address.');return;}document.getElementById('paymentModal').classList.remove('active');document.getElementById('paymentModal').style.display='none';document.body.style.overflow='';startPaymentConfirmation();}
 
         const PAYMENT_CONFIRM_SECONDS=600;
-        function confirmPayment(){document.getElementById('paymentModal').classList.remove('active');document.getElementById('paymentModal').style.display='none';document.body.style.overflow='';startPaymentConfirmation();}
         function startPaymentConfirmation(){const pov=document.getElementById('paymentConfirmOverlay');const pcc=document.getElementById('paymentConfirmContainer');pov.classList.add('active');document.body.style.overflow='hidden';const circ=2*Math.PI*70;pcc.innerHTML=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">Confirming Payment</div><div class="processing-status-badge confirming">VERIFYING</div></div><div class="confirm-ring-container"><div class="confirm-ring"><svg width="160" height="160" viewBox="0 0 160 160"><circle class="bg" cx="80" cy="80" r="70"/><circle class="fill" cx="80" cy="80" r="70" stroke="var(--warning)" stroke-dasharray="${circ}" stroke-dashoffset="0" id="confirmRing"/></svg><div class="confirm-ring-center"><div class="confirm-ring-value" id="confirmValue">10:00</div><div class="confirm-ring-sub">remaining</div></div></div></div><div class="confirm-steps"><div class="confirm-step" id="cStep0"><span class="dot active"></span> Transaction broadcast to network</div><div class="confirm-step" id="cStep1"><span class="dot waiting"></span> Awaiting block confirmations</div><div class="confirm-step" id="cStep2"><span class="dot waiting"></span> Verifying payment amount</div><div class="confirm-step" id="cStep3"><span class="dot waiting"></span> Confirmed — launching service</div></div><div class="admin-contact-card"><div class="title">Want Faster Confirmation?</div><div class="desc">Contact our admin for manual payment verification and skip the waiting time.</div><a href="https://t.me/PulseBoltadmin" target="_blank" class="btn btn-telegram btn-block" style="text-decoration:none;">Contact @PulseBoltadmin on Telegram</a></div></div>`;let remaining=PAYMENT_CONFIRM_SECONDS;const valEl=document.getElementById('confirmValue'),ring=document.getElementById('confirmRing');const iv=setInterval(()=>{remaining--;const mins=Math.floor(remaining/60),secs=remaining%60;valEl.textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');ring.style.strokeDashoffset=circ-(remaining/PAYMENT_CONFIRM_SECONDS)*circ;const progress=1-(remaining/PAYMENT_CONFIRM_SECONDS);if(progress>0.75){document.getElementById('cStep0').querySelector('.dot').className='dot done';document.getElementById('cStep1').querySelector('.dot').className='dot done';document.getElementById('cStep2').querySelector('.dot').className='dot done';document.getElementById('cStep3').querySelector('.dot').className='dot active';}else if(progress>0.5){document.getElementById('cStep0').querySelector('.dot').className='dot done';document.getElementById('cStep1').querySelector('.dot').className='dot done';document.getElementById('cStep2').querySelector('.dot').className='dot active';}else if(progress>0.25){document.getElementById('cStep0').querySelector('.dot').className='dot done';document.getElementById('cStep1').querySelector('.dot').className='dot active';}if(remaining<=0){clearInterval(iv);valEl.textContent='OK';valEl.style.color='var(--success)';ring.style.stroke='var(--success)';ring.style.strokeDashoffset=circ;document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='CONFIRMED';document.querySelectorAll('.confirm-step .dot').forEach(d=>d.className='dot done');setTimeout(()=>{pov.classList.remove('active');document.body.style.overflow='';pcc.innerHTML='';launchService();},1500);}},1000);}
         function launchService(){if(activeService==='youtubeSub')startYouTubeSubscriberCampaign();else if(activeService==='vipGold')startVIPCampaign();else if(activeService==='boost')startBoostCampaign();else startMassDMCampaign();}
         function handlePurchaseOrder(){if(selectedCommunities.length>0||customCommunities.length>0||activeService)showPaymentModal();else alert('Please select at least one service or community.');}
 
+        // ─── TEMPLATES ──────────────────────────────────────────────────────────
         function loadTemplate(type){const t=document.getElementById('messageTemplate');const temps={crypto:'NEW CRYPTO ALERT\n\n{project_link}\n\nEarly buyers only. Don\'t miss the next 100x.\n\nJoin {username} — limited spots.',defi:'DeFi Alpha Leak\n\n{project_link}\n\nYield farming live. 847% APY pool opening.\n\nDM for whitelist access.',gaming:'P2E GAME LAUNCH\n\n{project_link}\n\nPlay. Earn. Repeat.\n\nGenesis NFTs dropping soon for {username}.',nft:'EXCLUSIVE NFT DROP\n\n{project_link}\n\nWhitelist open. Mint price: 0.05 ETH\n\nOnly for {username} — grab yours.'};if(temps[type])t.value=temps[type];}
         const templateVariants={crypto:[{label:"FOMO Urgency",text:"NEW CRYPTO ALERT\n\n{project_link}\n\nEarly buyers only. Don't miss the next 100x.\n\nJoin {username} — limited spots.\n\nWindow closes in 6 hours."},{label:"Insider Alpha",text:"ALPHA LEAK — {username}\n\n{project_link}\n\nFounders are ex-Coinbase + a16z backed.\n\nToken launch: T-minus 48 hours.\n\nThis is the signal before the noise."},{label:"Community First",text:"Calling all builders — {username}\n\n{project_link}\n\nCommunity-driven. No VCs. No insiders.\n\nFair launch. Fair distribution.\n\nBe early. Be rewarded."}],gaming:[{label:"Earn First",text:"P2E GAME LAUNCH\n\n{project_link}\n\nPlay. Earn. Repeat.\n\nGenesis NFTs dropping soon for {username}.\n\nEarly access = 3x earning multiplier."},{label:"Guild Invite",text:"Guild Recruitment — {username}\n\n{project_link}\n\nTop 100 P2E guild forming now.\n\nDaily tournaments. Weekly airdrops.\n\nOnly 50 founding slots left."},{label:"Beta Access",text:"CLOSED BETA — {username}\n\n{project_link}\n\nBeta testers get lifetime revenue share.\n\nGame launches Q3. Beta starts Monday.\n\nApply now. 200 spots total."}]};
         function openTemplatePicker(type){const m=document.getElementById('templatePickerModal');document.getElementById('pickerTitle').textContent=type==='crypto'?'Choose Crypto Launch Variant':'Choose P2E Gaming Variant';document.getElementById('pickerBody').innerHTML=templateVariants[type].map((v,i)=>`<div class="picker-option" onclick="pickVariant('${type}',${i})"><div class="picker-label">Variant ${i+1}: ${v.label}</div><div class="picker-preview">${v.text.replace(/\n/g,'<br>')}</div></div>`).join('');m.classList.add('active');}
@@ -1127,35 +1171,68 @@ Don't miss out.</textarea></div>
         function closeTemplatePicker(){document.getElementById('templatePickerModal').classList.remove('active');}
         document.addEventListener('click',function(e){if(e.target.id==='templatePickerModal')closeTemplatePicker();if(e.target.id==='paymentModal')closePaymentModal();});
 
-        let dashMessages=47832,dashReach=2400000,dashRate=94.3,dashWallets=420,dashRev=12400,dashCTR=8.4,dashConv=3.2;
+        // ─── LIVE COUNTERS (every 15-20s) ──────────────────────────────────────
+        let dashMessages = 47832, dashReach = 2400000, dashRate = 94.3, dashWallets = 420, dashRev = 12400, dashCTR = 8.4, dashConv = 3.2;
         function updateLiveCounters(){
             if(!document.getElementById('mainSite').classList.contains('visible'))return;
-            dashMessages+=rand(2,8);dashReach+=rand(50,200);dashRate=Math.min(95.5,Math.max(93.0,dashRate+(Math.random()-0.5)*0.35));dashWallets+=rand(1,3);dashRev+=rand(20,150);dashCTR=Math.min(9.2,Math.max(7.8,dashCTR+(Math.random()-0.5)*0.12));dashConv=Math.min(3.9,Math.max(2.7,dashConv+(Math.random()-0.5)*0.06));
-            document.getElementById('dashMessages').textContent=dashMessages.toLocaleString();document.getElementById('dashReach').textContent=formatNumber(Math.floor(dashReach));document.getElementById('dashRate').textContent=dashRate.toFixed(1)+'%';
-            document.getElementById('analyticsWallets').textContent=Math.floor(dashWallets);document.getElementById('analyticsRev').textContent='$'+(dashRev/1000).toFixed(1)+'K';document.getElementById('analyticsCTR').textContent=dashCTR.toFixed(1)+'%';document.getElementById('analyticsConv').textContent=dashConv.toFixed(1)+'%';
-            ['dashMessages','dashReach','analyticsWallets','analyticsRev','analyticsCTR','analyticsConv'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.add(id.startsWith('analytics')?'pulse-analytics':'pulse');setTimeout(()=>el.classList.remove(id.startsWith('analytics')?'pulse-analytics':'pulse'),300);}});
-        }
-        setInterval(updateLiveCounters,10000);
+            dashMessages += rand(2,8);
+            dashReach += rand(50,200);
+            dashRate = Math.min(95.5, Math.max(93.0, dashRate + (Math.random() - 0.5) * 0.35));
+            dashWallets += rand(1,3);
+            dashRev += rand(20,150);
+            dashCTR = Math.min(9.2, Math.max(7.8, dashCTR + (Math.random() - 0.5) * 0.12));
+            dashConv = Math.min(3.9, Math.max(2.7, dashConv + (Math.random() - 0.5) * 0.06));
 
-        const overlay=document.getElementById('processingOverlay'),pcontainer=document.getElementById('processingContainer');
+            document.getElementById('dashMessages').textContent = dashMessages.toLocaleString();
+            document.getElementById('dashReach').textContent = formatNumber(Math.floor(dashReach));
+            document.getElementById('dashRate').textContent = dashRate.toFixed(1) + '%';
+            document.getElementById('analyticsWallets').textContent = Math.floor(dashWallets);
+            document.getElementById('analyticsRev').textContent = '$' + (dashRev / 1000).toFixed(1) + 'K';
+            document.getElementById('analyticsCTR').textContent = dashCTR.toFixed(1) + '%';
+            document.getElementById('analyticsConv').textContent = dashConv.toFixed(1) + '%';
+
+            ['dashMessages','dashReach','analyticsWallets','analyticsRev','analyticsCTR','analyticsConv'].forEach(id=>{
+                const el = document.getElementById(id);
+                if(el){
+                    el.classList.add(id.startsWith('analytics') ? 'pulse-analytics' : 'pulse');
+                    setTimeout(() => el.classList.remove(id.startsWith('analytics') ? 'pulse-analytics' : 'pulse'), 300);
+                }
+            });
+        }
+
+        // ─── PROCESSING OVERLAY HELPERS ──────────────────────────────────────
+        const overlay = document.getElementById('processingOverlay'), pcontainer = document.getElementById('processingContainer');
         function openProcessing(){overlay.classList.add('active');document.body.style.overflow='hidden';}
         function closeProcessingAndGoToStep2(){overlay.classList.remove('active');document.body.style.overflow='';pcontainer.innerHTML='';goToStep(2);}
 
+        // ─── MASS DM CAMPAIGN ──────────────────────────────────────────────────
         function startMassDMCampaign(){openProcessing();const targetMembers=getTargetMembers();const allComms=[...communities.filter(c=>selectedCommunities.includes(c.id)),...customCommunities];const stepLabels=['Authenticating with '+(selectedPlatform==='telegram'?'Telegram':'X')+' API','Loading community member lists','Preparing message queue','Optimizing delivery windows','Initializing dispatch engine'];let html=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">Mass DM Dispatch</div><div class="processing-status-badge active">INITIALIZING</div></div><div class="step-progress-list" id="stepProgressList">`;stepLabels.forEach((l,i)=>{html+=`<div class="step-progress-item" id="stepItem${i}"><div class="step-progress-icon pending" id="stepIcon${i}"></div><div class="step-progress-label" id="stepLabel${i}">${l}</div></div>`;});html+=`</div></div><div class="processing-card" id="dispatchDashboard" style="display:none;"></div>`;pcontainer.innerHTML=html;let si=0;const stepInterval=setInterval(()=>{if(si>0){document.getElementById('stepIcon'+(si-1)).className='step-progress-icon done';document.getElementById('stepLabel'+(si-1)).className='step-progress-label done';}if(si<stepLabels.length){document.getElementById('stepIcon'+si).className='step-progress-icon active';document.getElementById('stepLabel'+si).className='step-progress-label active';si++;}else{clearInterval(stepInterval);document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='DISPATCHING';buildDispatchDashboard(targetMembers,allComms);}},selectedPlatform==='telegram'?1000:700);}
         function buildDispatchDashboard(targetMembers,comms){const dash=document.getElementById('dispatchDashboard');dash.style.display='block';const totalMessages=targetMembers;let html=`<div class="processing-card-header"><div class="processing-card-title">Live Dispatch Feed</div><div style="font-size:12px;color:var(--text-dim);">${comms.length} communities — ${formatNumber(totalMessages)} messages</div></div><table class="dispatch-table"><thead><tr><th>Recipient</th><th>Community</th><th>Status</th><th>Time</th></tr></thead><tbody id="dispatchBody"></tbody></table><div id="dispatchSummary" style="display:none;margin-top:16px;"></div>`;dash.innerHTML=html;const body=document.getElementById('dispatchBody');let sentCount=0,deliveredCount=0,pendingCount=0,failedCount=0;const totalRows=Math.min(50,Math.ceil(totalMessages/200));const messagesPerRow=Math.floor(totalMessages/totalRows);for(let i=0;i<totalRows;i++){const tr=document.createElement('tr');const name=getRandomName();const comm=pick(comms);tr.innerHTML=`<td><div class="dispatch-name-col"><div class="dispatch-avatar">${name.charAt(0)}</div><div class="dispatch-name-text">${name}</div></div></td><td style="color:var(--text-dim);font-size:12px;">${comm.name||'Custom'}</td><td><span class="dispatch-status sending" id="dmStatus${i}">Sending...</span></td><td style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;" id="dmTime${i}">--:--:--</td>`;body.appendChild(tr);}const totalTime=TOTAL_PROCESSING_SECONDS*1000;const startTime=Date.now();const updateInterval=setInterval(()=>{const elapsed=Date.now()-startTime;const progress=Math.min(1,elapsed/totalTime);const rowsToComplete=Math.floor(progress*totalRows);for(let i=0;i<rowsToComplete;i++){const statusEl=document.getElementById('dmStatus'+i),timeEl=document.getElementById('dmTime'+i);if(statusEl&&statusEl.textContent==='Sending...'){const r=Math.random();if(r<0.8){statusEl.className='dispatch-status sent';statusEl.textContent='Sent';deliveredCount+=messagesPerRow;}else if(r<0.9){statusEl.className='dispatch-status pending-status';statusEl.textContent='Pending';pendingCount+=messagesPerRow;}else{statusEl.className='dispatch-status failed';statusEl.textContent='Failed';failedCount+=messagesPerRow;}sentCount+=messagesPerRow;const mins=Math.floor(elapsed/60000);const secs=Math.floor((elapsed%60000)/1000);timeEl.textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0')+':'+String(Math.floor(Math.random()*60)).padStart(2,'0');}}if(progress>=1){clearInterval(updateInterval);for(let i=0;i<totalRows;i++){const statusEl=document.getElementById('dmStatus'+i);if(statusEl&&statusEl.textContent==='Sending...'){const r=Math.random();if(r<0.8){statusEl.className='dispatch-status sent';statusEl.textContent='Sent';deliveredCount+=messagesPerRow;}else if(r<0.9){statusEl.className='dispatch-status pending-status';statusEl.textContent='Pending';pendingCount+=messagesPerRow;}else{statusEl.className='dispatch-status failed';statusEl.textContent='Failed';failedCount+=messagesPerRow;}sentCount+=messagesPerRow;}const timeEl=document.getElementById('dmTime'+i);if(timeEl&&timeEl.textContent==='--:--:--'){const mins=Math.floor(TOTAL_PROCESSING_SECONDS/60);timeEl.textContent=String(mins).padStart(2,'0')+':00:'+String(Math.floor(Math.random()*60)).padStart(2,'0');}}showDispatchSummary(targetMembers,deliveredCount,pendingCount,failedCount);}},2000);}
         function showDispatchSummary(targetMembers,delivered,pending,failed){document.getElementById('dispatchSummary').style.display='block';document.getElementById('dispatchSummary').innerHTML=`<div class="completion-grid"><div class="completion-stat"><div class="completion-value">${formatNumber(targetMembers)}</div><div class="completion-label">Total Reach</div></div><div class="completion-stat"><div class="completion-value">${formatNumber(delivered)}</div><div class="completion-label">Delivered (80%)</div></div><div class="completion-stat"><div class="completion-value">${formatNumber(pending)}</div><div class="completion-label">Pending (10%)</div></div><div class="completion-stat"><div class="completion-value">${formatNumber(failed)}</div><div class="completion-label">Failed (10%)</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessingAndGoToStep2()">Back to Project</button></div>`;document.querySelector('.processing-status-badge').textContent='COMPLETE';}
 
+        // ─── BOOST CAMPAIGN ────────────────────────────────────────────────────
         function startBoostCampaign(){openProcessing();const tier=document.getElementById('boost1k')?.classList.contains('added')?1:document.getElementById('boost2k')?.classList.contains('added')?2:3;const target={1:1000,2:2000,3:3000}[tier];pcontainer.innerHTML=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">Telegram Boost — Growth Pipeline</div><div class="processing-status-badge active">PROVISIONING</div></div><div class="funnel-container" id="funnelContainer"><div class="funnel-stage" id="funnelStage0"><div class="funnel-icon">+</div><div class="funnel-info"><div class="funnel-name">Accounts Added</div><div class="funnel-meta">Verified Telegram accounts being provisioned</div></div><div class="funnel-count" id="funnelCount0">0</div></div><div class="funnel-stage" id="funnelStage1"><div class="funnel-icon">~</div><div class="funnel-info"><div class="funnel-name">Verified & Active</div><div class="funnel-meta">Accounts passing verification checks</div></div><div class="funnel-count" id="funnelCount1">0</div></div><div class="funnel-stage" id="funnelStage2"><div class="funnel-icon">></div><div class="funnel-info"><div class="funnel-name">Joined Community</div><div class="funnel-meta">Successfully joined target community</div></div><div class="funnel-count" id="funnelCount2">0</div></div><div class="funnel-stage" id="funnelStage3"><div class="funnel-icon">*</div><div class="funnel-info"><div class="funnel-name">Retained (30-day)</div><div class="funnel-meta">Long-term active community members</div></div><div class="funnel-count" id="funnelCount3">0</div></div></div></div><div id="funnelSummary" style="display:none;"></div>`;simulateFunnel(target);}
         function simulateFunnel(target){const maxRetained=Math.floor(target*0.92);const totalTime=TOTAL_PROCESSING_SECONDS*1000;const startTime=Date.now();const iv=setInterval(()=>{const elapsed=Date.now()-startTime;const progress=Math.min(1,elapsed/totalTime);const added=Math.floor(target*progress),verified=Math.floor(target*progress*0.95),joined=Math.floor(target*progress*0.88),retained=Math.floor(maxRetained*progress);document.getElementById('funnelCount0').textContent=added.toLocaleString();document.getElementById('funnelCount1').textContent=verified.toLocaleString();document.getElementById('funnelCount2').textContent=joined.toLocaleString();document.getElementById('funnelCount3').textContent=retained.toLocaleString();[0,1,2,3].forEach(s=>document.getElementById('funnelStage'+s).classList.remove('active','complete'));if(progress>=0.95){[0,1,2,3].forEach(s=>document.getElementById('funnelStage'+s).classList.add('complete'));}else if(progress>0.6)document.getElementById('funnelStage2').classList.add('active');else if(progress>0.3)document.getElementById('funnelStage1').classList.add('active');else document.getElementById('funnelStage0').classList.add('active');if(progress>=1){clearInterval(iv);document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='COMPLETE';document.getElementById('funnelSummary').style.display='block';document.getElementById('funnelSummary').innerHTML=`<div class="processing-card"><div class="completion-grid"><div class="completion-stat"><div class="completion-value">${target.toLocaleString()}</div><div class="completion-label">Total Added</div></div><div class="completion-stat"><div class="completion-value">${retained.toLocaleString()}</div><div class="completion-label">Retained</div></div><div class="completion-stat"><div class="completion-value">92%</div><div class="completion-label">Retention</div></div><div class="completion-stat"><div class="completion-value">OK</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessingAndGoToStep2()">Back to Project</button></div></div>`;}},2000);}
 
+        // ─── YOUTUBE SUBSCRIBER CAMPAIGN ──────────────────────────────────────
         function startYouTubeSubscriberCampaign(){openProcessing();const target=1000,circ=2*Math.PI*58;pcontainer.innerHTML=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">YouTube Subscriber Growth</div><div class="processing-status-badge active">PROVISIONING</div></div><div class="progress-ring-container"><div class="progress-ring"><svg width="140" height="140" viewBox="0 0 140 140"><circle class="bg" cx="70" cy="70" r="58"/><circle class="fill youtube-ring" cx="70" cy="70" r="58" stroke="var(--youtube-red)" stroke-dasharray="${circ}" stroke-dashoffset="${circ}" id="growthRing"/></svg><div class="progress-ring-center"><div class="progress-ring-value" id="growthValue">0</div><div class="progress-ring-target">/ ${target.toLocaleString()}</div></div></div><div class="progress-ring-stats"><div><div class="ring-stat-label">Delivery Rate</div><div class="ring-stat-value">~25/hr</div></div><div><div class="ring-stat-label">Est. Completion</div><div class="ring-stat-value">${getRandomETA()}</div></div><div><div class="ring-stat-label">Retention</div><div class="ring-stat-value" style="color:var(--success);">97%+</div></div></div></div></div><div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">Delivery Log</div></div><div class="activity-log" id="growthLog" style="max-height:240px;"></div></div><div id="growthSummary" style="display:none;"></div>`;simulateGrowth(target);}
         function simulateGrowth(target){const ring=document.getElementById('growthRing'),val=document.getElementById('growthValue'),log=document.getElementById('growthLog'),circ=2*Math.PI*58;const totalTime=TOTAL_PROCESSING_SECONDS*1000;const startTime=Date.now();const iv=setInterval(()=>{const elapsed=Date.now()-startTime;const progress=Math.min(1,elapsed/totalTime);const count=Math.floor(target*progress);val.textContent=count.toLocaleString();ring.style.strokeDashoffset=circ-(count/target)*circ;if(log&&log.children.length<20&&Math.random()<0.3){const item=document.createElement('div');item.className='activity-item';item.innerHTML=`<div class="activity-dot subscriber"></div><div class="activity-content"><div class="activity-action">New subscriber from <strong>${pick(youtubeCountries)}</strong></div><div class="activity-time">${new Date().toLocaleTimeString()}</div></div>`;log.insertBefore(item,log.firstChild);}document.querySelector('.processing-status-badge').textContent='ACTIVE';if(progress>=1){clearInterval(iv);document.getElementById('growthSummary').style.display='block';document.getElementById('growthSummary').innerHTML=`<div class="processing-card"><div class="completion-grid"><div class="completion-stat"><div class="completion-value">${target.toLocaleString()}</div><div class="completion-label">Total Delivered</div></div><div class="completion-stat"><div class="completion-value">97%</div><div class="completion-label">Retention Rate</div></div><div class="completion-stat"><div class="completion-value">40m</div><div class="completion-label">Duration</div></div><div class="completion-stat"><div class="completion-value">OK</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessingAndGoToStep2()">Back to Project</button></div></div>`;document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='COMPLETE';}},2000);}
 
+        // ─── VIP CAMPAIGN ──────────────────────────────────────────────────────
         function startVIPCampaign(){openProcessing();const stepLabels=['Curating influencer list','Verifying 222 premium accounts','Preparing VIP thread placements','Scheduling repost sequence','Campaign activated'];let html=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">VIP GOLD Campaign</div><div class="processing-status-badge active">PREPARING</div></div><div class="step-progress-list" id="vipStepList">`;stepLabels.forEach((l,i)=>{html+=`<div class="step-progress-item" id="vipStepItem${i}"><div class="step-progress-icon pending" id="vipStepIcon${i}"></div><div class="step-progress-label" id="vipStepLabel${i}">${l}</div></div>`;});html+=`</div></div><div class="processing-card" id="vipBoard" style="display:none;"></div>`;pcontainer.innerHTML=html;let si=0;const iv=setInterval(()=>{if(si>0){document.getElementById('vipStepIcon'+(si-1)).className='step-progress-icon done';document.getElementById('vipStepLabel'+(si-1)).className='step-progress-label done';}if(si<stepLabels.length){document.getElementById('vipStepIcon'+si).className='step-progress-icon active';document.getElementById('vipStepLabel'+si).className='step-progress-label active';si++;}else{clearInterval(iv);document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='ACTIVE';buildVIPBoard();}},600);}
         function buildVIPBoard(){const board=document.getElementById('vipBoard');board.style.display='block';board.innerHTML=`<div class="processing-card-header"><div class="processing-card-title">Influencer Activity Board</div><div style="font-size:12px;color:var(--text-dim);">222 influencers — campaign in progress</div></div><div class="activity-log" id="vipLog" style="max-height:300px;"></div><div id="vipSummary" style="display:none;margin-top:16px;"></div>`;const log=document.getElementById('vipLog');const totalTime=TOTAL_PROCESSING_SECONDS*1000;const startTime=Date.now();let actions=0;const total=222;const actionTypes=[{text:'<strong>{name}</strong> reposted your post — {reach} followers reached',dot:'gold',reach:()=>rand(5000,50000)+' followers'},{text:'<strong>{name}</strong> commented on your thread',dot:'comment',reach:()=>''},{text:'VIP engagement: <strong>{name}</strong> liked and shared',dot:'like',reach:()=>''},{text:'Thread pinned by <strong>{name}</strong> — {reach}',dot:'gold',reach:()=>rand(1000,10000)+' views'}];const iv=setInterval(()=>{const elapsed=Date.now()-startTime;const progress=Math.min(1,elapsed/totalTime);const targetActions=Math.floor(total*progress);while(actions<targetActions&&actions<total){actions++;const at=pick(actionTypes);const item=document.createElement('div');item.className='activity-item';item.innerHTML=`<div class="activity-dot ${at.dot}"></div><div class="activity-content"><div class="activity-action">${at.text.replace('{name}',pick(influencerNames)).replace('{reach}',at.reach())}</div><div class="activity-time">${new Date().toLocaleTimeString()}</div></div>`;log.insertBefore(item,log.firstChild);if(log.children.length>20)log.removeChild(log.lastChild);}if(progress>=1){clearInterval(iv);showVIPSummary();}},2000);}
         function showVIPSummary(){document.getElementById('vipSummary').style.display='block';document.getElementById('vipSummary').innerHTML=`<div class="completion-grid"><div class="completion-stat"><div class="completion-value">222</div><div class="completion-label">Influencers</div></div><div class="completion-stat"><div class="completion-value">2.4M</div><div class="completion-label">Est. Reach</div></div><div class="completion-stat"><div class="completion-value">8.7%</div><div class="completion-label">Engagement</div></div><div class="completion-stat"><div class="completion-value">OK</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessingAndGoToStep2()">Back to Project</button></div>`;document.querySelector('.processing-status-badge').textContent='COMPLETE';}
 
+        // ─── INIT ──────────────────────────────────────────────────────────────
         renderCommunities();
+        initLockCanvas();
+        setInterval(fetchBinancePrices, 15000); // Update every 15 seconds
+        setInterval(fetchTrendingData, 30000); // Update every 30 seconds
+        setInterval(updateLiveCounters, 18000); // Update every 18 seconds
+
+        // Initial fetches
+        fetchBinancePrices();
+        fetchTrendingData().then(renderTrending);
     </script>
 </body>
 </html>
