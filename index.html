@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PulseBolt — Mass DM & Outreach Suite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <base target="_blank">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,11 +14,173 @@
             --bg-elevated: #1a1a1a; --border: #222222; --border-hover: #333333;
             --text: #e5e5e5; --text-muted: #666666; --text-dim: #888888;
             --success: #22c55e; --error: #ef4444; --info: #3b82f6; --orange: #f59e0b;
+            --warning: #eab308; --telegram: #0088cc; --solana: #9945FF; --ethereum: #627EEA;
+            --bitcoin: #F7931A; --base: #0052FF; --matic: #8247E5; --arb: #28A0F0; --bnb: #F3BA2F;
         }
         body {
             font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
             min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
         }
+
+        /* ══════════════════════════════════════ */
+        /* LOCK SCREEN — SCROLLABLE */
+        /* ══════════════════════════════════════ */
+        #lockScreen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #060606; z-index: 9999;
+            overflow-y: auto; overflow-x: hidden;
+        }
+        #lockScreen.hidden { display: none; }
+        .lock-bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .lock-content {
+            position: relative; z-index: 1; width: 100%; max-width: 1100px;
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 40px 20px; margin: 0 auto;
+        }
+        .lock-logo { margin-bottom: 10px; position: relative; }
+        .lock-logo-3d { width: 80px; height: 80px; perspective: 600px; }
+        .lock-logo-cube {
+            width: 80px; height: 80px; position: relative; transform-style: preserve-3d;
+            animation: rotateCube 6s linear infinite;
+        }
+        .lock-logo-cube .face {
+            position: absolute; width: 80px; height: 80px;
+            border: 2px solid var(--blue); background: rgba(0,212,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; font-weight: 900; color: var(--blue);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .lock-logo-cube .front { transform: translateZ(40px); }
+        .lock-logo-cube .back { transform: rotateY(180deg) translateZ(40px); }
+        .lock-logo-cube .right { transform: rotateY(90deg) translateZ(40px); }
+        .lock-logo-cube .left { transform: rotateY(-90deg) translateZ(40px); }
+        .lock-logo-cube .top { transform: rotateX(90deg) translateZ(40px); }
+        .lock-logo-cube .bottom { transform: rotateX(-90deg) translateZ(40px); }
+        @keyframes rotateCube {
+            0% { transform: rotateX(15deg) rotateY(0deg); }
+            100% { transform: rotateX(375deg) rotateY(360deg); }
+        }
+        .lock-title {
+            font-size: 32px; font-weight: 900; letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff, var(--blue));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            margin-bottom: 6px; text-align: center;
+        }
+        .lock-subtitle {
+            font-size: 13px; color: var(--text-dim); text-align: center; margin-bottom: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Ticker Bar */
+        .ticker-bar {
+            display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+            margin-bottom: 24px; width: 100%; max-width: 900px;
+        }
+        .ticker-item {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+            padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+            min-width: 120px; transition: all 0.4s; flex-shrink: 0;
+        }
+        .ticker-item.updating { border-color: var(--success); box-shadow: 0 0 8px rgba(34,197,94,0.15); }
+        .ticker-item.dropping { border-color: var(--error); box-shadow: 0 0 8px rgba(239,68,68,0.15); }
+        .ticker-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+            box-shadow: 0 0 10px currentColor; animation: dotGlow 2s ease-in-out infinite;
+        }
+        @keyframes dotGlow {
+            0%,100% { box-shadow: 0 0 6px currentColor; }
+            50% { box-shadow: 0 0 14px currentColor; }
+        }
+        .ticker-info { display: flex; flex-direction: column; }
+        .ticker-name { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .ticker-price {
+            font-size: 15px; font-weight: 700; color: #fff; font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s;
+        }
+        .ticker-price.flash-up { color: var(--success); }
+        .ticker-price.flash-down { color: var(--error); }
+        .ticker-change { font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; transition: all 0.3s; }
+        .ticker-change.up { color: var(--success); }
+        .ticker-change.down { color: var(--error); }
+
+        /* Stats Row */
+        .lock-stats-row {
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+            width: 100%; max-width: 700px; margin-bottom: 24px;
+        }
+        @media (max-width: 600px) { .lock-stats-row { grid-template-columns: repeat(2,1fr); } }
+        .lock-stat-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 16px; text-align: center; transition: all 0.3s;
+        }
+        .lock-stat-value {
+            font-size: 26px; font-weight: 900; color: var(--blue);
+            font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; transition: all 0.3s;
+        }
+        .lock-stat-value.pulse-stat { color: var(--success); }
+        .lock-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Trending Section */
+        .trending-section { width: 100%; max-width: 900px; margin-bottom: 20px; }
+        .trending-header {
+            font-size: 12px; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; text-align: center;
+        }
+        .trending-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; }
+        @media (max-width: 800px) { .trending-grid { grid-template-columns: repeat(2,1fr); } }
+        .trending-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+            padding: 10px; cursor: pointer; transition: all 0.3s;
+        }
+        .trending-card:hover { border-color: var(--blue); transform: translateY(-1px); }
+        .trending-pair { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .trending-chain { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+        .trending-price { font-size: 12px; font-weight: 600; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+        .trending-change { font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin-top: 2px; transition: all 0.3s; }
+        .trending-change.up { color: var(--success); }
+        .trending-change.down { color: var(--error); }
+
+        /* Password Input */
+        .lock-pass-container { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+        .lock-pass-input {
+            width: 280px; padding: 14px 18px; background: var(--bg-elevated);
+            border: 2px solid var(--border); border-radius: 10px;
+            color: #fff; font-size: 15px; font-family: 'JetBrains Mono', monospace;
+            text-align: center; letter-spacing: 3px; transition: all 0.3s;
+        }
+        .lock-pass-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px var(--blue-glow); }
+        .lock-pass-input::placeholder { color: var(--text-muted); letter-spacing: 1px; }
+        .lock-pass-btn {
+            padding: 14px 24px; background: linear-gradient(135deg, var(--blue), var(--blue-dim));
+            color: #000; border: none; border-radius: 10px; font-weight: 700; font-size: 14px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .lock-pass-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,212,255,0.3); }
+        .lock-error { color: var(--error); font-size: 12px; margin-top: 8px; display: none; text-align: center; }
+
+        /* 3D Orb Animations */
+        .orb {
+            position: fixed; border-radius: 50%; filter: blur(40px); opacity: 0.3;
+            animation: floatOrb 12s ease-in-out infinite; pointer-events: none; z-index: 0;
+        }
+        .orb-1 { width: 200px; height: 200px; background: radial-gradient(circle, var(--blue), transparent); top: 10%; left: 5%; animation-delay: 0s; }
+        .orb-2 { width: 160px; height: 160px; background: radial-gradient(circle, var(--solana), transparent); top: 50%; right: 5%; animation-delay: -4s; }
+        .orb-3 { width: 180px; height: 180px; background: radial-gradient(circle, var(--ethereum), transparent); bottom: 10%; left: 20%; animation-delay: -8s; }
+        .orb-4 { width: 140px; height: 140px; background: radial-gradient(circle, var(--bitcoin), transparent); top: 30%; right: 30%; animation-delay: -2s; }
+        .orb-5 { width: 120px; height: 120px; background: radial-gradient(circle, var(--base), transparent); bottom: 30%; right: 15%; animation-delay: -6s; }
+        @keyframes floatOrb {
+            0%,100% { transform: translate(0,0) scale(1); }
+            25% { transform: translate(40px,-30px) scale(1.15); }
+            50% { transform: translate(-30px,50px) scale(0.85); }
+            75% { transform: translate(-50px,-15px) scale(1.1); }
+        }
+
+        /* ══════════════════════════════════════ */
+        /* MAIN SITE (hidden until unlocked) */
+        /* ══════════════════════════════════════ */
+        #mainSite { display: none; }
+        #mainSite.visible { display: block; }
+
         .bg-grid {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
@@ -78,7 +240,6 @@
         @media (min-width: 640px) { .dash-label { font-size: 11px; letter-spacing: 0.5px; } }
         .dash-divider { display: none; }
         @media (min-width: 640px) { .dash-divider { display: block; width: 1px; background: var(--border); align-self: stretch; } }
-
         .stepper {
             display: flex; justify-content: center; gap: 0; margin-bottom: 20px;
             overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch;
@@ -101,7 +262,6 @@
         .step-line.completed { background: linear-gradient(90deg, var(--success), var(--blue)); }
         .step-label { font-size: 9px; color: var(--text-muted); font-weight: 500; margin-top: 4px; text-align: center; }
         @media (min-width: 640px) { .step-label { font-size: 10px; margin-top: 6px; } }
-
         .card {
             background: var(--bg-card); border: 1px solid var(--border);
             border-radius: 14px; padding: 16px; margin-bottom: 16px; transition: all 0.3s;
@@ -150,7 +310,6 @@
             display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
         .platform-icon-wrapper img { width: 100%; height: 100%; object-fit: contain; border-radius: 12px; }
-
         .community-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
         .community-item {
             display: flex; align-items: center; gap: 12px; background: var(--bg-elevated);
@@ -182,7 +341,6 @@
         .community-item.selected .checkbox-custom svg { opacity: 1; }
         .custom-community-row { display: flex; gap: 8px; margin-top: 12px; }
         .custom-community-row .form-input { flex: 1; }
-
         .btn {
             padding: 12px 20px; border-radius: 10px; border: none; font-weight: 700;
             cursor: pointer; font-size: 14px; transition: all 0.2s; display: inline-flex;
@@ -203,26 +361,18 @@
         }
         .btn-youtube:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(255,0,0,0.4); }
         .btn-youtube.added { background: var(--success); color: #fff; }
+        .btn-telegram {
+            background: linear-gradient(135deg, #0088cc, #006699);
+            color: #fff; box-shadow: 0 4px 16px rgba(0,136,204,0.25);
+        }
+        .btn-telegram:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,136,204,0.4); }
 
         .boost-panel { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
         .boost-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
         .boost-panel-title { font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
-        .boost-panel-title svg { width: 20px; height: 20px; color: var(--blue); }
-        .boost-badge {
-            background: linear-gradient(135deg, var(--blue), var(--blue-dim));
-            color: #000; font-size: 10px; font-weight: 800; padding: 4px 10px;
-            border-radius: 20px; text-transform: uppercase;
-        }
-        .boost-badge-red {
-            background: linear-gradient(135deg, var(--youtube-red), #cc0000);
-            color: #fff; font-size: 10px; font-weight: 800; padding: 4px 10px;
-            border-radius: 20px; text-transform: uppercase;
-        }
-        .boost-badge-gold {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000; font-size: 10px; font-weight: 800; padding: 4px 10px;
-            border-radius: 20px; text-transform: uppercase;
-        }
+        .boost-badge { background: linear-gradient(135deg, var(--blue), var(--blue-dim)); color: #000; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+        .boost-badge-red { background: linear-gradient(135deg, var(--youtube-red), #cc0000); color: #fff; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+        .boost-badge-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
         .boost-packages { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
         @media (max-width: 640px) { .boost-packages { grid-template-columns: 1fr; } }
         .boost-package {
@@ -232,40 +382,24 @@
         }
         .boost-package:hover { border-color: var(--blue); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,212,255,0.1); }
         .boost-package.popular { border-color: var(--blue); background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent); }
-        .boost-package.popular::before {
-            content: "POPULAR"; position: absolute; top: 8px; right: -28px;
-            background: var(--blue); color: #000; font-size: 9px; font-weight: 800;
-            padding: 2px 24px; transform: rotate(45deg);
-        }
+        .boost-package.popular::before { content: "POPULAR"; position: absolute; top: 8px; right: -28px; background: var(--blue); color: #000; font-size: 9px; font-weight: 800; padding: 2px 24px; transform: rotate(45deg); }
         .boost-package.exclusive { border-color: var(--youtube-red); background: linear-gradient(135deg, rgba(255,0,0,0.08), transparent); }
-        .boost-package.exclusive::before {
-            content: "EXCLUSIVE"; position: absolute; top: 8px; right: -35px;
-            background: var(--youtube-red); color: #fff; font-size: 8px; font-weight: 800;
-            padding: 2px 28px; transform: rotate(45deg);
-        }
+        .boost-package.exclusive::before { content: "EXCLUSIVE"; position: absolute; top: 8px; right: -35px; background: var(--youtube-red); color: #fff; font-size: 8px; font-weight: 800; padding: 2px 28px; transform: rotate(45deg); }
         .boost-package.gold { border-color: #f59e0b; background: linear-gradient(135deg, rgba(245,158,11,0.08), transparent); }
-        .boost-package.gold::before {
-            content: "PREMIUM"; position: absolute; top: 8px; right: -32px;
-            background: #f59e0b; color: #000; font-size: 8px; font-weight: 800;
-            padding: 2px 28px; transform: rotate(45deg);
-        }
+        .boost-package.gold::before { content: "PREMIUM"; position: absolute; top: 8px; right: -32px; background: #f59e0b; color: #000; font-size: 8px; font-weight: 800; padding: 2px 28px; transform: rotate(45deg); }
         .boost-amount { font-size: 24px; font-weight: 900; color: #fff; margin-bottom: 4px; }
         .boost-members { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
         .boost-price { font-size: 28px; font-weight: 800; color: var(--blue); font-family: 'JetBrains Mono', monospace; margin-bottom: 12px; }
-        .boost-price span { font-size: 14px; color: var(--text-muted); }
         .boost-btn {
             width: 100%; padding: 10px; background: linear-gradient(135deg, var(--blue), var(--blue-dim));
-            color: #000; border: none; border-radius: 8px; font-weight: 700; font-size: 12px;
-            cursor: pointer; transition: all 0.2s;
+            color: #000; border: none; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s;
         }
         .boost-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,212,255,0.3); }
         .boost-btn.added { background: var(--success); color: #fff; }
         .boost-btn.btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; }
-        .boost-btn.btn-gold:hover { box-shadow: 0 4px 16px rgba(245,158,11,0.3); }
         .boost-features { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
         .boost-feature { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
         .boost-feature svg { width: 12px; height: 12px; color: var(--success); }
-
         .step-content { display: none; }
         .step-content.active { display: block; animation: fadeUp 0.4s ease; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -278,12 +412,10 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
         .post-link-section { margin-bottom: 20px; padding: 16px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; }
         .post-link-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
         .post-link-header svg { width: 18px; height: 18px; color: var(--blue); }
         .post-link-header span { font-size: 12px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
-
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.8); z-index: 2000; align-items: center;
@@ -346,14 +478,13 @@
         .usdc-chain-option:hover { border-color: var(--blue); }
         .usdc-chain-option.selected { border-color: var(--blue); background: linear-gradient(135deg, rgba(0,212,255,0.08), transparent); }
 
-        /* PROCESSING SCREENS */
-        .processing-overlay {
+        .processing-overlay, .payment-confirm-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: var(--bg); z-index: 1000; flex-direction: column;
             align-items: center; justify-content: flex-start; overflow-y: auto; padding: 20px;
         }
-        .processing-overlay.active { display: flex; }
-        .processing-container {
+        .processing-overlay.active, .payment-confirm-overlay.active { display: flex; }
+        .processing-container, .payment-confirm-container {
             width: 100%; max-width: 680px; margin: 0 auto; padding: 10px 0;
         }
         .processing-card {
@@ -368,12 +499,9 @@
             font-size: 10px; font-weight: 800; text-transform: uppercase;
             padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px;
         }
-        .processing-status-badge.active {
-            background: rgba(0,212,255,0.12); color: var(--blue); border: 1px solid rgba(0,212,255,0.2);
-        }
-        .processing-status-badge.complete {
-            background: rgba(34,197,94,0.12); color: var(--success); border: 1px solid rgba(34,197,94,0.2);
-        }
+        .processing-status-badge.active { background: rgba(0,212,255,0.12); color: var(--blue); border: 1px solid rgba(0,212,255,0.2); }
+        .processing-status-badge.complete { background: rgba(34,197,94,0.12); color: var(--success); border: 1px solid rgba(34,197,94,0.2); }
+        .processing-status-badge.confirming { background: rgba(234,179,8,0.12); color: var(--warning); border: 1px solid rgba(234,179,8,0.2); }
         .step-progress-list { display: flex; flex-direction: column; gap: 0; }
         .step-progress-item {
             display: flex; align-items: center; gap: 14px; padding: 12px 0;
@@ -388,58 +516,28 @@
         .step-progress-icon.pending { border-color: var(--border); background: transparent; }
         .step-progress-icon.active { border-color: var(--blue); background: rgba(0,212,255,0.1); animation: pulse-ring 1.5s infinite; }
         .step-progress-icon.done { border-color: var(--success); background: var(--success); }
-        .step-progress-icon.done::after { content: "✓"; color: #fff; font-size: 14px; font-weight: 700; }
+        .step-progress-icon.done::after { content: "OK"; color: #fff; font-size: 11px; font-weight: 700; }
         .step-progress-label { font-size: 13px; color: var(--text-dim); flex: 1; }
         .step-progress-label.done { color: var(--success); }
         .step-progress-label.active { color: #fff; }
         @keyframes pulse-ring { 0%,100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.4); } 50% { box-shadow: 0 0 0 8px rgba(0,212,255,0); } }
-
         .dispatch-table { width: 100%; border-collapse: collapse; }
         .dispatch-table th {
             text-align: left; font-size: 10px; color: var(--text-muted); text-transform: uppercase;
             letter-spacing: 0.5px; padding: 8px 12px; border-bottom: 1px solid var(--border); font-weight: 600;
         }
-        .dispatch-table td {
-            padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle;
-        }
-        .dispatch-community { display: flex; align-items: center; gap: 10px; }
+        .dispatch-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+        .dispatch-name-col { display: flex; align-items: center; gap: 8px; }
         .dispatch-avatar {
-            width: 32px; height: 32px; border-radius: 8px; background: var(--bg-elevated);
-            display: flex; align-items: center; justify-content: center; font-size: 16px;
+            width: 28px; height: 28px; border-radius: 6px; background: var(--bg-elevated);
+            display: flex; align-items: center; justify-content: center; font-size: 13px;
         }
-        .dispatch-name { font-weight: 600; color: #fff; font-size: 13px; }
-        .dispatch-meta { font-size: 11px; color: var(--text-muted); }
-        .dispatch-status {
-            font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px; display: inline-block;
-        }
-        .dispatch-status.sending { background: rgba(0,212,255,0.1); color: var(--blue); }
-        .dispatch-status.completed { background: rgba(34,197,94,0.1); color: var(--success); }
-        .dispatch-status.queued { background: rgba(100,116,139,0.1); color: var(--text-dim); }
-        .dispatch-progress-wrap {
-            width: 100%; height: 4px; background: var(--bg-elevated); border-radius: 2px; overflow: hidden;
-        }
-        .dispatch-progress-fill {
-            height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue-dim));
-            border-radius: 2px; transition: width 0.8s ease;
-        }
-        .progress-ring-container {
-            display: flex; align-items: center; justify-content: center; gap: 32px;
-            padding: 20px 0; flex-wrap: wrap;
-        }
-        .progress-ring { width: 140px; height: 140px; position: relative; flex-shrink: 0; }
-        .progress-ring svg { transform: rotate(-90deg); width: 140px; height: 140px; }
-        .progress-ring .bg { fill: none; stroke: var(--border); stroke-width: 6; }
-        .progress-ring .fill { fill: none; stroke: var(--blue); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
-        .progress-ring .fill.youtube-ring { stroke: var(--youtube-red); }
-        .progress-ring .fill.gold-ring { stroke: #f59e0b; }
-        .progress-ring-center {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center;
-        }
-        .progress-ring-value { font-size: 32px; font-weight: 900; color: #fff; font-family: 'JetBrains Mono', monospace; line-height: 1; }
-        .progress-ring-target { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-        .progress-ring-stats { display: flex; flex-direction: column; gap: 16px; }
-        .ring-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .ring-stat-value { font-size: 18px; font-weight: 700; color: #fff; font-family: 'JetBrains Mono', monospace; }
+        .dispatch-name-text { font-weight: 600; color: #fff; font-size: 13px; }
+        .dispatch-status { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 12px; display: inline-block; }
+        .dispatch-status.sending { background: rgba(0,212,255,0.12); color: var(--blue); }
+        .dispatch-status.sent { background: rgba(34,197,94,0.12); color: var(--success); }
+        .dispatch-status.pending-status { background: rgba(234,179,8,0.12); color: var(--warning); }
+        .dispatch-status.failed { background: rgba(239,68,68,0.12); color: var(--error); }
         .activity-log { max-height: 300px; overflow-y: auto; }
         .activity-item {
             display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);
@@ -464,13 +562,23 @@
         .completion-value { font-size: 20px; font-weight: 800; color: var(--blue); font-family: 'JetBrains Mono', monospace; }
         .completion-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
         .back-to-dashboard { text-align: center; margin-top: 20px; }
-
-        /* Funnel Visualizer */
+        .progress-ring-container { display: flex; align-items: center; justify-content: center; gap: 32px; padding: 20px 0; flex-wrap: wrap; }
+        .progress-ring { width: 140px; height: 140px; position: relative; flex-shrink: 0; }
+        .progress-ring svg { transform: rotate(-90deg); width: 140px; height: 140px; }
+        .progress-ring .bg { fill: none; stroke: var(--border); stroke-width: 6; }
+        .progress-ring .fill { fill: none; stroke: var(--blue); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 2s linear; }
+        .progress-ring .fill.youtube-ring { stroke: var(--youtube-red); }
+        .progress-ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+        .progress-ring-value { font-size: 32px; font-weight: 900; color: #fff; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+        .progress-ring-target { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .progress-ring-stats { display: flex; flex-direction: column; gap: 16px; }
+        .ring-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .ring-stat-value { font-size: 18px; font-weight: 700; color: #fff; font-family: 'JetBrains Mono', monospace; }
         .funnel-container { display: flex; flex-direction: column; gap: 12px; padding: 10px 0; }
         .funnel-stage {
             display: flex; align-items: center; gap: 12px; padding: 14px 16px;
             background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px;
-            transition: all 0.5s;
+            transition: all 0.8s;
         }
         .funnel-stage.active { border-color: var(--blue); background: linear-gradient(90deg, rgba(0,212,255,0.05), transparent); }
         .funnel-stage.complete { border-color: var(--success); background: linear-gradient(90deg, rgba(34,197,94,0.05), transparent); }
@@ -486,7 +594,29 @@
         .funnel-meta { font-size: 11px; color: var(--text-muted); }
         .funnel-count { font-size: 18px; font-weight: 800; color: var(--blue); font-family: 'JetBrains Mono', monospace; }
         .funnel-stage.complete .funnel-count { color: var(--success); }
-
+        .confirm-ring-container { display: flex; align-items: center; justify-content: center; padding: 24px 0; }
+        .confirm-ring { width: 160px; height: 160px; position: relative; }
+        .confirm-ring svg { transform: rotate(-90deg); width: 160px; height: 160px; }
+        .confirm-ring .bg { fill: none; stroke: var(--border); stroke-width: 8; }
+        .confirm-ring .fill { fill: none; stroke: var(--warning); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+        .confirm-ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+        .confirm-ring-value { font-size: 38px; font-weight: 900; color: var(--warning); font-family: 'JetBrains Mono', monospace; line-height: 1; }
+        .confirm-ring-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .confirm-steps { margin-top: 20px; }
+        .confirm-step {
+            display: flex; align-items: center; gap: 10px; padding: 8px 0;
+            font-size: 12px; color: var(--text-dim);
+        }
+        .confirm-step .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+        .confirm-step .dot.waiting { background: var(--text-muted); }
+        .confirm-step .dot.active { background: var(--warning); animation: pulse 1s infinite; }
+        .confirm-step .dot.done { background: var(--success); }
+        .admin-contact-card {
+            background: var(--bg-elevated); border: 1px solid var(--telegram); border-radius: 12px;
+            padding: 16px; margin-top: 16px; text-align: center;
+        }
+        .admin-contact-card .title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .admin-contact-card .desc { font-size: 11px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; }
         .dex-wrapper { margin-top: 16px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-card); }
         .dex-wrapper iframe { width: 100%; height: 400px; border: none; }
         @media (min-width: 640px) { .dex-wrapper iframe { height: 500px; } }
@@ -499,204 +629,257 @@
             border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.2s;
         }
         .template-card:hover { border-color: var(--blue); background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent); }
-        .template-emoji { font-size: 22px; margin-bottom: 6px; }
         .template-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 2px; }
         .template-desc { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
-        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--border); border-radius: 22px; transition: 0.3s; }
-        .toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
-        .toggle-switch input:checked + .toggle-slider { background: var(--blue); }
-        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(18px); }
         .analytics-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
         @media (min-width: 640px) { .analytics-grid { grid-template-columns: repeat(4,1fr); gap: 10px; } }
         .analytics-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 12px 8px; text-align: center; }
         .analytics-number { font-size: 18px; font-weight: 800; color: var(--blue); font-family: 'JetBrains Mono', monospace; line-height: 1; margin-bottom: 4px; transition: all 0.3s; }
+        .analytics-number.pulse-analytics { color: var(--success); }
         .analytics-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .modal-overlay#templatePickerModal { z-index: 3000; }
         .picker-option { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
         .picker-option:hover { border-color: var(--blue); background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent); }
         .picker-label { font-size: 12px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         .picker-preview { font-size: 13px; color: var(--text-dim); line-height: 1.5; white-space: pre-wrap; }
-        .hidden { display: none !important; }
+
+        /* Unlock transition */
+        .unlock-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #060606; z-index: 9998; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .unlock-overlay.active { display: flex; }
+        .unlock-spinner {
+            width: 50px; height: 50px; border: 3px solid var(--border);
+            border-top-color: var(--blue); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .unlock-text { margin-top: 16px; font-size: 14px; color: var(--text-dim); font-weight: 500; }
     </style>
 </head>
 <body>
-    <div class="bg-grid"></div>
 
-    <div class="container">
-        <div class="header">
-            <div class="logo-badge">
-                <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="48" fill="none" stroke="#00D4FF" stroke-width="2"/>
-                    <circle cx="50" cy="50" r="44" fill="#0a0a0a"/>
-                    <path d="M35 35 L65 35 L55 50 L65 65 L35 65 L45 50 Z" fill="none" stroke="#00D4FF" stroke-width="4" stroke-linejoin="round"/>
-                    <path d="M40 40 L60 40 L50 50 L60 60 L40 60 L50 50 Z" fill="#00D4FF" opacity="0.3"/>
-                    <path d="M48 35 L52 35 L48 65 L44 65 Z" fill="#00D4FF"/>
-                    <path d="M42 30 L58 30 L50 50 L42 30 Z" fill="#00D4FF" opacity="0.6"/>
-                    <text x="50" y="92" font-family="Inter, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="800">PULSEBOLT</text>
-                </svg>
-                <div><div class="logo-text">PULSEBOLT</div><div class="logo-sub">Mass DM & Outreach Suite v3.1</div></div>
-            </div>
-            <div class="dashboard-bar">
-                <div class="dash-item"><div class="dash-number" id="dashMessages">47,832</div><div class="dash-label">Messages Sent Today</div></div>
-                <div class="dash-divider"></div>
-                <div class="dash-item"><div class="dash-number" id="dashActive">12</div><div class="dash-label">Active Campaigns</div></div>
-                <div class="dash-divider"></div>
-                <div class="dash-item"><div class="dash-number" id="dashReach">2.4M</div><div class="dash-label">Total Reach</div></div>
-                <div class="dash-divider"></div>
-                <div class="dash-item"><div class="dash-number" id="dashRate">94.2%</div><div class="dash-label">Success Rate</div></div>
-            </div>
-            <h1>Community Outreach Engine</h1>
-            <p>Target active communities, insert your project, and reach thousands.</p>
-            <div class="status-bar"><div class="status-dot"></div><span>All Systems Operational</span></div>
-        </div>
-
-        <div class="stepper">
-            <div class="step"><div><div class="step-circle active" id="step1-circle">1</div><div class="step-label">Platform</div></div></div>
-            <div class="step-line" id="line1"></div>
-            <div class="step"><div><div class="step-circle pending" id="step2-circle">2</div><div class="step-label">Project</div></div></div>
-            <div class="step-line" id="line2"></div>
-            <div class="step"><div><div class="step-circle pending" id="step3-circle">3</div><div class="step-label">Communities</div></div></div>
-            <div class="step-line" id="line3"></div>
-            <div class="step"><div><div class="step-circle pending" id="step4-circle">4</div><div class="step-label">Launch</div></div></div>
-        </div>
-
-        <!-- Step 1: Platform (3 platforms only - NO DISCORD) -->
-        <div class="step-content active" id="step1">
-            <div class="card">
-                <div class="card-title">🎯 Pick Your Target Social Media</div>
-                <div class="card-desc">Select the platform where your audience lives. We optimize delivery for maximum reach and engagement.</div>
-                <div class="platform-grid">
-                    <div class="platform-option" data-platform="youtube" onclick="selectPlatform(this)"><div class="platform-icon-wrapper"><svg viewBox="0 0 24 24" width="52" height="52"><rect width="24" height="24" rx="6" fill="#FF0000"/><polygon points="10,8 16,12 10,16" fill="white"/></svg></div></div>
-                    <div class="platform-option" data-platform="telegram" onclick="selectPlatform(this)"><div class="platform-icon-wrapper"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram"></div></div>
-                    <div class="platform-option" data-platform="twitter" onclick="selectPlatform(this)"><div class="platform-icon-wrapper"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/X_icon_2.svg" alt="X"></div></div>
+    <!-- ══════════════════════════════════════ -->
+    <!-- LOCK SCREEN — NOW SCROLLABLE -->
+    <!-- ══════════════════════════════════════ -->
+    <div id="lockScreen">
+        <canvas class="lock-bg-canvas" id="lockCanvas"></canvas>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+        <div class="orb orb-5"></div>
+        <div class="lock-content">
+            <div class="lock-logo">
+                <div class="lock-logo-3d">
+                    <div class="lock-logo-cube">
+                        <div class="face front">PB</div>
+                        <div class="face back">PB</div>
+                        <div class="face right">PB</div>
+                        <div class="face left">PB</div>
+                        <div class="face top">PB</div>
+                        <div class="face bottom">PB</div>
+                    </div>
                 </div>
-                <div class="action-bar" style="justify-content: flex-end;"><button class="btn btn-primary" id="btn-step1" onclick="goToStep(2)" disabled>Continue →</button></div>
             </div>
-        </div>
+            <div class="lock-title">PULSEBOLT ANALYTICS</div>
+            <div class="lock-subtitle">Live Market Intelligence & Campaign Command Center</div>
 
-        <!-- Step 2: Project -->
-        <div class="step-content" id="step2">
-            <div class="card">
-                <div class="card-title">🔗 Insert Your Project</div>
-                <div class="card-desc">Enter the link to your project, game, or community that you want to promote.</div>
-                <div class="form-group"><label class="form-label">Project URL</label><input type="text" class="form-input" id="projectLink" placeholder="https://t.me/YourProject or https://yourgame.com" oninput="validateStep2()"><div id="linkError" style="color: var(--error); font-size: 12px; margin-top: 6px; display: none;"></div></div>
-                <div class="form-group"><label class="form-label">Campaign Name (Optional)</label><input type="text" class="form-input" id="campaignName" placeholder="e.g. PulseBolt Launch"></div>
-                <div class="form-group"><label class="form-label">Message Template</label><textarea class="form-input" id="messageTemplate" rows="3">Hey {username}, check out this amazing project! 🚀
+            <!-- Ticker Bar — SOL, ETH, BNB first -->
+            <div class="ticker-bar" id="tickerBar">
+                <div class="ticker-item" data-coin="SOL"><div class="ticker-dot" style="background:#9945FF;color:#9945FF;"></div><div class="ticker-info"><div class="ticker-name">Solana</div><div class="ticker-price" id="tickerSOL">$142.80</div><div class="ticker-change down" id="tickerSOLChange">-0.6%</div></div></div>
+                <div class="ticker-item" data-coin="ETH"><div class="ticker-dot" style="background:#627EEA;color:#627EEA;"></div><div class="ticker-info"><div class="ticker-name">Ethereum</div><div class="ticker-price" id="tickerETH">$3,521</div><div class="ticker-change up" id="tickerETHChange">+1.8%</div></div></div>
+                <div class="ticker-item" data-coin="BNB"><div class="ticker-dot" style="background:#F3BA2F;color:#F3BA2F;"></div><div class="ticker-info"><div class="ticker-name">BNB</div><div class="ticker-price" id="tickerBNB">$582.30</div><div class="ticker-change up" id="tickerBNBChange">+0.9%</div></div></div>
+                <div class="ticker-item" data-coin="BTC"><div class="ticker-dot" style="background:#F7931A;color:#F7931A;"></div><div class="ticker-info"><div class="ticker-name">Bitcoin</div><div class="ticker-price" id="tickerBTC">$67,452</div><div class="ticker-change up" id="tickerBTCChange">+2.4%</div></div></div>
+                <div class="ticker-item" data-coin="BASE"><div class="ticker-dot" style="background:#0052FF;color:#0052FF;"></div><div class="ticker-info"><div class="ticker-name">Base</div><div class="ticker-price" id="tickerBASE">$1.24</div><div class="ticker-change up" id="tickerBASEChange">+5.2%</div></div></div>
+                <div class="ticker-item" data-coin="MATIC"><div class="ticker-dot" style="background:#8247E5;color:#8247E5;"></div><div class="ticker-info"><div class="ticker-name">Polygon</div><div class="ticker-price" id="tickerMATIC">$0.72</div><div class="ticker-change down" id="tickerMATICChange">-1.1%</div></div></div>
+                <div class="ticker-item" data-coin="ARB"><div class="ticker-dot" style="background:#28A0F0;color:#28A0F0;"></div><div class="ticker-info"><div class="ticker-name">Arbitrum</div><div class="ticker-price" id="tickerARB">$0.89</div><div class="ticker-change up" id="tickerARBChange">+3.7%</div></div></div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="lock-stats-row">
+                <div class="lock-stat-card"><div class="lock-stat-value" id="lockRevenue">$47,832</div><div class="lock-stat-label">Total Revenue</div></div>
+                <div class="lock-stat-card"><div class="lock-stat-value" id="lockCampaigns">1,247</div><div class="lock-stat-label">Campaigns Completed</div></div>
+                <div class="lock-stat-card"><div class="lock-stat-value" id="lockReach">8.4M</div><div class="lock-stat-label">Total Reach</div></div>
+            </div>
+
+            <!-- Trending Section -->
+            <div class="trending-section">
+                <div class="trending-header">Trending — DexScreener Top 10</div>
+                <div class="trending-grid" id="trendingGrid"></div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="lock-pass-container">
+                <input type="password" class="lock-pass-input" id="lockPassInput" placeholder="Enter Passcode" onkeydown="if(event.key==='Enter')checkPasscode()">
+                <button class="lock-pass-btn" onclick="checkPasscode()">Unlock</button>
+            </div>
+            <div class="lock-error" id="lockError">Invalid passcode. Access denied.</div>
+        </div>
+    </div>
+
+    <!-- Unlock Transition Overlay -->
+    <div class="unlock-overlay" id="unlockOverlay">
+        <div class="unlock-spinner"></div>
+        <div class="unlock-text">Initializing PulseBolt Engine...</div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- MAIN SITE -->
+    <!-- ══════════════════════════════════════ -->
+    <div id="mainSite">
+        <div class="bg-grid"></div>
+        <div class="container">
+            <div class="header">
+                <div class="logo-badge">
+                    <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="48" fill="none" stroke="#00D4FF" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="44" fill="#0a0a0a"/>
+                        <path d="M35 35 L65 35 L55 50 L65 65 L35 65 L45 50 Z" fill="none" stroke="#00D4FF" stroke-width="4" stroke-linejoin="round"/>
+                        <path d="M40 40 L60 40 L50 50 L60 60 L40 60 L50 50 Z" fill="#00D4FF" opacity="0.3"/>
+                        <path d="M48 35 L52 35 L48 65 L44 65 Z" fill="#00D4FF"/>
+                        <path d="M42 30 L58 30 L50 50 L42 30 Z" fill="#00D4FF" opacity="0.6"/>
+                        <text x="50" y="92" font-family="Inter, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="800">PULSEBOLT</text>
+                    </svg>
+                    <div><div class="logo-text">PULSEBOLT</div><div class="logo-sub">Mass DM & Outreach Suite v4.0</div></div>
+                </div>
+                <div class="dashboard-bar">
+                    <div class="dash-item"><div class="dash-number" id="dashMessages">47,832</div><div class="dash-label">Messages Sent Today</div></div>
+                    <div class="dash-divider"></div>
+                    <div class="dash-item"><div class="dash-number" id="dashActive">12</div><div class="dash-label">Active Campaigns</div></div>
+                    <div class="dash-divider"></div>
+                    <div class="dash-item"><div class="dash-number" id="dashReach">2.4M</div><div class="dash-label">Total Reach</div></div>
+                    <div class="dash-divider"></div>
+                    <div class="dash-item"><div class="dash-number" id="dashRate">94.3%</div><div class="dash-label">Success Rate</div></div>
+                </div>
+                <h1>Community Outreach Engine</h1>
+                <p>Target active communities, insert your project, and reach thousands.</p>
+                <div class="status-bar"><div class="status-dot"></div><span>All Systems Operational</span></div>
+            </div>
+            <div class="stepper">
+                <div class="step"><div><div class="step-circle active" id="step1-circle">1</div><div class="step-label">Platform</div></div></div>
+                <div class="step-line" id="line1"></div>
+                <div class="step"><div><div class="step-circle pending" id="step2-circle">2</div><div class="step-label">Project</div></div></div>
+                <div class="step-line" id="line2"></div>
+                <div class="step"><div><div class="step-circle pending" id="step3-circle">3</div><div class="step-label">Communities</div></div></div>
+                <div class="step-line" id="line3"></div>
+                <div class="step"><div><div class="step-circle pending" id="step4-circle">4</div><div class="step-label">Launch</div></div></div>
+            </div>
+            <div class="step-content active" id="step1">
+                <div class="card">
+                    <div class="card-title">Pick Your Target Social Media</div>
+                    <div class="card-desc">Select the platform where your audience lives.</div>
+                    <div class="platform-grid">
+                        <div class="platform-option" data-platform="youtube" onclick="selectPlatform(this)"><div class="platform-icon-wrapper"><svg viewBox="0 0 24 24" width="52" height="52"><rect width="24" height="24" rx="6" fill="#FF0000"/><polygon points="10,8 16,12 10,16" fill="white"/></svg></div></div>
+                        <div class="platform-option" data-platform="telegram" onclick="selectPlatform(this)"><div class="platform-icon-wrapper"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram"></div></div>
+                        <div class="platform-option" data-platform="twitter" onclick="selectPlatform(this)"><div class="platform-icon-wrapper"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/X_icon_2.svg" alt="X"></div></div>
+                    </div>
+                    <div class="action-bar" style="justify-content: flex-end;"><button class="btn btn-primary" id="btn-step1" onclick="goToStep(2)" disabled>Continue</button></div>
+                </div>
+            </div>
+            <div class="step-content" id="step2">
+                <div class="card">
+                    <div class="card-title">Insert Your Project</div>
+                    <div class="card-desc">Enter the link to your project.</div>
+                    <div class="form-group"><label class="form-label">Project URL</label><input type="text" class="form-input" id="projectLink" placeholder="https://t.me/YourProject" oninput="validateStep2()"><div id="linkError" style="color: var(--error); font-size: 12px; margin-top: 6px; display: none;"></div></div>
+                    <div class="form-group"><label class="form-label">Campaign Name (Optional)</label><input type="text" class="form-input" id="campaignName" placeholder="e.g. PulseBolt Launch"></div>
+                    <div class="form-group"><label class="form-label">Message Template</label><textarea class="form-input" id="messageTemplate" rows="3">Hey {username}, check out this project.
 
 {project_link}
 
-Don't miss out!</textarea></div>
-                <div class="template-library" style="margin-top: 20px; margin-bottom: 16px;">
-                    <label class="form-label">Template Library</label>
-                    <div class="template-grid">
-                        <div class="template-card" onclick="openTemplatePicker('crypto')"><div class="template-emoji">🪙</div><div class="template-name">Crypto Launch</div><div class="template-desc">High-conversion crypto project announcement — 3 variants</div></div>
-                        <div class="template-card" onclick="loadTemplate('defi')"><div class="template-emoji">🔥</div><div class="template-name">DeFi Alpha</div><div class="template-desc">Yield farming & liquidity pool invite</div></div>
-                        <div class="template-card" onclick="openTemplatePicker('gaming')"><div class="template-emoji">🎮</div><div class="template-name">P2E Gaming</div><div class="template-desc">Play-to-earn game launch template — 3 variants</div></div>
-                        <div class="template-card" onclick="loadTemplate('nft')"><div class="template-emoji">🎨</div><div class="template-name">NFT Drop</div><div class="template-desc">Mint announcement & whitelist invite</div></div>
+Don't miss out.</textarea></div>
+                    <div class="template-library" style="margin-top: 20px; margin-bottom: 16px;">
+                        <label class="form-label">Template Library</label>
+                        <div class="template-grid">
+                            <div class="template-card" onclick="openTemplatePicker('crypto')"><div class="template-name">Crypto Launch</div><div class="template-desc">High-conversion crypto project announcement — 3 variants</div></div>
+                            <div class="template-card" onclick="loadTemplate('defi')"><div class="template-name">DeFi Alpha</div><div class="template-desc">Yield farming & liquidity pool invite</div></div>
+                            <div class="template-card" onclick="openTemplatePicker('gaming')"><div class="template-name">P2E Gaming</div><div class="template-desc">Play-to-earn game launch template — 3 variants</div></div>
+                            <div class="template-card" onclick="loadTemplate('nft')"><div class="template-name">NFT Drop</div><div class="template-desc">Mint announcement & whitelist invite</div></div>
+                        </div>
                     </div>
+                    <div class="action-bar"><button class="btn btn-outline" onclick="goToStep(1)">Back</button><button class="btn btn-primary" id="step2ContinueBtn" onclick="goToStep(3)" disabled>Continue</button></div>
                 </div>
-                <div class="action-bar"><button class="btn btn-outline" onclick="goToStep(1)">← Back</button><button class="btn btn-primary" id="step2ContinueBtn" onclick="goToStep(3)" disabled>Continue →</button></div>
             </div>
-        </div>
-
-        <!-- Step 3: Communities & Services -->
-        <div class="step-content" id="step3">
-            <div class="card">
-                <div class="card-title">👥 Target Communities</div>
-                <div class="card-desc" id="step3desc">Select active communities to reach. Higher online count = better engagement.</div>
-
-                <!-- Community List (for Telegram & X Mass DM) -->
-                <div class="community-list" id="communityList"></div>
-                <div id="customCommunityRow" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
-                    <label class="form-label">Add Custom Community</label>
-                    <div class="custom-community-row"><input type="text" class="form-input" id="customCommunity" placeholder="Paste community link"><button class="btn btn-outline" style="padding:10px 16px;" onclick="addCustomCommunity()">Add</button></div>
-                </div>
-
-                <!-- Target Member Count (Mass DM only) -->
-                <div class="form-group" id="memberCountGroup" style="margin-top:16px;"><label class="form-label">Target Member Count</label><select class="form-input" id="memberCount"><option value="10000">10,000 members — $1,000</option><option value="20000">20,000 members — $2,000</option><option value="30000">30,000 members — $3,000</option><option value="40000">40,000 members — $4,000</option><option value="50000">50,000 members — $5,000</option></select></div>
-
-                <!-- DexScreener Section -->
-                <div class="form-group"><label class="form-label">Contract Address (CA)</label><input type="text" class="form-input" id="contractAddress" placeholder="Paste CA (e.g. 0x...)" oninput="updateDexChart()"></div>
-                <div class="form-group" style="margin-top: 10px;"><label class="form-label">DexScreener Chain</label><select class="form-input" id="dexChain" onchange="updateDexChart()"><option value="ethereum">Ethereum</option><option value="bsc">BNB Smart Chain</option><option value="solana">Solana</option><option value="polygon">Polygon</option><option value="arbitrum">Arbitrum</option><option value="optimism">Optimism</option><option value="base">Base</option><option value="avalanche">Avalanche</option></select></div>
-
-                <!-- TELEGRAM BOOST (Standalone - not mixed with Mass DM) -->
-                <div class="boost-panel" id="boostPanel" style="display:none;">
-                    <div class="boost-panel-header"><div class="boost-panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Boost Community Members</div><div class="boost-badge">Standalone</div></div>
-                    <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">⚠️ Selecting a Boost package will replace any Mass DM community selections. Boost is a standalone service.</div>
-                    <div class="boost-packages">
-                        <div class="boost-package" id="boost1k" onclick="toggleBoost('1k')"><div class="boost-amount">1K</div><div class="boost-members">members</div><div class="boost-price">$999</div><button class="boost-btn" id="boostBtn1k" onclick="event.stopPropagation();toggleBoost('1k')">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Verified, long-term active members</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Organic community engagement</div></div></div>
-                        <div class="boost-package popular" id="boost2k" onclick="toggleBoost('2k')"><div class="boost-amount">2K</div><div class="boost-members">members</div><div class="boost-price">$1,999</div><button class="boost-btn" id="boostBtn2k" onclick="event.stopPropagation();toggleBoost('2k')">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Verified, long-term active members</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>50% investor-tier + VIP priority support</div></div></div>
-                        <div class="boost-package" id="boost3k" onclick="toggleBoost('3k')"><div class="boost-amount">3K</div><div class="boost-members">members</div><div class="boost-price">$2,999</div><button class="boost-btn" id="boostBtn3k" onclick="event.stopPropagation();toggleBoost('3k')">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Verified members + 3-month retention</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>50% investor-tier + VIP support</div></div></div>
+            <div class="step-content" id="step3">
+                <div class="card">
+                    <div class="card-title">Target Communities</div>
+                    <div class="card-desc" id="step3desc">Select active communities to reach.</div>
+                    <div class="community-list" id="communityList"></div>
+                    <div id="customCommunityRow" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+                        <label class="form-label">Add Custom Community</label>
+                        <div class="custom-community-row"><input type="text" class="form-input" id="customCommunity" placeholder="Paste community link"><button class="btn btn-outline" style="padding:10px 16px;" onclick="addCustomCommunity()">Add</button></div>
                     </div>
-                </div>
-
-                <!-- X VIP GOLD (Standalone) -->
-                <div class="boost-panel" id="vipGoldPanel" style="display:none; border-color: #f59e0b;">
-                    <div class="boost-panel-header"><div class="boost-panel-title" style="color: #f59e0b;"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> VIP GOLD Premium Influencers</div><div class="boost-badge-gold">Standalone</div></div>
-                    <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">⚠️ Selecting VIP GOLD will replace any Mass DM community selections. This is a standalone premium service.</div>
-                    <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">222 Popular influencers see your post on our VIP menu</div>
-                    <div class="boost-packages">
-                        <div class="boost-package gold" id="vipGoldPackage" onclick="toggleVIPGold()"><div class="boost-amount">222</div><div class="boost-members">Premium Influencers</div><div class="boost-price" style="color: #f59e0b;">$1,700</div><button class="boost-btn btn-gold" id="vipGoldBtn" onclick="event.stopPropagation();toggleVIPGold()">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Reposts to 2M+ combined followers</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>High-engagement comments from top-tier accounts</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Exclusive VIP thread placement & pinned visibility</div></div></div>
+                    <div class="form-group" id="memberCountGroup" style="margin-top:16px;"><label class="form-label">Target Member Count</label><select class="form-input" id="memberCount"><option value="10000">10,000 members — $1,000</option><option value="20000">20,000 members — $2,000</option><option value="30000">30,000 members — $3,000</option><option value="40000">40,000 members — $4,000</option><option value="50000">50,000 members — $5,000</option></select></div>
+                    <div class="form-group"><label class="form-label">Contract Address (CA)</label><input type="text" class="form-input" id="contractAddress" placeholder="Paste CA (e.g. 0x...)" oninput="updateDexChart()"></div>
+                    <div class="form-group" style="margin-top: 10px;"><label class="form-label">DexScreener Chain</label><select class="form-input" id="dexChain" onchange="updateDexChart()"><option value="ethereum">Ethereum</option><option value="bsc">BNB Smart Chain</option><option value="solana">Solana</option><option value="polygon">Polygon</option><option value="arbitrum">Arbitrum</option><option value="optimism">Optimism</option><option value="base">Base</option><option value="avalanche">Avalanche</option></select></div>
+                    <div class="boost-panel" id="boostPanel" style="display:none;">
+                        <div class="boost-panel-header"><div class="boost-panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Boost Community Members</div><div class="boost-badge">Standalone</div></div>
+                        <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Selecting a Boost package will replace any Mass DM community selections.</div>
+                        <div class="boost-packages">
+                            <div class="boost-package" id="boost1k" onclick="toggleBoost('1k')"><div class="boost-amount">1K</div><div class="boost-members">members</div><div class="boost-price">$999</div><button class="boost-btn" id="boostBtn1k" onclick="event.stopPropagation();toggleBoost('1k')">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>Verified, long-term active members</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>Organic community engagement</div></div></div>
+                            <div class="boost-package popular" id="boost2k" onclick="toggleBoost('2k')"><div class="boost-amount">2K</div><div class="boost-members">members</div><div class="boost-price">$1,999</div><button class="boost-btn" id="boostBtn2k" onclick="event.stopPropagation();toggleBoost('2k')">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>Verified, long-term active members</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>50% investor-tier + VIP priority support</div></div></div>
+                            <div class="boost-package" id="boost3k" onclick="toggleBoost('3k')"><div class="boost-amount">3K</div><div class="boost-members">members</div><div class="boost-price">$2,999</div><button class="boost-btn" id="boostBtn3k" onclick="event.stopPropagation();toggleBoost('3k')">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>Verified members + 3-month retention</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>50% investor-tier + VIP support</div></div></div>
+                        </div>
                     </div>
-                </div>
-
-                <!-- YouTube Subscriber Growth (Standalone) -->
-                <div class="boost-panel" id="youtubeSubPanel" style="display:none; border-color: var(--youtube-red);">
-                    <div class="boost-panel-header"><div class="boost-panel-title" style="color: var(--youtube-red);"><svg viewBox="0 0 24 24" width="20" height="20" fill="var(--youtube-red)" stroke="var(--youtube-red)" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="2"/><polygon points="10,9 16,12 10,15" fill="#0a0a0a"/></svg> YouTube Subscriber Growth</div><div class="boost-badge-red">Standalone</div></div>
-                    <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">Real, high-retention subscribers delivered organically to your YouTube channel.</div>
-                    <div class="boost-packages">
-                        <div class="boost-package exclusive" id="youtubeSub1k" onclick="toggleYouTubeSub('sub1k')"><div class="boost-amount">1,000</div><div class="boost-members">Real Subscribers</div><div class="boost-price" style="color: var(--youtube-red);">$1,000</div><button class="boost-btn btn-youtube" id="youtubeSub1kBtn" onclick="event.stopPropagation();toggleYouTubeSub('sub1k')">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>1,000 real, aged Google accounts</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Gradual delivery: 10 days @ 100/day</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>90%+ retention guarantee</div></div></div>
+                    <div class="boost-panel" id="vipGoldPanel" style="display:none; border-color: #f59e0b;">
+                        <div class="boost-panel-header"><div class="boost-panel-title" style="color: #f59e0b;"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> VIP GOLD Premium Influencers</div><div class="boost-badge-gold">Standalone</div></div>
+                        <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">Selecting VIP GOLD will replace any Mass DM community selections.</div>
+                        <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">222 Popular influencers see your post on our VIP menu</div>
+                        <div class="boost-packages">
+                            <div class="boost-package gold" id="vipGoldPackage" onclick="toggleVIPGold()"><div class="boost-amount">222</div><div class="boost-members">Premium Influencers</div><div class="boost-price" style="color: #f59e0b;">$1,700</div><button class="boost-btn btn-gold" id="vipGoldBtn" onclick="event.stopPropagation();toggleVIPGold()">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>Reposts to 2M+ combined followers</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>High-engagement comments from top-tier accounts</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>Exclusive VIP thread placement & pinned visibility</div></div></div>
+                        </div>
                     </div>
+                    <div class="boost-panel" id="youtubeSubPanel" style="display:none; border-color: var(--youtube-red);">
+                        <div class="boost-panel-header"><div class="boost-panel-title" style="color: var(--youtube-red);"><svg viewBox="0 0 24 24" width="20" height="20" fill="var(--youtube-red)" stroke="var(--youtube-red)" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="2"/><polygon points="10,9 16,12 10,15" fill="#0a0a0a"/></svg> YouTube Subscriber Growth</div><div class="boost-badge-red">Standalone</div></div>
+                        <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">Real, high-retention subscribers delivered organically.</div>
+                        <div class="boost-packages">
+                            <div class="boost-package exclusive" id="youtubeSub1k" onclick="toggleYouTubeSub('sub1k')"><div class="boost-amount">1,000</div><div class="boost-members">Real Subscribers</div><div class="boost-price" style="color: var(--youtube-red);">$1,000</div><button class="boost-btn btn-youtube" id="youtubeSub1kBtn" onclick="event.stopPropagation();toggleYouTubeSub('sub1k')">Add to Campaign</button><div class="boost-features"><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>1,000 real, aged Google accounts</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>Gradual delivery: 10 days @ 100/day</div><div class="boost-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>90%+ retention guarantee</div></div></div>
+                        </div>
+                    </div>
+                    <div class="post-link-section" id="postLinkSection"><div class="post-link-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg><span id="postLinkLabel">Post Link</span></div><input type="text" class="form-input" id="postLink" placeholder="https://youtube.com/watch?v=..."></div>
+                    <div class="action-bar"><button class="btn btn-outline" onclick="goToStep(2)">Back</button><div class="selected-count">Selected: <span id="selectedCount">0</span> (<span id="totalReach">0</span>)</div><button class="btn btn-primary" id="btn-step3" onclick="goToStep(4)" disabled>Continue</button></div>
                 </div>
-
-                <!-- Post Link Section (YouTube & X only) -->
-                <div class="post-link-section" id="postLinkSection"><div class="post-link-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg><span id="postLinkLabel">Post Link</span></div><input type="text" class="form-input" id="postLink" placeholder="https://youtube.com/watch?v=... or https://x.com/.../status/..." oninput="validateStep3();"></div>
-
-                <div class="action-bar"><button class="btn btn-outline" onclick="goToStep(2)">← Back</button><div class="selected-count">Selected: <span id="selectedCount">0</span> (<span id="totalReach">0</span>)</div><button class="btn btn-primary" id="btn-step3" onclick="goToStep(4)" disabled>Continue →</button></div>
             </div>
-        </div>
-
-        <!-- Step 4: Launch -->
-        <div class="step-content" id="step4">
-            <div class="card">
-                <div class="card-title">🚀 Final Review</div>
-                <div class="card-desc">Review your campaign details before initiating.</div>
-                <div style="background: var(--bg-elevated); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                        <div><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Project</div><div style="font-weight: 600; color: #fff; font-size: 13px;" id="reviewProject">-</div></div>
-                        <div><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Platform</div><div style="font-weight: 600; color: #fff; font-size: 13px;" id="reviewPlatform">-</div></div>
-                        <div><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Service Type</div><div style="font-weight: 600; color: #fff; font-size: 13px;" id="reviewService">-</div></div>
-                        <div><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Total Delivery</div><div style="font-weight: 800; color: var(--blue); font-size: 15px;" id="reviewReach">-</div></div>
+            <div class="step-content" id="step4">
+                <div class="card">
+                    <div class="card-title">Final Review</div>
+                    <div class="card-desc">Review your campaign details before initiating.</div>
+                    <div style="background: var(--bg-elevated); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                            <div><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Project</div><div style="font-weight: 600; color: #fff; font-size: 13px;" id="reviewProject">-</div></div>
+                            <div><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Platform</div><div style="font-weight: 600; color: #fff; font-size: 13px;" id="reviewPlatform">-</div></div>
+                            <div><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Service Type</div><div style="font-weight: 600; color: #fff; font-size: 13px;" id="reviewService">-</div></div>
+                            <div><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Total Delivery</div><div style="font-weight: 800; color: var(--blue); font-size: 15px;" id="reviewReach">-</div></div>
+                        </div>
                     </div>
+                    <div style="background: var(--bg-elevated); border-radius: 10px; padding: 14px; margin-bottom: 16px; border-left: 3px solid var(--blue);"><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Message Preview</div><div style="font-size: 13px; line-height: 1.5; color: var(--text-dim); white-space: pre-wrap;" id="reviewMessage">-</div></div>
+                    <div class="card" style="margin-top: 16px; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;"><div class="card-title" style="font-size: 14px;">Campaign Cost Summary</div><div id="costBadge" style="font-size: 12px; color: var(--blue); font-weight: 700;">PENDING</div></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="font-size: 12px; color: var(--text-dim);">Target Delivery</span><span id="costMembers" style="font-size: 13px; font-weight: 700; color: #fff;">-</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="font-size: 12px; color: var(--text-dim);">Price per Unit</span><span id="costPerMember" style="font-size: 13px; font-weight: 700; color: #fff;">-</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="font-size: 12px; color: var(--text-dim);">Estimated Delivery</span><span id="costETA" style="font-size: 13px; font-weight: 700; color: var(--success);">-</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0 0 0;"><span style="font-size: 13px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Total Cost</span><span id="costTotal" style="font-size: 18px; font-weight: 800; color: var(--blue); font-family: 'JetBrains Mono', monospace;">-</span></div>
+                    </div>
+                    <div class="card" style="margin-bottom: 16px;"><div class="card-title" style="font-size: 14px; margin-bottom: 12px;">Projected Campaign Analytics</div><div class="analytics-grid"><div class="analytics-card"><div class="analytics-number analytics-live" id="analyticsCTR">8.4%</div><div class="analytics-label">Projected CTR</div></div><div class="analytics-card"><div class="analytics-number analytics-live" id="analyticsWallets">420</div><div class="analytics-label">Wallet Connects</div></div><div class="analytics-card"><div class="analytics-number analytics-live" id="analyticsConv">3.2%</div><div class="analytics-label">Conversion Rate</div></div><div class="analytics-card"><div class="analytics-number analytics-live" id="analyticsRev">$12.4K</div><div class="analytics-label">Est. Revenue</div></div></div></div>
+                    <div class="card" style="margin-bottom: 16px;"><div class="card-title" style="font-size: 14px; margin-bottom: 12px;">DexScreener Live Chart</div><div class="dex-wrapper"><iframe id="dexIframe" src="about:blank" allowfullscreen loading="lazy"></iframe></div></div>
+                    <div class="action-bar"><button class="btn btn-outline" onclick="goToStep(3)">Back</button><button class="btn btn-primary" onclick="handlePurchaseOrder()">PURCHASE ORDER</button></div>
                 </div>
-                <div style="background: var(--bg-elevated); border-radius: 10px; padding: 14px; margin-bottom: 16px; border-left: 3px solid var(--blue);"><div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Message Preview</div><div style="font-size: 13px; line-height: 1.5; color: var(--text-dim); white-space: pre-wrap;" id="reviewMessage">-</div></div>
-                <div class="card" style="margin-top: 16px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;"><div class="card-title" style="font-size: 14px;">💰 Campaign Cost Summary</div><div id="costBadge" style="font-size: 12px; color: var(--blue); font-weight: 700;">PENDING</div></div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="font-size: 12px; color: var(--text-dim);">Target Delivery</span><span id="costMembers" style="font-size: 13px; font-weight: 700; color: #fff;">-</span></div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="font-size: 12px; color: var(--text-dim);">Price per Unit</span><span id="costPerMember" style="font-size: 13px; font-weight: 700; color: #fff;">-</span></div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border);"><span style="font-size: 12px; color: var(--text-dim);">Estimated Time</span><span id="costETA" style="font-size: 13px; font-weight: 700; color: var(--success);">-</span></div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0 0 0;"><span style="font-size: 13px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Total Cost</span><span id="costTotal" style="font-size: 18px; font-weight: 800; color: var(--blue); font-family: 'JetBrains Mono', monospace;">-</span></div>
-                </div>
-                <div class="card" style="margin-bottom: 16px;"><div class="card-title" style="font-size: 14px; margin-bottom: 12px;">📊 Projected Campaign Analytics</div><div class="analytics-grid"><div class="analytics-card"><div class="analytics-number" id="analyticsCTR">8.4%</div><div class="analytics-label">Projected CTR</div></div><div class="analytics-card"><div class="analytics-number" id="analyticsWallets">~420</div><div class="analytics-label">Wallet Connects</div></div><div class="analytics-card"><div class="analytics-number" id="analyticsConv">3.2%</div><div class="analytics-label">Conversion Rate</div></div><div class="analytics-card"><div class="analytics-number" id="analyticsRev">$12.4K</div><div class="analytics-label">Est. Revenue</div></div></div></div>
-                <div class="card" style="margin-bottom: 16px;"><div class="card-title" style="font-size: 14px; margin-bottom: 12px;">📊 DexScreener Live Chart</div><div class="dex-wrapper"><iframe id="dexIframe" src="about:blank" allowfullscreen loading="lazy"></iframe></div></div>
-                <div class="action-bar"><button class="btn btn-outline" onclick="goToStep(3)">← Back</button><button class="btn btn-primary" onclick="handlePurchaseOrder()">⚡ PURCHASE ORDER</button></div>
             </div>
         </div>
     </div>
 
     <!-- PROCESSING OVERLAY -->
-    <div class="processing-overlay" id="processingOverlay">
-        <div class="processing-container" id="processingContainer"></div>
-    </div>
-
+    <div class="processing-overlay" id="processingOverlay"><div class="processing-container" id="processingContainer"></div></div>
+    <!-- PAYMENT CONFIRMATION OVERLAY -->
+    <div class="payment-confirm-overlay" id="paymentConfirmOverlay"><div class="payment-confirm-container" id="paymentConfirmContainer"></div></div>
     <!-- Payment Modal -->
     <div class="modal-overlay" id="paymentModal" style="display: none;">
         <div class="modal-card">
-            <div class="modal-header"><div class="modal-title">💳 Select Payment Method</div><button class="modal-close" onclick="closePaymentModal()">×</button></div>
+            <div class="modal-header"><div class="modal-title">Select Payment Method</div><button class="modal-close" onclick="closePaymentModal()">x</button></div>
             <div class="modal-body">
-                <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 16px; text-align: center;">Choose your preferred cryptocurrency to complete your campaign purchase.</div>
+                <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 16px; text-align: center;">Choose your preferred cryptocurrency.</div>
                 <div class="payment-grid">
                     <div class="payment-option" data-coin="eth" data-addr="0xf290e454C28362e8206bf7471990c68e2f4C2aD0" data-name="Ethereum" onclick="selectPayment(this)"><svg viewBox="0 0 32 32" width="40" height="40" style="display:block;margin:0 auto 8px;"><rect width="32" height="32" rx="16" fill="#627EEA"/><path d="M16 4L16 15L22 16L16 4Z" fill="#C0C0C0"/><path d="M16 4L10 16L16 15L16 4Z" fill="#FFFFFF"/><path d="M16 21L16 28L22 16L16 21Z" fill="#C0C0C0"/><path d="M16 21L10 16L16 28L16 21Z" fill="#FFFFFF"/><path d="M16 16L22 16L16 4L16 16Z" fill="#FFFFFF" fill-opacity="0.2"/><path d="M10 16L16 16L16 4L10 16Z" fill="#FFFFFF" fill-opacity="0.6"/><path d="M16 16L22 16L16 28L16 16Z" fill="#FFFFFF" fill-opacity="0.2"/><path d="M10 16L16 16L16 28L10 16Z" fill="#FFFFFF" fill-opacity="0.6"/></svg><div class="payment-name">ETH</div><div class="payment-network">Ethereum</div></div>
                     <div class="payment-option" data-coin="sol" data-addr="AL1z5oGdfHSnDe9Aod4dDF852nch9EkZDHDZVmVjjeS8" data-name="Solana" onclick="selectPayment(this)"><img src="https://cryptologos.cc/logos/solana-sol-logo.png?v=026" class="payment-logo" alt="SOL"><div class="payment-name">SOL</div><div class="payment-network">Solana</div></div>
@@ -711,341 +894,266 @@ Don't miss out!</textarea></div>
                         <div class="usdc-chain-option" data-addr="0xf290e454C28362e8206bf7471990c68e2f4C2aD0" data-name="USDC (BNB)" onclick="selectUsdcChain(this)" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 8px; text-align: center; cursor: pointer;"><div style="font-size: 11px; font-weight: 700; color: #fff;">BNB</div><div style="font-size: 9px; color: var(--text-muted);">BNB Chain</div></div>
                     </div>
                 </div>
-                <div class="payment-address-box" id="paymentAddressBox"><div class="payment-address-label">Send Payment To</div><div class="payment-address-value" id="paymentAddressValue"></div><button class="payment-copy-btn" id="paymentCopyBtn" onclick="copyPaymentAddress()">📋 Copy Address</button></div>
-                <button class="btn btn-primary btn-block" onclick="confirmPayment()" style="width: 100%; justify-content: center; padding: 14px; font-size: 15px;">✅ I Have Sent Payment</button>
+                <div class="payment-address-box" id="paymentAddressBox"><div class="payment-address-label">Send Payment To</div><div class="payment-address-value" id="paymentAddressValue"></div><button class="payment-copy-btn" id="paymentCopyBtn" onclick="copyPaymentAddress()">Copy Address</button></div>
+                <button class="btn btn-primary btn-block" onclick="confirmPayment()" style="width: 100%; justify-content: center; padding: 14px; font-size: 15px;">I Have Sent Payment</button>
             </div>
         </div>
     </div>
-
-    <!-- Template Picker Modal -->
-    <div class="modal-overlay" id="templatePickerModal"><div class="modal-card"><div class="modal-header"><div class="modal-title" id="pickerTitle">Choose Template</div><button class="modal-close" onclick="closeTemplatePicker()">✕</button></div><div class="modal-body" id="pickerBody"></div></div></div>
+    <div class="modal-overlay" id="templatePickerModal"><div class="modal-card"><div class="modal-header"><div class="modal-title" id="pickerTitle">Choose Template</div><button class="modal-close" onclick="closeTemplatePicker()">x</button></div><div class="modal-body" id="pickerBody"></div></div></div>
 
     <script>
-        // ══════════════════════════════════════
-        // PULSEBOLT ENGINE v3.1
-        // ══════════════════════════════════════
-        let currentStep = 1, selectedPlatform = null, selectedCommunities = [], customCommunities = [];
-        let activeService = null; // 'massDM', 'boost', 'vipGold', 'youtubeSub'
-        const DELIVERY_RATE_PER_DAY = 100;
-        const cryptoNicknames = ["SatoshiWhale","MoonBoy_99","DegenApe","HODL_King","CryptoBull","BearSlayer","DiamondHands","PaperHands","RugPullSurvivor","FOMO_Master","AltcoinGambler","NFT_Degenerate","SolanaMaxi","ETH_Believer","BTC_Stacker","AirdropFarmer","YieldHunter","LeverageKing","Liquidated_Again","PumpChaser","DumpDumper","VitalikFan","SBF_WasRight","CZ_Army","ElonMusket","MemeCoinMillionaire","ShitcoinSurfer","Web3_Wizard","DAO_Voter","GasFeeVictim"];
-        const communityNames = ["Crypto Moonshots","DeFi Alpha Leaks","NFT Whales","Solana Ecosystem","GameFi Legends","P2E Gaming Hub","Web3 Builders","Meme Coin Army","Bitcoin Maxis","Airdrop Hunters"];
-        const youtubeCountries = ["United States","United Kingdom","Germany","Canada","Australia","Brazil","France","India","Japan","South Korea","Netherlands","Singapore","Sweden","UAE","Nigeria","Mexico","Italy","Spain","Poland","Turkey"];
-        const influencerNames = ["CryptoMaxi","DeFiDegen","NFTWhale","SolanaKing","AlphaHunter","MoonShotChris","BlockchainBabe","Web3Wizard","TradingTitan","CoinBureau","YieldFarmer","AirdropSensei","MemeCoinLord","EthBuilder","SolSniper","P2E_Gamer","MetaVerseMike","TokenTrends","ChainAnalyst","DegenSpartan"];
-
-        // Communities array — NO DISCORD entries
-        const communities = [
-            { id:1, name:"Crypto Moonshots", emoji:"🌙", members:45200, online:12800, platform:"telegram", category:"Crypto" },{ id:2, name:"DeFi Alpha Leaks", emoji:"🔥", members:28900, online:9400, platform:"telegram", category:"DeFi" },{ id:3, name:"NFT Whales", emoji:"🐋", members:67100, online:21300, platform:"telegram", category:"NFT" },{ id:4, name:"Solana Ecosystem", emoji:"⚡", members:83400, online:31200, platform:"telegram", category:"Solana" },{ id:5, name:"GameFi Legends", emoji:"🎮", members:15600, online:5200, platform:"telegram", category:"Gaming" },{ id:6, name:"P2E Gaming Hub", emoji:"💰", members:42300, online:18700, platform:"telegram", category:"Gaming" },{ id:7, name:"Web3 Builders", emoji:"🔨", members:23800, online:6100, platform:"telegram", category:"Web3" },{ id:8, name:"Meme Coin Army", emoji:"🐸", members:56700, online:24500, platform:"telegram", category:"Meme" },{ id:9, name:"Bitcoin Maxis", emoji:"₿", members:91200, online:34800, platform:"telegram", category:"Bitcoin" },{ id:10, name:"Airdrop Hunters", emoji:"🪂", members:34500, online:15600, platform:"telegram", category:"Airdrops" },{ id:11, name:"Crypto Twitter", emoji:"🐦", members:128000, online:45600, platform:"twitter", category:"Crypto" },{ id:12, name:"Solana NFTs", emoji:"🎨", members:45600, online:12300, platform:"twitter", category:"NFT" },{ id:13, name:"Mega Crypto Alpha", emoji:"🚀", members:120000, online:42000, platform:"telegram", category:"Crypto" },{ id:14, name:"Whale Alert Pro", emoji:"🐳", members:150000, online:55000, platform:"twitter", category:"Whale" },{ id:15, name:"X NFT ART CLUB", emoji:"🎨", members:38200, online:12400, platform:"twitter", category:"NFT" },{ id:16, name:"Doodlegenics", emoji:"🖍️", members:27500, online:8900, platform:"twitter", category:"Art" },{ id:17, name:"CRYPTO/STOCKS 24/7", emoji:"📈", members:51900, online:18700, platform:"twitter", category:"Trading" },{ id:18, name:"MemeLock", emoji:"🔒", members:44300, online:15600, platform:"twitter", category:"Meme" },{ id:19, name:"Solana Meme Coin", emoji:"☀️", members:36700, online:11200, platform:"twitter", category:"Solana" },{ id:20, name:"Blast coiner", emoji:"💥", members:29800, online:9500, platform:"twitter", category:"Crypto" }
+        const CORRECT_PASSCODE = 'PulseBoltTool';
+        const trendingData = [
+            { pair: 'PULSE/SOL', chain: 'Solana', price: '$0.0042', change: '+124.5%', up: true },
+            { pair: 'BOLT/ETH', chain: 'Ethereum', price: '$0.0018', change: '+89.3%', up: true },
+            { pair: 'NEURO/USDT', chain: 'BNB', price: '$0.032', change: '+56.2%', up: true },
+            { pair: 'QUANT/ETH', chain: 'Ethereum', price: '$0.0075', change: '-12.4%', up: false },
+            { pair: 'VECTOR/SOL', chain: 'Solana', price: '$0.0012', change: '+234.1%', up: true },
+            { pair: 'SYNAPSE/ETH', chain: 'Base', price: '$0.0056', change: '+45.7%', up: true },
+            { pair: 'ORBIT/USDT', chain: 'Arbitrum', price: '$0.022', change: '-8.9%', up: false },
+            { pair: 'NOVA/SOL', chain: 'Solana', price: '$0.0009', change: '+312.6%', up: true },
+            { pair: 'FUSION/ETH', chain: 'Polygon', price: '$0.0034', change: '+67.8%', up: true },
+            { pair: 'APEX/USDT', chain: 'BNB', price: '$0.015', change: '-3.2%', up: false }
         ];
-        const platformPrefixes = { youtube:['https://youtube.com/','https://www.youtube.com/'], telegram:['https://t.me/'], twitter:['https://x.com/','https://twitter.com/'] };
 
-        function formatNumber(num){ if(num>=1e6)return(num/1e6).toFixed(1)+'M'; if(num>=1e3)return(num/1e3).toFixed(1)+'K'; return num.toString(); }
-        function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-        function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+        function renderTrending() {
+            const grid = document.getElementById('trendingGrid');
+            grid.innerHTML = trendingData.map(t => `
+                <div class="trending-card">
+                    <div class="trending-pair">${t.pair}</div>
+                    <div class="trending-chain">${t.chain}</div>
+                    <div class="trending-price">${t.price}</div>
+                    <div class="trending-change ${t.up?'up':'down'}">${t.change}</div>
+                </div>
+            `).join('');
+        }
 
-        // ── STEPPER ──────────────────────────
+        const tickerPrices = {
+            SOL: { price: 142.80, change: -0.6 },
+            ETH: { price: 3521, change: 1.8 },
+            BNB: { price: 582.30, change: 0.9 },
+            BTC: { price: 67452, change: 2.4 },
+            BASE: { price: 1.24, change: 5.2 },
+            MATIC: { price: 0.72, change: -1.1 },
+            ARB: { price: 0.89, change: 3.7 }
+        };
+
+        function updateTickers() {
+            Object.keys(tickerPrices).forEach(coin => {
+                const data = tickerPrices[coin];
+                const oldPrice = data.price;
+                const fluctuation = (Math.random() - 0.5) * data.price * 0.003;
+                data.price += fluctuation;
+                data.change += (Math.random() - 0.5) * 0.2;
+                data.change = Math.max(-8, Math.min(15, data.change));
+                const priceEl = document.getElementById('ticker' + coin);
+                const changeEl = document.getElementById('ticker' + coin + 'Change');
+                const tickerItem = priceEl ? priceEl.closest('.ticker-item') : null;
+                if (priceEl) {
+                    const newPrice = coin === 'BTC' ? '$' + Math.round(data.price).toLocaleString() :
+                        coin === 'ETH' || coin === 'BNB' ? '$' + data.price.toFixed(coin === 'ETH' ? 0 : 2) :
+                        '$' + data.price.toFixed(2);
+                    priceEl.textContent = newPrice;
+                    if (data.price > oldPrice) {
+                        priceEl.classList.add('flash-up');
+                        setTimeout(() => priceEl.classList.remove('flash-up'), 400);
+                    } else if (data.price < oldPrice) {
+                        priceEl.classList.add('flash-down');
+                        setTimeout(() => priceEl.classList.remove('flash-down'), 400);
+                    }
+                }
+                if (changeEl) {
+                    changeEl.textContent = (data.change >= 0 ? '+' : '') + data.change.toFixed(1) + '%';
+                    changeEl.className = 'ticker-change ' + (data.change >= 0 ? 'up' : 'down');
+                }
+                if (tickerItem) {
+                    if (data.change >= 0 && Math.abs(data.change) > 0.3) {
+                        tickerItem.classList.add('updating');
+                        setTimeout(() => tickerItem.classList.remove('updating'), 500);
+                    } else if (data.change < 0 && Math.abs(data.change) > 0.3) {
+                        tickerItem.classList.add('dropping');
+                        setTimeout(() => tickerItem.classList.remove('dropping'), 500);
+                    }
+                }
+            });
+            const rev = 47000 + Math.floor(Math.random() * 3000);
+            const revEl = document.getElementById('lockRevenue');
+            revEl.textContent = '$' + rev.toLocaleString();
+            revEl.classList.add('pulse-stat');
+            setTimeout(() => revEl.classList.remove('pulse-stat'), 400);
+            document.getElementById('lockCampaigns').textContent = (1240 + Math.floor(Math.random() * 20)).toLocaleString();
+            document.getElementById('lockReach').textContent = (8.3 + Math.random() * 0.4).toFixed(1) + 'M';
+        }
+
+        function checkPasscode() {
+            const input = document.getElementById('lockPassInput').value;
+            const error = document.getElementById('lockError');
+            if (input === CORRECT_PASSCODE) {
+                error.style.display = 'none';
+                document.getElementById('unlockOverlay').classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('lockScreen').classList.add('hidden');
+                    document.getElementById('unlockOverlay').classList.remove('active');
+                    document.getElementById('mainSite').classList.add('visible');
+                }, 2000);
+            } else {
+                error.style.display = 'block';
+                document.getElementById('lockPassInput').value = '';
+                document.getElementById('lockPassInput').style.borderColor = 'var(--error)';
+                setTimeout(() => { document.getElementById('lockPassInput').style.borderColor = 'var(--border)'; }, 1500);
+            }
+        }
+
+        function initLockCanvas() {
+            const canvas = document.getElementById('lockCanvas');
+            const ctx = canvas.getContext('2d');
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            resize(); window.addEventListener('resize', resize);
+            const particles = [];
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                    r: Math.random() * 2 + 0.5,
+                    dx: (Math.random() - 0.5) * 0.8, dy: (Math.random() - 0.5) * 0.8,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.dx; p.y += p.dy;
+                    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(0,212,255,${p.alpha})`; ctx.fill();
+                });
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
+                        if (dist < 120) {
+                            ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(0,212,255,${0.04 * (1 - dist / 120)})`; ctx.lineWidth = 0.5; ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        renderTrending();
+        initLockCanvas();
+        setInterval(updateTickers, 3000);
+        updateTickers();
+
+        // ══════════════════════════════════════
+        // MAIN SITE LOGIC
+        // ══════════════════════════════════════
+        let currentStep=1,selectedPlatform=null,selectedCommunities=[],customCommunities=[],activeService=null;
+        const TOTAL_PROCESSING_SECONDS=2400;
+        const cryptoNicknames=["SatoshiWhale","MoonBoy_99","DegenApe","HODL_King","CryptoBull","BearSlayer","DiamondHands","PaperHands","RugPullSurvivor","FOMO_Master","AltcoinGambler","NFT_Degenerate","SolanaMaxi","ETH_Believer","BTC_Stacker","AirdropFarmer","YieldHunter","LeverageKing","Liquidated_Again","PumpChaser","DumpDumper","VitalikFan","CZ_Army","ElonMusket","MemeCoinMillionaire","ShitcoinSurfer","Web3_Wizard","DAO_Voter","GasFeeVictim"];
+        const maleNames=["James","Michael","Robert","David","William","Richard","Thomas","Daniel","Matthew","Anthony","Mark","Steven","Paul","Andrew","Joshua","Kenneth","Kevin","Brian","George","Edward","Alex","Chris","Nick","Sam","Ben","Jake","Ryan","Nathan","Ethan","Brandon"];
+        const femaleNames=["Sarah","Jessica","Ashley","Emily","Amanda","Megan","Rachel","Laura","Kimberly","Stephanie","Jennifer","Nicole","Michelle","Heather","Rebecca","Amber","Melissa","Danielle","Elizabeth","Hannah","Sophia","Olivia","Emma","Ava","Mia","Isabella","Charlotte","Amelia","Evelyn","Abigail"];
+        const communityNamesList=["Crypto Moonshots","DeFi Alpha Leaks","NFT Whales","Solana Ecosystem","GameFi Legends","P2E Gaming Hub","Web3 Builders","Meme Coin Army","Bitcoin Maxis","Airdrop Hunters"];
+        const youtubeCountries=["United States","United Kingdom","Germany","Canada","Australia","Brazil","France","India","Japan","South Korea","Netherlands","Singapore","Sweden","UAE","Nigeria","Mexico","Italy","Spain","Poland","Turkey"];
+        const influencerNames=["CryptoMaxi","DeFiDegen","NFTWhale","SolanaKing","AlphaHunter","MoonShotChris","BlockchainBabe","Web3Wizard","TradingTitan","CoinBureau","YieldFarmer","AirdropSensei","MemeCoinLord","EthBuilder","SolSniper","P2E_Gamer","MetaVerseMike","TokenTrends","ChainAnalyst","DegenSpartan"];
+        const communities=[{id:1,name:"Crypto Moonshots",members:45200,online:12800,platform:"telegram",category:"Crypto"},{id:2,name:"DeFi Alpha Leaks",members:28900,online:9400,platform:"telegram",category:"DeFi"},{id:3,name:"NFT Whales",members:67100,online:21300,platform:"telegram",category:"NFT"},{id:4,name:"Solana Ecosystem",members:83400,online:31200,platform:"telegram",category:"Solana"},{id:5,name:"GameFi Legends",members:15600,online:5200,platform:"telegram",category:"Gaming"},{id:6,name:"P2E Gaming Hub",members:42300,online:18700,platform:"telegram",category:"Gaming"},{id:7,name:"Web3 Builders",members:23800,online:6100,platform:"telegram",category:"Web3"},{id:8,name:"Meme Coin Army",members:56700,online:24500,platform:"telegram",category:"Meme"},{id:9,name:"Bitcoin Maxis",members:91200,online:34800,platform:"telegram",category:"Bitcoin"},{id:10,name:"Airdrop Hunters",members:34500,online:15600,platform:"telegram",category:"Airdrops"},{id:11,name:"Crypto Twitter",members:128000,online:45600,platform:"twitter",category:"Crypto"},{id:12,name:"Solana NFTs",members:45600,online:12300,platform:"twitter",category:"NFT"},{id:13,name:"Mega Crypto Alpha",members:120000,online:42000,platform:"telegram",category:"Crypto"},{id:14,name:"Whale Alert Pro",members:150000,online:55000,platform:"twitter",category:"Whale"},{id:15,name:"X NFT ART CLUB",members:38200,online:12400,platform:"twitter",category:"NFT"},{id:16,name:"Doodlegenics",members:27500,online:8900,platform:"twitter",category:"Art"},{id:17,name:"CRYPTO/STOCKS 24/7",members:51900,online:18700,platform:"twitter",category:"Trading"},{id:18,name:"MemeLock",members:44300,online:15600,platform:"twitter",category:"Meme"},{id:19,name:"Solana Meme Coin",members:36700,online:11200,platform:"twitter",category:"Solana"},{id:20,name:"Blast coiner",members:29800,online:9500,platform:"twitter",category:"Crypto"}];
+        const platformPrefixes={youtube:['https://youtube.com/','https://www.youtube.com/'],telegram:['https://t.me/'],twitter:['https://x.com/','https://twitter.com/']};
+
+        function formatNumber(num){if(num>=1e6)return(num/1e6).toFixed(1)+'M';if(num>=1e3)return(num/1e3).toFixed(1)+'K';return num.toString();}
+        function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+        function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+        function getRandomName(){const r=Math.random();if(r<0.7)return pick(cryptoNicknames);if(r<0.85)return pick(maleNames);return pick(femaleNames);}
+        function getRandomETA(){const mins=rand(50,1440);if(mins<60)return mins+' minutes';const h=Math.floor(mins/60);const m=mins%60;return m>0?h+'h '+m+'m':h+' hours';}
+
         function goToStep(step){
             if(step===3&&!selectedPlatform){alert("Select a platform first");return;}
             if(step===4&&!activeService&&selectedCommunities.length===0&&customCommunities.length===0){alert("Select at least one community or service");return;}
-            for(let i=1;i<=4;i++){
-                const c=document.getElementById('step'+i+'-circle'), l=document.getElementById('line'+i);
-                if(i<step){c.className='step-circle completed';c.innerHTML='✓';if(l)l.classList.add('completed');}
-                else if(i===step){c.className='step-circle active';c.innerHTML=i;}
-                else{c.className='step-circle pending';c.innerHTML=i;}
-            }
+            for(let i=1;i<=4;i++){const c=document.getElementById('step'+i+'-circle'),l=document.getElementById('line'+i);if(i<step){c.className='step-circle completed';c.innerHTML='OK';if(l)l.classList.add('completed');}else if(i===step){c.className='step-circle active';c.innerHTML=i;}else{c.className='step-circle pending';c.innerHTML=i;}}
             document.querySelectorAll('.step-content').forEach(el=>el.classList.remove('active'));
-            document.getElementById('step'+step).classList.add('active'); currentStep=step;
+            document.getElementById('step'+step).classList.add('active');currentStep=step;
             if(step===3)renderCommunities();
             if(step===4)updateReview();
         }
-
-        // ── PLATFORM SELECTION (resets all data) ──
         function selectPlatform(el){
-            document.querySelectorAll('.platform-option').forEach(o=>o.classList.remove('selected'));
-            el.classList.add('selected');
-            // Reset ALL platform-specific data
-            if(selectedPlatform!==el.dataset.platform){
-                document.getElementById('projectLink').value='';
-                document.getElementById('campaignName').value='';
-                document.getElementById('messageTemplate').value='Hey {username}, check out this amazing project! 🚀\n\n{project_link}\n\nDon\'t miss out!';
-                document.getElementById('postLink').value='';
-                document.getElementById('customCommunity').value='';
-                document.getElementById('contractAddress').value='';
-                document.getElementById('dexIframe').src='about:blank';
-                selectedCommunities=[];
-                customCommunities=[];
-                activeService=null;
-                document.querySelectorAll('.boost-package').forEach(p=>p.classList.remove('added','popular','exclusive','gold'));
-                document.querySelectorAll('.boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added','btn-gold');});
-            }
-            selectedPlatform=el.dataset.platform;
-            const isYouTube=selectedPlatform==='youtube';
-            const isTwitter=selectedPlatform==='twitter';
-            const isTelegram=selectedPlatform==='telegram';
-
+            document.querySelectorAll('.platform-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');
+            if(selectedPlatform!==el.dataset.platform){document.getElementById('projectLink').value='';document.getElementById('campaignName').value='';document.getElementById('messageTemplate').value='Hey {username}, check out this project.\n\n{project_link}\n\nDon\'t miss out.';document.getElementById('postLink').value='';document.getElementById('customCommunity').value='';document.getElementById('contractAddress').value='';document.getElementById('dexIframe').src='about:blank';selectedCommunities=[];customCommunities=[];activeService=null;document.querySelectorAll('.boost-package').forEach(p=>p.classList.remove('added','popular','exclusive','gold'));document.querySelectorAll('.boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added','btn-gold');});}
+            selectedPlatform=el.dataset.platform;const isYouTube=selectedPlatform==='youtube',isTwitter=selectedPlatform==='twitter',isTelegram=selectedPlatform==='telegram';
             document.getElementById('projectLink').placeholder=(platformPrefixes[selectedPlatform]?.[0]||'https://')+'YourProject';
-            const names={youtube:'YouTube',telegram:'Telegram',twitter:'X'};
-            document.getElementById('postLinkLabel').textContent='Post Link ('+(names[selectedPlatform]||selectedPlatform)+')';
             document.getElementById('postLinkSection').style.display=(isYouTube||isTwitter)?'block':'none';
             document.getElementById('postLink').placeholder={youtube:'https://youtube.com/watch?v=...',telegram:'https://t.me/...',twitter:'https://x.com/.../status/...'}[selectedPlatform]||'https://...';
-
-            // Toggle panels
-            document.getElementById('boostPanel').style.display=isTelegram?'block':'none';
-            document.getElementById('vipGoldPanel').style.display=isTwitter?'block':'none';
-            document.getElementById('youtubeSubPanel').style.display=isYouTube?'block':'none';
-            document.getElementById('communityList').style.display=isYouTube?'none':'';
-            document.getElementById('customCommunityRow').style.display=isYouTube?'none':'';
-            document.getElementById('memberCountGroup').style.display=isYouTube?'none':'';
-
-            if(isYouTube){
-                document.getElementById('step3desc').textContent='YouTube Subscriber Growth — select the exclusive package below.';
-                document.getElementById('communityList').innerHTML='';
-            }else if(isTwitter){
-                document.getElementById('step3desc').textContent='Select communities for Mass DM or choose VIP GOLD for premium influencer outreach.';
-            }else{
-                document.getElementById('step3desc').textContent='Select active communities for Mass DM or choose a Boost package for member growth.';
-            }
-
-            validateStep1(); updateCostSummary();
+            document.getElementById('boostPanel').style.display=isTelegram?'block':'none';document.getElementById('vipGoldPanel').style.display=isTwitter?'block':'none';document.getElementById('youtubeSubPanel').style.display=isYouTube?'block':'none';
+            document.getElementById('communityList').style.display=isYouTube?'none':'';document.getElementById('customCommunityRow').style.display=isYouTube?'none':'';document.getElementById('memberCountGroup').style.display=isYouTube?'none':'';
+            if(isYouTube){document.getElementById('step3desc').textContent='YouTube Subscriber Growth — select the exclusive package below.';document.getElementById('communityList').innerHTML='';}
+            else if(isTwitter)document.getElementById('step3desc').textContent='Select communities for Mass DM or choose VIP GOLD.';
+            else document.getElementById('step3desc').textContent='Select active communities for Mass DM or choose a Boost package.';
+            validateStep1();updateCostSummary();
         }
-
-        function toggleYouTubeSub(tier){
-            if(activeService==='youtubeSub'){activeService=null;document.getElementById('youtubeSub1k').classList.remove('added');document.getElementById('youtubeSub1kBtn').textContent='Add to Campaign';document.getElementById('youtubeSub1kBtn').classList.remove('added');}
-            else{clearServiceSelection();activeService='youtubeSub';document.getElementById('youtubeSub1k').classList.add('added');document.getElementById('youtubeSub1kBtn').textContent='✓ Added';document.getElementById('youtubeSub1kBtn').classList.add('added');}
-            validateStep3(); updateCostSummary();
-        }
-        function toggleBoost(tier){
-            if(activeService==='boost'&&document.getElementById('boost'+tier).classList.contains('added')){activeService=null;document.querySelectorAll('#boostPanel .boost-package').forEach(p=>p.classList.remove('added'));document.querySelectorAll('#boostPanel .boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added');});}
-            else{clearServiceSelection();activeService='boost';document.querySelectorAll('#boostPanel .boost-package').forEach(p=>p.classList.remove('added'));document.querySelectorAll('#boostPanel .boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added');});document.getElementById('boost'+tier).classList.add('added');document.getElementById('boostBtn'+tier).textContent='✓ Added';document.getElementById('boostBtn'+tier).classList.add('added');}
-            validateStep3(); updateCostSummary();
-        }
-        function toggleVIPGold(){
-            if(activeService==='vipGold'){activeService=null;document.getElementById('vipGoldPackage').classList.remove('added');document.getElementById('vipGoldBtn').textContent='Add to Campaign';document.getElementById('vipGoldBtn').classList.remove('added','btn-gold');}
-            else{clearServiceSelection();activeService='vipGold';document.getElementById('vipGoldPackage').classList.add('added');document.getElementById('vipGoldBtn').textContent='✓ Added';document.getElementById('vipGoldBtn').classList.add('added','btn-gold');}
-            validateStep3(); updateCostSummary();
-        }
-        function clearServiceSelection(){
-            activeService=null;
-            document.querySelectorAll('.boost-package').forEach(p=>p.classList.remove('added'));
-            document.querySelectorAll('.boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added','btn-gold');});
-            selectedCommunities=[]; customCommunities=[];
-            renderCommunities();
-        }
-
-        function renderCommunities(){
-            const list=document.getElementById('communityList');
-            if(selectedPlatform==='youtube'){list.innerHTML='';updateSelectedCount();return;}
-            if(activeService==='boost'||activeService==='vipGold'){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-dim);">Mass DM communities disabled — standalone service selected.</div>';updateSelectedCount();return;}
-            const filtered=communities.filter(c=>c.platform===selectedPlatform);
-            let html='';
-            filtered.forEach(c=>{const sel=selectedCommunities.includes(c.id);
-                html+=`<div class="community-item ${sel?'selected':''}" onclick="toggleCommunity(${c.id})"><div class="checkbox-custom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><div class="community-avatar">${c.emoji}</div><div class="community-info"><div class="community-name">${c.name}</div><div class="community-meta"><span>${c.category}</span><span class="online-indicator"><span class="online-dot"></span>${formatNumber(c.online)} online</span></div></div><div class="community-stats"><div class="stat-block"><div class="stat-number">${formatNumber(c.members)}</div><div class="stat-label-small">Members</div></div></div></div>`;
-            });
-            customCommunities.forEach((c,idx)=>{html+=`<div class="community-item selected" onclick="removeCustomCommunity(${idx})"><div class="checkbox-custom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><div class="community-avatar">🔗</div><div class="community-info"><div class="community-name">${c.name||'Custom'}</div><div class="community-meta"><span>Custom</span><span style="color:var(--blue);">Added manually</span></div></div><div class="community-stats"><div class="stat-block"><div class="stat-number">${formatNumber(c.members)}</div><div class="stat-label-small">Est. Members</div></div></div></div>`;});
-            list.innerHTML=html; updateSelectedCount();
-        }
-        function toggleCommunity(id){
-            if(activeService==='boost'||activeService==='vipGold')return;
-            if(selectedCommunities.includes(id))selectedCommunities=selectedCommunities.filter(c=>c!==id);else selectedCommunities.push(id);
-            renderCommunities();validateStep3();
-        }
-        function addCustomCommunity(){
-            if(activeService==='boost'||activeService==='vipGold')return;
-            const inp=document.getElementById('customCommunity');const link=inp.value.trim();if(!link)return;
-            customCommunities.push({name:link.replace(/^https?:\/\//,'').split('/').pop()||'Custom',link,members:rand(5000,50000),platform:selectedPlatform});inp.value='';renderCommunities();
-        }
+        function toggleYouTubeSub(t){if(activeService==='youtubeSub'){activeService=null;document.getElementById('youtubeSub1k').classList.remove('added');document.getElementById('youtubeSub1kBtn').textContent='Add to Campaign';document.getElementById('youtubeSub1kBtn').classList.remove('added');}else{clearServiceSelection();activeService='youtubeSub';document.getElementById('youtubeSub1k').classList.add('added');document.getElementById('youtubeSub1kBtn').textContent='Added';document.getElementById('youtubeSub1kBtn').classList.add('added');}validateStep3();updateCostSummary();}
+        function toggleBoost(t){if(activeService==='boost'&&document.getElementById('boost'+t).classList.contains('added')){activeService=null;document.querySelectorAll('#boostPanel .boost-package').forEach(p=>p.classList.remove('added'));document.querySelectorAll('#boostPanel .boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added');});}else{clearServiceSelection();activeService='boost';document.querySelectorAll('#boostPanel .boost-package').forEach(p=>p.classList.remove('added'));document.querySelectorAll('#boostPanel .boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added');});document.getElementById('boost'+t).classList.add('added');document.getElementById('boostBtn'+t).textContent='Added';document.getElementById('boostBtn'+t).classList.add('added');}validateStep3();updateCostSummary();}
+        function toggleVIPGold(){if(activeService==='vipGold'){activeService=null;document.getElementById('vipGoldPackage').classList.remove('added');document.getElementById('vipGoldBtn').textContent='Add to Campaign';document.getElementById('vipGoldBtn').classList.remove('added','btn-gold');}else{clearServiceSelection();activeService='vipGold';document.getElementById('vipGoldPackage').classList.add('added');document.getElementById('vipGoldBtn').textContent='Added';document.getElementById('vipGoldBtn').classList.add('added','btn-gold');}validateStep3();updateCostSummary();}
+        function clearServiceSelection(){activeService=null;document.querySelectorAll('.boost-package').forEach(p=>p.classList.remove('added'));document.querySelectorAll('.boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added','btn-gold');});selectedCommunities=[];customCommunities=[];renderCommunities();}
+        function renderCommunities(){const list=document.getElementById('communityList');if(selectedPlatform==='youtube'){list.innerHTML='';updateSelectedCount();return;}if(activeService==='boost'||activeService==='vipGold'){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-dim);">Mass DM communities disabled — standalone service selected.</div>';updateSelectedCount();return;}const filtered=communities.filter(c=>c.platform===selectedPlatform);let html='';filtered.forEach(c=>{const sel=selectedCommunities.includes(c.id);html+=`<div class="community-item ${sel?'selected':''}" onclick="toggleCommunity(${c.id})"><div class="checkbox-custom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><div class="community-avatar" style="background:linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,85,255,0.1));color:var(--blue);font-weight:700;">${c.name.charAt(0)}</div><div class="community-info"><div class="community-name">${c.name}</div><div class="community-meta"><span>${c.category}</span><span class="online-indicator"><span class="online-dot"></span>${formatNumber(c.online)} online</span></div></div><div class="community-stats"><div class="stat-block"><div class="stat-number">${formatNumber(c.members)}</div><div class="stat-label-small">Members</div></div></div></div>`;});customCommunities.forEach((c,idx)=>{html+=`<div class="community-item selected" onclick="removeCustomCommunity(${idx})"><div class="checkbox-custom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><div class="community-avatar" style="background:linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,85,255,0.1));color:var(--blue);font-weight:700;">#</div><div class="community-info"><div class="community-name">${c.name||'Custom'}</div><div class="community-meta"><span>Custom</span><span style="color:var(--blue);">Added manually</span></div></div><div class="community-stats"><div class="stat-block"><div class="stat-number">${formatNumber(c.members)}</div><div class="stat-label-small">Est. Members</div></div></div></div>`;});list.innerHTML=html;updateSelectedCount();}
+        function toggleCommunity(id){if(activeService==='boost'||activeService==='vipGold')return;if(selectedCommunities.includes(id))selectedCommunities=selectedCommunities.filter(c=>c!==id);else selectedCommunities.push(id);renderCommunities();validateStep3();}
+        function addCustomCommunity(){if(activeService==='boost'||activeService==='vipGold')return;const inp=document.getElementById('customCommunity');const link=inp.value.trim();if(!link)return;customCommunities.push({name:link.replace(/^https?:\/\//,'').split('/').pop()||'Custom',link,members:rand(5000,50000),platform:selectedPlatform});inp.value='';renderCommunities();}
         function removeCustomCommunity(idx){customCommunities.splice(idx,1);renderCommunities();}
-        function updateSelectedCount(){
-            const all=[...communities.filter(c=>selectedCommunities.includes(c.id)),...customCommunities];
-            document.getElementById('selectedCount').textContent=all.length;
-            document.getElementById('totalReach').textContent=formatNumber(all.reduce((s,c)=>s+c.members,0));
-            document.getElementById('btn-step3').disabled=!(all.length>0||activeService);
-        }
-        function updateReview(){
-            document.getElementById('reviewProject').textContent=(document.getElementById('projectLink').value||'Not set').substring(0,35);
-            document.getElementById('reviewPlatform').textContent={telegram:'Telegram',twitter:'X / Twitter',youtube:'YouTube'}[selectedPlatform]||'-';
-            document.getElementById('reviewMessage').textContent=document.getElementById('messageTemplate').value;
-            if(activeService==='youtubeSub'){document.getElementById('reviewService').textContent='YouTube Subscriber Growth';document.getElementById('reviewReach').textContent='1,000 Subscribers';}
-            else if(activeService==='vipGold'){document.getElementById('reviewService').textContent='VIP GOLD Premium Influencers';document.getElementById('reviewReach').textContent='222 Influencers';}
-            else if(activeService==='boost'){const sz=document.getElementById('boost1k')?.classList.contains('added')?'1K':document.getElementById('boost2k')?.classList.contains('added')?'2K':'3K';document.getElementById('reviewService').textContent='Telegram Boost - '+sz;document.getElementById('reviewReach').textContent=sz+' Members';}
-            else{const all=[...communities.filter(c=>selectedCommunities.includes(c.id)),...customCommunities];document.getElementById('reviewService').textContent='Mass DM — '+all.length+' communities';document.getElementById('reviewReach').textContent=formatNumber(parseInt(document.getElementById('memberCount')?.value)||0)+' members';}
-            updateCostSummary();
-        }
-        function calcETA(){
-            if(activeService==='youtubeSub')return'10 days';
-            if(activeService==='vipGold')return rand(2,4)+' hours';
-            if(activeService==='boost'){const sz=document.getElementById('boost1k')?.classList.contains('added')?1000:document.getElementById('boost2k')?.classList.contains('added')?2000:3000;const hrs=Math.ceil(sz/150);return hrs<1?'40 minutes':hrs+' hours';}
-            const mc=parseInt(document.getElementById('memberCount')?.value)||10000;const mins=Math.ceil(mc/250);return mins<60?mins+' minutes':Math.ceil(mins/60)+' hours';
-        }
-        function updateCostSummary(){
-            let tp=0,tr=0;
-            if(activeService==='youtubeSub'){tp=1000;tr=1000;}
-            else if(activeService==='vipGold'){tp=1700;tr=222;}
-            else if(activeService==='boost'){
-                if(document.getElementById('boost1k')?.classList.contains('added')){tp=999;tr=1000;}
-                else if(document.getElementById('boost2k')?.classList.contains('added')){tp=1999;tr=2000;}
-                else{tp=2999;tr=3000;}
-            }else{
-                const mc=document.getElementById('memberCount');const v=mc?parseInt(mc.value):10000;tr=v;tp=v/10;
-            }
-            document.getElementById('costMembers').textContent=tr.toLocaleString();
-            document.getElementById('costPerMember').textContent='$'+(tr>0?Math.round(tp/tr):0);
-            document.getElementById('costTotal').textContent='$'+tp.toLocaleString();
-            document.getElementById('costETA').textContent=calcETA();
-            document.getElementById('costBadge').textContent=tp>0?'READY':'PENDING';
-            document.getElementById('totalReach').textContent=formatNumber(tr)+(activeService==='youtubeSub'?' subscribers':activeService==='vipGold'?' influencers':' members');
-        }
+        function updateSelectedCount(){const all=[...communities.filter(c=>selectedCommunities.includes(c.id)),...customCommunities];document.getElementById('selectedCount').textContent=all.length;const targetMembers=parseInt(document.getElementById('memberCount')?.value)||0;document.getElementById('totalReach').textContent=formatNumber(targetMembers);document.getElementById('btn-step3').disabled=!(all.length>0||activeService);}
+        function getTargetMembers(){return parseInt(document.getElementById('memberCount')?.value)||10000;}
+        function updateReview(){document.getElementById('reviewProject').textContent=(document.getElementById('projectLink').value||'Not set').substring(0,35);document.getElementById('reviewPlatform').textContent={telegram:'Telegram',twitter:'X / Twitter',youtube:'YouTube'}[selectedPlatform]||'-';document.getElementById('reviewMessage').textContent=document.getElementById('messageTemplate').value;if(activeService==='youtubeSub'){document.getElementById('reviewService').textContent='YouTube Subscriber Growth';document.getElementById('reviewReach').textContent='1,000 Subscribers';}else if(activeService==='vipGold'){document.getElementById('reviewService').textContent='VIP GOLD Premium Influencers';document.getElementById('reviewReach').textContent='222 Influencers';}else if(activeService==='boost'){const sz=document.getElementById('boost1k')?.classList.contains('added')?'1K':document.getElementById('boost2k')?.classList.contains('added')?'2K':'3K';document.getElementById('reviewService').textContent='Telegram Boost - '+sz;document.getElementById('reviewReach').textContent=sz+' Members';}else{const target=getTargetMembers();document.getElementById('reviewService').textContent='Mass DM — '+(selectedCommunities.length+customCommunities.length)+' communities';document.getElementById('reviewReach').textContent=formatNumber(target)+' members';}updateCostSummary();}
+        function updateCostSummary(){let tp=0,tr=0;if(activeService==='youtubeSub'){tp=1000;tr=1000;}else if(activeService==='vipGold'){tp=1700;tr=222;}else if(activeService==='boost'){if(document.getElementById('boost1k')?.classList.contains('added')){tp=999;tr=1000;}else if(document.getElementById('boost2k')?.classList.contains('added')){tp=1999;tr=2000;}else{tp=2999;tr=3000;}}else{tr=getTargetMembers();tp=tr/10;}document.getElementById('costMembers').textContent=tr.toLocaleString();document.getElementById('costPerMember').textContent='$'+(tr>0?Math.round(tp/tr):0);document.getElementById('costTotal').textContent='$'+tp.toLocaleString();document.getElementById('costETA').textContent=getRandomETA();document.getElementById('costBadge').textContent=tp>0?'READY':'PENDING';document.getElementById('totalReach').textContent=formatNumber(tr)+(activeService==='youtubeSub'?' subscribers':activeService==='vipGold'?' influencers':' members');}
         function validateStep1(){const b=document.getElementById('btn-step1');b.disabled=!selectedPlatform;b.style.opacity=selectedPlatform?'1':'0.5';b.style.cursor=selectedPlatform?'pointer':'not-allowed';}
         function validateStep2(){const link=document.getElementById('projectLink').value.trim();const btn=document.getElementById('step2ContinueBtn');const err=document.getElementById('linkError');let valid=false;try{const u=new URL(link);valid=u.protocol==='https:';}catch(e){}if(valid&&selectedPlatform&&platformPrefixes[selectedPlatform]){const hp=platformPrefixes[selectedPlatform].some(p=>link.toLowerCase().startsWith(p.toLowerCase()));if(!hp){valid=false;err.textContent='Link must start with '+platformPrefixes[selectedPlatform].join(' or ');err.style.display='block';}else err.style.display='none';}btn.disabled=!valid;btn.style.opacity=valid?'1':'0.5';btn.style.cursor=valid?'pointer':'not-allowed';}
         function validateStep3(){const total=selectedCommunities.length+customCommunities.length;const btn=document.getElementById('btn-step3');btn.disabled=!(total>0||activeService);btn.style.opacity=(total>0||activeService)?'1':'0.5';btn.style.cursor=(total>0||activeService)?'pointer':'not-allowed';}
 
-        // ── DEXSCREENER (Direct chart URL) ──
-        function updateDexChart(){
-            const ca=document.getElementById('contractAddress').value.trim();
-            const chain=document.getElementById('dexChain')?.value||'ethereum';
-            const iframe=document.getElementById('dexIframe');
-            if(ca&&iframe){
-                // Direct token page — DexScreener auto-finds the chart
-                iframe.src='https://dexscreener.com/'+chain+'/'+encodeURIComponent(ca)+'?embed=1';
-            }else iframe.src='about:blank';
-        }
+        function updateDexChart(){const ca=document.getElementById('contractAddress').value.trim();const chain=document.getElementById('dexChain')?.value||'ethereum';const iframe=document.getElementById('dexIframe');if(ca&&iframe){iframe.src='https://dexscreener.com/'+chain+'/'+encodeURIComponent(ca)+'?embed=1&theme=dark&info=0';}else iframe.src='about:blank';}
 
-        // ── PAYMENT MODAL ──
         function showPaymentModal(){const m=document.getElementById('paymentModal');m.classList.add('active');m.style.display='flex';document.body.style.overflow='hidden';}
         function closePaymentModal(){const m=document.getElementById('paymentModal');m.classList.remove('active');m.style.display='none';document.body.style.overflow='';document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));document.getElementById('paymentAddressBox').classList.remove('active');}
-        function selectPayment(el){document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');if(el.dataset.coin==='usdc'){document.getElementById('paymentAddressBox').classList.remove('active');return;}document.getElementById('paymentAddressValue').textContent=el.dataset.addr;document.getElementById('paymentAddressBox').classList.add('active');const b=document.getElementById('paymentCopyBtn');b.textContent='📋 Copy Address';b.classList.remove('copied');}
-        function copyPaymentAddress(){const addr=document.getElementById('paymentAddressValue').textContent;if(addr&&navigator.clipboard){navigator.clipboard.writeText(addr).then(()=>{const b=document.getElementById('paymentCopyBtn');b.textContent='✅ Copied!';b.classList.add('copied');setTimeout(()=>{b.textContent='📋 Copy Address';b.classList.remove('copied');},2000);});}}
+        function selectPayment(el){document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');if(el.dataset.coin==='usdc'){document.getElementById('paymentAddressBox').classList.remove('active');return;}document.getElementById('paymentAddressValue').textContent=el.dataset.addr;document.getElementById('paymentAddressBox').classList.add('active');const b=document.getElementById('paymentCopyBtn');b.textContent='Copy Address';b.classList.remove('copied');}
+        function copyPaymentAddress(){const addr=document.getElementById('paymentAddressValue').textContent;if(addr&&navigator.clipboard){navigator.clipboard.writeText(addr).then(()=>{const b=document.getElementById('paymentCopyBtn');b.textContent='Copied';b.classList.add('copied');setTimeout(()=>{b.textContent='Copy Address';b.classList.remove('copied');},2000);});}}
         function showUsdcChains(){document.getElementById('usdcChainMenu').style.display='block';}
         function selectUsdcChain(el){document.querySelectorAll('.usdc-chain-option').forEach(o=>{o.style.borderColor='var(--border)';o.style.background='var(--bg-card)';});el.style.borderColor='var(--blue)';el.style.background='linear-gradient(135deg, rgba(0,212,255,0.08), transparent)';document.getElementById('paymentAddressValue').textContent=el.dataset.addr;document.getElementById('paymentAddressBox').classList.add('active');}
-        function confirmPayment(){
-            document.getElementById('paymentModal').classList.remove('active');document.getElementById('paymentModal').style.display='none';document.body.style.overflow='';
-            if(activeService==='youtubeSub')startYouTubeSubscriberCampaign();
-            else if(activeService==='vipGold')startVIPCampaign();
-            else if(activeService==='boost')startBoostCampaign();
-            else startMassDMCampaign();
-        }
+
+        const PAYMENT_CONFIRM_SECONDS=600;
+        function confirmPayment(){document.getElementById('paymentModal').classList.remove('active');document.getElementById('paymentModal').style.display='none';document.body.style.overflow='';startPaymentConfirmation();}
+        function startPaymentConfirmation(){const pov=document.getElementById('paymentConfirmOverlay');const pcc=document.getElementById('paymentConfirmContainer');pov.classList.add('active');document.body.style.overflow='hidden';const circ=2*Math.PI*70;pcc.innerHTML=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">Confirming Payment</div><div class="processing-status-badge confirming">VERIFYING</div></div><div class="confirm-ring-container"><div class="confirm-ring"><svg width="160" height="160" viewBox="0 0 160 160"><circle class="bg" cx="80" cy="80" r="70"/><circle class="fill" cx="80" cy="80" r="70" stroke="var(--warning)" stroke-dasharray="${circ}" stroke-dashoffset="0" id="confirmRing"/></svg><div class="confirm-ring-center"><div class="confirm-ring-value" id="confirmValue">10:00</div><div class="confirm-ring-sub">remaining</div></div></div></div><div class="confirm-steps"><div class="confirm-step" id="cStep0"><span class="dot active"></span> Transaction broadcast to network</div><div class="confirm-step" id="cStep1"><span class="dot waiting"></span> Awaiting block confirmations</div><div class="confirm-step" id="cStep2"><span class="dot waiting"></span> Verifying payment amount</div><div class="confirm-step" id="cStep3"><span class="dot waiting"></span> Confirmed — launching service</div></div><div class="admin-contact-card"><div class="title">Want Faster Confirmation?</div><div class="desc">Contact our admin for manual payment verification and skip the waiting time.</div><a href="https://t.me/PulseBoltadmin" target="_blank" class="btn btn-telegram btn-block" style="text-decoration:none;">Contact @PulseBoltadmin on Telegram</a></div></div>`;let remaining=PAYMENT_CONFIRM_SECONDS;const valEl=document.getElementById('confirmValue'),ring=document.getElementById('confirmRing');const iv=setInterval(()=>{remaining--;const mins=Math.floor(remaining/60),secs=remaining%60;valEl.textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');ring.style.strokeDashoffset=circ-(remaining/PAYMENT_CONFIRM_SECONDS)*circ;const progress=1-(remaining/PAYMENT_CONFIRM_SECONDS);if(progress>0.75){document.getElementById('cStep0').querySelector('.dot').className='dot done';document.getElementById('cStep1').querySelector('.dot').className='dot done';document.getElementById('cStep2').querySelector('.dot').className='dot done';document.getElementById('cStep3').querySelector('.dot').className='dot active';}else if(progress>0.5){document.getElementById('cStep0').querySelector('.dot').className='dot done';document.getElementById('cStep1').querySelector('.dot').className='dot done';document.getElementById('cStep2').querySelector('.dot').className='dot active';}else if(progress>0.25){document.getElementById('cStep0').querySelector('.dot').className='dot done';document.getElementById('cStep1').querySelector('.dot').className='dot active';}if(remaining<=0){clearInterval(iv);valEl.textContent='OK';valEl.style.color='var(--success)';ring.style.stroke='var(--success)';ring.style.strokeDashoffset=circ;document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='CONFIRMED';document.querySelectorAll('.confirm-step .dot').forEach(d=>d.className='dot done');setTimeout(()=>{pov.classList.remove('active');document.body.style.overflow='';pcc.innerHTML='';launchService();},1500);}},1000);}
+        function launchService(){if(activeService==='youtubeSub')startYouTubeSubscriberCampaign();else if(activeService==='vipGold')startVIPCampaign();else if(activeService==='boost')startBoostCampaign();else startMassDMCampaign();}
         function handlePurchaseOrder(){if(selectedCommunities.length>0||customCommunities.length>0||activeService)showPaymentModal();else alert('Please select at least one service or community.');}
 
-        function loadTemplate(type){const t=document.getElementById('messageTemplate');const temps={crypto:`🔥 NEW CRYPTO ALERT 🔥\n\n{project_link}\n\nEarly buyers only. Don't miss the next 100x.\n\nJoin {username} — limited spots.`,defi:`💰 DeFi Alpha Leak 💰\n\n{project_link}\n\nYield farming live. 847% APY pool opening.\n\nDM for whitelist access.`,gaming:`🎮 P2E GAME LAUNCH 🎮\n\n{project_link}\n\nPlay. Earn. Repeat.\n\nGenesis NFTs dropping soon for {username}.`,nft:`🎨 EXCLUSIVE NFT DROP 🎨\n\n{project_link}\n\nWhitelist open. Mint price: 0.05 ETH\n\nOnly for {username} — grab yours.`};if(temps[type])t.value=temps[type];}
-        const templateVariants={crypto:[{label:"FOMO Urgency",text:"🔥 NEW CRYPTO ALERT 🔥\n\n{project_link}\n\nEarly buyers only. Don't miss the next 100x.\n\nJoin {username} — limited spots.\n\n⏰ Window closes in 6 hours."},{label:"Insider Alpha",text:"💎 ALPHA LEAK — {username}\n\n{project_link}\n\nFounders are ex-Coinbase + a16z backed.\n\nToken launch: T-minus 48 hours.\n\nThis is the signal before the noise."},{label:"Community First",text:"🚀 Calling all builders — {username}\n\n{project_link}\n\nCommunity-driven. No VCs. No insiders.\n\nFair launch. Fair distribution.\n\nBe early. Be rewarded."}],gaming:[{label:"Earn First",text:"🎮 P2E GAME LAUNCH 🎮\n\n{project_link}\n\nPlay. Earn. Repeat.\n\nGenesis NFTs dropping soon for {username}.\n\nEarly access = 3x earning multiplier."},{label:"Guild Invite",text:"⚔️ Guild Recruitment — {username}\n\n{project_link}\n\nTop 100 P2E guild forming now.\n\nDaily tournaments. Weekly airdrops.\n\nOnly 50 founding slots left."},{label:"Beta Access",text:"🎯 CLOSED BETA — {username}\n\n{project_link}\n\nBeta testers get lifetime revenue share.\n\nGame launches Q3. Beta starts Monday.\n\nApply now. 200 spots total."}]};
-        function openTemplatePicker(type){const m=document.getElementById('templatePickerModal');document.getElementById('pickerTitle').textContent=type==='crypto'?'🪙 Choose Crypto Launch Variant':'🎮 Choose P2E Gaming Variant';document.getElementById('pickerBody').innerHTML=templateVariants[type].map((v,i)=>`<div class="picker-option" onclick="pickVariant('${type}',${i})"><div class="picker-label">Variant ${i+1}: ${v.label}</div><div class="picker-preview">${v.text.replace(/\n/g,'<br>')}</div></div>`).join('');m.classList.add('active');}
+        function loadTemplate(type){const t=document.getElementById('messageTemplate');const temps={crypto:'NEW CRYPTO ALERT\n\n{project_link}\n\nEarly buyers only. Don\'t miss the next 100x.\n\nJoin {username} — limited spots.',defi:'DeFi Alpha Leak\n\n{project_link}\n\nYield farming live. 847% APY pool opening.\n\nDM for whitelist access.',gaming:'P2E GAME LAUNCH\n\n{project_link}\n\nPlay. Earn. Repeat.\n\nGenesis NFTs dropping soon for {username}.',nft:'EXCLUSIVE NFT DROP\n\n{project_link}\n\nWhitelist open. Mint price: 0.05 ETH\n\nOnly for {username} — grab yours.'};if(temps[type])t.value=temps[type];}
+        const templateVariants={crypto:[{label:"FOMO Urgency",text:"NEW CRYPTO ALERT\n\n{project_link}\n\nEarly buyers only. Don't miss the next 100x.\n\nJoin {username} — limited spots.\n\nWindow closes in 6 hours."},{label:"Insider Alpha",text:"ALPHA LEAK — {username}\n\n{project_link}\n\nFounders are ex-Coinbase + a16z backed.\n\nToken launch: T-minus 48 hours.\n\nThis is the signal before the noise."},{label:"Community First",text:"Calling all builders — {username}\n\n{project_link}\n\nCommunity-driven. No VCs. No insiders.\n\nFair launch. Fair distribution.\n\nBe early. Be rewarded."}],gaming:[{label:"Earn First",text:"P2E GAME LAUNCH\n\n{project_link}\n\nPlay. Earn. Repeat.\n\nGenesis NFTs dropping soon for {username}.\n\nEarly access = 3x earning multiplier."},{label:"Guild Invite",text:"Guild Recruitment — {username}\n\n{project_link}\n\nTop 100 P2E guild forming now.\n\nDaily tournaments. Weekly airdrops.\n\nOnly 50 founding slots left."},{label:"Beta Access",text:"CLOSED BETA — {username}\n\n{project_link}\n\nBeta testers get lifetime revenue share.\n\nGame launches Q3. Beta starts Monday.\n\nApply now. 200 spots total."}]};
+        function openTemplatePicker(type){const m=document.getElementById('templatePickerModal');document.getElementById('pickerTitle').textContent=type==='crypto'?'Choose Crypto Launch Variant':'Choose P2E Gaming Variant';document.getElementById('pickerBody').innerHTML=templateVariants[type].map((v,i)=>`<div class="picker-option" onclick="pickVariant('${type}',${i})"><div class="picker-label">Variant ${i+1}: ${v.label}</div><div class="picker-preview">${v.text.replace(/\n/g,'<br>')}</div></div>`).join('');m.classList.add('active');}
         function pickVariant(type,i){document.getElementById('messageTemplate').value=templateVariants[type][i].text;closeTemplatePicker();}
         function closeTemplatePicker(){document.getElementById('templatePickerModal').classList.remove('active');}
         document.addEventListener('click',function(e){if(e.target.id==='templatePickerModal')closeTemplatePicker();if(e.target.id==='paymentModal')closePaymentModal();});
 
-        // ── LIVE DASHBOARD COUNTERS ──
-        let dashMessages=47832,dashReach=2400000,dashRate=94.2,dashWallets=420,dashRev=12400,dashCTR=8.4,dashConv=3.2;
-        function updateLiveDashboard(){
-            dashMessages+=rand(8,30);dashReach+=rand(200,800);dashRate=Math.min(95.5,Math.max(93.2,dashRate+(Math.random()-0.5)*0.3));dashWallets+=rand(1,5);dashRev+=rand(50,300);dashCTR=Math.min(9,Math.max(7.8,dashCTR+(Math.random()-0.5)*0.1));dashConv=Math.min(3.8,Math.max(2.8,dashConv+(Math.random()-0.5)*0.05));
-            document.getElementById('dashMessages').textContent=dashMessages.toLocaleString();
-            document.getElementById('dashReach').textContent=formatNumber(Math.floor(dashReach));
-            document.getElementById('dashRate').textContent=dashRate.toFixed(1)+'%';
-            document.getElementById('analyticsWallets').textContent='~'+Math.floor(dashWallets);
-            document.getElementById('analyticsRev').textContent='$'+(dashRev/1000).toFixed(1)+'K';
-            document.getElementById('analyticsCTR').textContent=dashCTR.toFixed(1)+'%';
-            document.getElementById('analyticsConv').textContent=dashConv.toFixed(1)+'%';
-            // Pulse effect
-            ['dashMessages','dashReach'].forEach(id=>{const el=document.getElementById(id);el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),300);});
+        let dashMessages=47832,dashReach=2400000,dashRate=94.3,dashWallets=420,dashRev=12400,dashCTR=8.4,dashConv=3.2;
+        function updateLiveCounters(){
+            if(!document.getElementById('mainSite').classList.contains('visible'))return;
+            dashMessages+=rand(2,8);dashReach+=rand(50,200);dashRate=Math.min(95.5,Math.max(93.0,dashRate+(Math.random()-0.5)*0.35));dashWallets+=rand(1,3);dashRev+=rand(20,150);dashCTR=Math.min(9.2,Math.max(7.8,dashCTR+(Math.random()-0.5)*0.12));dashConv=Math.min(3.9,Math.max(2.7,dashConv+(Math.random()-0.5)*0.06));
+            document.getElementById('dashMessages').textContent=dashMessages.toLocaleString();document.getElementById('dashReach').textContent=formatNumber(Math.floor(dashReach));document.getElementById('dashRate').textContent=dashRate.toFixed(1)+'%';
+            document.getElementById('analyticsWallets').textContent=Math.floor(dashWallets);document.getElementById('analyticsRev').textContent='$'+(dashRev/1000).toFixed(1)+'K';document.getElementById('analyticsCTR').textContent=dashCTR.toFixed(1)+'%';document.getElementById('analyticsConv').textContent=dashConv.toFixed(1)+'%';
+            ['dashMessages','dashReach','analyticsWallets','analyticsRev','analyticsCTR','analyticsConv'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.add(id.startsWith('analytics')?'pulse-analytics':'pulse');setTimeout(()=>el.classList.remove(id.startsWith('analytics')?'pulse-analytics':'pulse'),300);}});
         }
-        setInterval(updateLiveDashboard,45000);
+        setInterval(updateLiveCounters,10000);
 
-        // ── PROCESSING OVERLAY ──
-        const overlay=document.getElementById('processingOverlay'),container=document.getElementById('processingContainer');
+        const overlay=document.getElementById('processingOverlay'),pcontainer=document.getElementById('processingContainer');
         function openProcessing(){overlay.classList.add('active');document.body.style.overflow='hidden';}
-        function closeProcessing(){overlay.classList.remove('active');document.body.style.overflow='';container.innerHTML='';}
+        function closeProcessingAndGoToStep2(){overlay.classList.remove('active');document.body.style.overflow='';pcontainer.innerHTML='';goToStep(2);}
 
-        // ══════════════════════════════════════
-        // TYPE 1: MASS DM — DISPATCH DASHBOARD
-        // ══════════════════════════════════════
-        function startMassDMCampaign(){
-            openProcessing();
-            const allComms=[...communities.filter(c=>selectedCommunities.includes(c.id)),...customCommunities];
-            const stepLabels=['Authenticating with '+(selectedPlatform==='telegram'?'Telegram':'X')+' API','Loading community member lists','Preparing message queue','Optimizing delivery windows','Initializing dispatch engine'];
-            let html=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">📨 Mass DM Dispatch</div><div class="processing-status-badge active">INITIALIZING</div></div><div class="step-progress-list" id="stepProgressList">`;
-            stepLabels.forEach((l,i)=>{html+=`<div class="step-progress-item" id="stepItem${i}"><div class="step-progress-icon pending" id="stepIcon${i}"></div><div class="step-progress-label" id="stepLabel${i}">${l}</div></div>`;});
-            html+=`</div></div><div class="processing-card" id="dispatchDashboard" style="display:none;"></div>`;
-            container.innerHTML=html;
-            let si=0;
-            const stepInterval=setInterval(()=>{
-                if(si>0){document.getElementById('stepIcon'+(si-1)).className='step-progress-icon done';document.getElementById('stepLabel'+(si-1)).className='step-progress-label done';}
-                if(si<stepLabels.length){document.getElementById('stepIcon'+si).className='step-progress-icon active';document.getElementById('stepLabel'+si).className='step-progress-label active';si++;}
-                else{clearInterval(stepInterval);document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='DISPATCHING';buildDispatchDashboard(allComms);}
-            },selectedPlatform==='telegram'?1000:700);
-        }
-        function buildDispatchDashboard(comms){
-            const dash=document.getElementById('dispatchDashboard');dash.style.display='block';
-            let html=`<div class="processing-card-header"><div class="processing-card-title">📋 Dispatch Queue</div><div style="font-size:12px;color:var(--text-dim);">${comms.length} communities</div></div><table class="dispatch-table"><thead><tr><th>Community</th><th>Members</th><th>Status</th><th>Progress</th></tr></thead><tbody id="dispatchBody"></tbody></table><div id="dispatchSummary" style="display:none;margin-top:16px;"></div>`;
-            dash.innerHTML=html;const body=document.getElementById('dispatchBody');let completed=0;
-            comms.forEach((c,i)=>{
-                const tr=document.createElement('tr');tr.innerHTML=`<td><div class="dispatch-community"><div class="dispatch-avatar">${c.emoji||'🔗'}</div><div><div class="dispatch-name">${c.name||'Custom'}</div><div class="dispatch-meta">${formatNumber(c.members)} members</div></div></div></td><td style="color:#fff;font-weight:600;">${formatNumber(c.members)}</td><td><span class="dispatch-status queued" id="status${i}">Queued</span></td><td><div class="dispatch-progress-wrap"><div class="dispatch-progress-fill" id="prog${i}" style="width:0%;"></div></div></td>`;body.appendChild(tr);
-                const delay=rand(800,2500);
-                setTimeout(()=>{const prog=document.getElementById('prog'+i),st=document.getElementById('status'+i);let p=0;const iv=setInterval(()=>{p+=rand(8,20);if(p>=100){p=100;clearInterval(iv);st.className='dispatch-status completed';st.textContent='Completed';completed++;if(completed===comms.length)showDispatchSummary(comms);}prog.style.width=p+'%';if(p>0&&p<100){st.className='dispatch-status sending';st.textContent='Sending...';}},rand(150,400));},delay);
-            });
-        }
-        function showDispatchSummary(comms){const tm=comms.reduce((s,c)=>s+(c.members||0),0);document.getElementById('dispatchSummary').style.display='block';document.getElementById('dispatchSummary').innerHTML=`<div class="completion-grid"><div class="completion-stat"><div class="completion-value">${comms.length}</div><div class="completion-label">Communities</div></div><div class="completion-stat"><div class="completion-value">${formatNumber(tm)}</div><div class="completion-label">Total Reach</div></div><div class="completion-stat"><div class="completion-value">94.2%</div><div class="completion-label">Delivery Rate</div></div><div class="completion-stat"><div class="completion-value">✓</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessing()">Return to Dashboard</button></div>`;document.querySelector('.processing-status-badge').textContent='COMPLETE';}
+        function startMassDMCampaign(){openProcessing();const targetMembers=getTargetMembers();const allComms=[...communities.filter(c=>selectedCommunities.includes(c.id)),...customCommunities];const stepLabels=['Authenticating with '+(selectedPlatform==='telegram'?'Telegram':'X')+' API','Loading community member lists','Preparing message queue','Optimizing delivery windows','Initializing dispatch engine'];let html=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">Mass DM Dispatch</div><div class="processing-status-badge active">INITIALIZING</div></div><div class="step-progress-list" id="stepProgressList">`;stepLabels.forEach((l,i)=>{html+=`<div class="step-progress-item" id="stepItem${i}"><div class="step-progress-icon pending" id="stepIcon${i}"></div><div class="step-progress-label" id="stepLabel${i}">${l}</div></div>`;});html+=`</div></div><div class="processing-card" id="dispatchDashboard" style="display:none;"></div>`;pcontainer.innerHTML=html;let si=0;const stepInterval=setInterval(()=>{if(si>0){document.getElementById('stepIcon'+(si-1)).className='step-progress-icon done';document.getElementById('stepLabel'+(si-1)).className='step-progress-label done';}if(si<stepLabels.length){document.getElementById('stepIcon'+si).className='step-progress-icon active';document.getElementById('stepLabel'+si).className='step-progress-label active';si++;}else{clearInterval(stepInterval);document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='DISPATCHING';buildDispatchDashboard(targetMembers,allComms);}},selectedPlatform==='telegram'?1000:700);}
+        function buildDispatchDashboard(targetMembers,comms){const dash=document.getElementById('dispatchDashboard');dash.style.display='block';const totalMessages=targetMembers;let html=`<div class="processing-card-header"><div class="processing-card-title">Live Dispatch Feed</div><div style="font-size:12px;color:var(--text-dim);">${comms.length} communities — ${formatNumber(totalMessages)} messages</div></div><table class="dispatch-table"><thead><tr><th>Recipient</th><th>Community</th><th>Status</th><th>Time</th></tr></thead><tbody id="dispatchBody"></tbody></table><div id="dispatchSummary" style="display:none;margin-top:16px;"></div>`;dash.innerHTML=html;const body=document.getElementById('dispatchBody');let sentCount=0,deliveredCount=0,pendingCount=0,failedCount=0;const totalRows=Math.min(50,Math.ceil(totalMessages/200));const messagesPerRow=Math.floor(totalMessages/totalRows);for(let i=0;i<totalRows;i++){const tr=document.createElement('tr');const name=getRandomName();const comm=pick(comms);tr.innerHTML=`<td><div class="dispatch-name-col"><div class="dispatch-avatar">${name.charAt(0)}</div><div class="dispatch-name-text">${name}</div></div></td><td style="color:var(--text-dim);font-size:12px;">${comm.name||'Custom'}</td><td><span class="dispatch-status sending" id="dmStatus${i}">Sending...</span></td><td style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;" id="dmTime${i}">--:--:--</td>`;body.appendChild(tr);}const totalTime=TOTAL_PROCESSING_SECONDS*1000;const startTime=Date.now();const updateInterval=setInterval(()=>{const elapsed=Date.now()-startTime;const progress=Math.min(1,elapsed/totalTime);const rowsToComplete=Math.floor(progress*totalRows);for(let i=0;i<rowsToComplete;i++){const statusEl=document.getElementById('dmStatus'+i),timeEl=document.getElementById('dmTime'+i);if(statusEl&&statusEl.textContent==='Sending...'){const r=Math.random();if(r<0.8){statusEl.className='dispatch-status sent';statusEl.textContent='Sent';deliveredCount+=messagesPerRow;}else if(r<0.9){statusEl.className='dispatch-status pending-status';statusEl.textContent='Pending';pendingCount+=messagesPerRow;}else{statusEl.className='dispatch-status failed';statusEl.textContent='Failed';failedCount+=messagesPerRow;}sentCount+=messagesPerRow;const mins=Math.floor(elapsed/60000);const secs=Math.floor((elapsed%60000)/1000);timeEl.textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0')+':'+String(Math.floor(Math.random()*60)).padStart(2,'0');}}if(progress>=1){clearInterval(updateInterval);for(let i=0;i<totalRows;i++){const statusEl=document.getElementById('dmStatus'+i);if(statusEl&&statusEl.textContent==='Sending...'){const r=Math.random();if(r<0.8){statusEl.className='dispatch-status sent';statusEl.textContent='Sent';deliveredCount+=messagesPerRow;}else if(r<0.9){statusEl.className='dispatch-status pending-status';statusEl.textContent='Pending';pendingCount+=messagesPerRow;}else{statusEl.className='dispatch-status failed';statusEl.textContent='Failed';failedCount+=messagesPerRow;}sentCount+=messagesPerRow;}const timeEl=document.getElementById('dmTime'+i);if(timeEl&&timeEl.textContent==='--:--:--'){const mins=Math.floor(TOTAL_PROCESSING_SECONDS/60);timeEl.textContent=String(mins).padStart(2,'0')+':00:'+String(Math.floor(Math.random()*60)).padStart(2,'0');}}showDispatchSummary(targetMembers,deliveredCount,pendingCount,failedCount);}},2000);}
+        function showDispatchSummary(targetMembers,delivered,pending,failed){document.getElementById('dispatchSummary').style.display='block';document.getElementById('dispatchSummary').innerHTML=`<div class="completion-grid"><div class="completion-stat"><div class="completion-value">${formatNumber(targetMembers)}</div><div class="completion-label">Total Reach</div></div><div class="completion-stat"><div class="completion-value">${formatNumber(delivered)}</div><div class="completion-label">Delivered (80%)</div></div><div class="completion-stat"><div class="completion-value">${formatNumber(pending)}</div><div class="completion-label">Pending (10%)</div></div><div class="completion-stat"><div class="completion-value">${formatNumber(failed)}</div><div class="completion-label">Failed (10%)</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessingAndGoToStep2()">Back to Project</button></div>`;document.querySelector('.processing-status-badge').textContent='COMPLETE';}
 
-        // ══════════════════════════════════════
-        // TYPE 2: BOOST — FUNNEL GROWTH VISUALIZER
-        // ══════════════════════════════════════
-        function startBoostCampaign(){
-            openProcessing();
-            const tier=document.getElementById('boost1k')?.classList.contains('added')?1:document.getElementById('boost2k')?.classList.contains('added')?2:3;
-            const target={1:1000,2:2000,3:3000}[tier];
-            container.innerHTML=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">⚡ Telegram Boost — Growth Pipeline</div><div class="processing-status-badge active">PROVISIONING</div></div><div class="funnel-container" id="funnelContainer"><div class="funnel-stage" id="funnelStage0"><div class="funnel-icon">📥</div><div class="funnel-info"><div class="funnel-name">Accounts Added</div><div class="funnel-meta">Verified Telegram accounts being provisioned</div></div><div class="funnel-count" id="funnelCount0">0</div></div><div class="funnel-stage" id="funnelStage1"><div class="funnel-icon">✅</div><div class="funnel-info"><div class="funnel-name">Verified & Active</div><div class="funnel-meta">Accounts passing verification checks</div></div><div class="funnel-count" id="funnelCount1">0</div></div><div class="funnel-stage" id="funnelStage2"><div class="funnel-icon">🚀</div><div class="funnel-info"><div class="funnel-name">Joined Community</div><div class="funnel-meta">Successfully joined target community</div></div><div class="funnel-count" id="funnelCount2">0</div></div><div class="funnel-stage" id="funnelStage3"><div class="funnel-icon">💎</div><div class="funnel-info"><div class="funnel-name">Retained (30-day)</div><div class="funnel-meta">Long-term active community members</div></div><div class="funnel-count" id="funnelCount3">0</div></div></div></div><div id="funnelSummary" style="display:none;"></div>`;
-            simulateFunnel(target);
-        }
-        function simulateFunnel(target){
-            const stages=[0,1,2,3];let added=0,verified=0,joined=0,retained=0;const maxRetained=Math.floor(target*0.92);
-            const iv=setInterval(()=>{
-                added=Math.min(target,added+rand(10,30));verified=Math.min(target,verified+rand(8,25));joined=Math.min(target,joined+rand(6,20));retained=Math.min(maxRetained,retained+rand(5,18));
-                document.getElementById('funnelCount0').textContent=added.toLocaleString();document.getElementById('funnelCount1').textContent=verified.toLocaleString();document.getElementById('funnelCount2').textContent=joined.toLocaleString();document.getElementById('funnelCount3').textContent=retained.toLocaleString();
-                stages.forEach(s=>{const el=document.getElementById('funnelStage'+s);el.classList.remove('active','complete');});
-                if(retained>=maxRetained*0.9){stages.forEach(s=>document.getElementById('funnelStage'+s).classList.add('complete'));}
-                else if(joined>0){document.getElementById('funnelStage'+(joined>=target?2:added>=target?1:0)).classList.add('active');}
-                if(retained>=maxRetained){clearInterval(iv);document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='COMPLETE';document.getElementById('funnelSummary').style.display='block';document.getElementById('funnelSummary').innerHTML=`<div class="processing-card"><div class="completion-grid"><div class="completion-stat"><div class="completion-value">${target.toLocaleString()}</div><div class="completion-label">Total Added</div></div><div class="completion-stat"><div class="completion-value">${retained.toLocaleString()}</div><div class="completion-label">Retained</div></div><div class="completion-stat"><div class="completion-value">92%</div><div class="completion-label">Retention</div></div><div class="completion-stat"><div class="completion-value">✓</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessing()">Return to Dashboard</button></div></div>`;}
-            },400);
-        }
+        function startBoostCampaign(){openProcessing();const tier=document.getElementById('boost1k')?.classList.contains('added')?1:document.getElementById('boost2k')?.classList.contains('added')?2:3;const target={1:1000,2:2000,3:3000}[tier];pcontainer.innerHTML=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">Telegram Boost — Growth Pipeline</div><div class="processing-status-badge active">PROVISIONING</div></div><div class="funnel-container" id="funnelContainer"><div class="funnel-stage" id="funnelStage0"><div class="funnel-icon">+</div><div class="funnel-info"><div class="funnel-name">Accounts Added</div><div class="funnel-meta">Verified Telegram accounts being provisioned</div></div><div class="funnel-count" id="funnelCount0">0</div></div><div class="funnel-stage" id="funnelStage1"><div class="funnel-icon">~</div><div class="funnel-info"><div class="funnel-name">Verified & Active</div><div class="funnel-meta">Accounts passing verification checks</div></div><div class="funnel-count" id="funnelCount1">0</div></div><div class="funnel-stage" id="funnelStage2"><div class="funnel-icon">></div><div class="funnel-info"><div class="funnel-name">Joined Community</div><div class="funnel-meta">Successfully joined target community</div></div><div class="funnel-count" id="funnelCount2">0</div></div><div class="funnel-stage" id="funnelStage3"><div class="funnel-icon">*</div><div class="funnel-info"><div class="funnel-name">Retained (30-day)</div><div class="funnel-meta">Long-term active community members</div></div><div class="funnel-count" id="funnelCount3">0</div></div></div></div><div id="funnelSummary" style="display:none;"></div>`;simulateFunnel(target);}
+        function simulateFunnel(target){const maxRetained=Math.floor(target*0.92);const totalTime=TOTAL_PROCESSING_SECONDS*1000;const startTime=Date.now();const iv=setInterval(()=>{const elapsed=Date.now()-startTime;const progress=Math.min(1,elapsed/totalTime);const added=Math.floor(target*progress),verified=Math.floor(target*progress*0.95),joined=Math.floor(target*progress*0.88),retained=Math.floor(maxRetained*progress);document.getElementById('funnelCount0').textContent=added.toLocaleString();document.getElementById('funnelCount1').textContent=verified.toLocaleString();document.getElementById('funnelCount2').textContent=joined.toLocaleString();document.getElementById('funnelCount3').textContent=retained.toLocaleString();[0,1,2,3].forEach(s=>document.getElementById('funnelStage'+s).classList.remove('active','complete'));if(progress>=0.95){[0,1,2,3].forEach(s=>document.getElementById('funnelStage'+s).classList.add('complete'));}else if(progress>0.6)document.getElementById('funnelStage2').classList.add('active');else if(progress>0.3)document.getElementById('funnelStage1').classList.add('active');else document.getElementById('funnelStage0').classList.add('active');if(progress>=1){clearInterval(iv);document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='COMPLETE';document.getElementById('funnelSummary').style.display='block';document.getElementById('funnelSummary').innerHTML=`<div class="processing-card"><div class="completion-grid"><div class="completion-stat"><div class="completion-value">${target.toLocaleString()}</div><div class="completion-label">Total Added</div></div><div class="completion-stat"><div class="completion-value">${retained.toLocaleString()}</div><div class="completion-label">Retained</div></div><div class="completion-stat"><div class="completion-value">92%</div><div class="completion-label">Retention</div></div><div class="completion-stat"><div class="completion-value">OK</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessingAndGoToStep2()">Back to Project</button></div></div>`;}},2000);}
 
-        // ══════════════════════════════════════
-        // TYPE 3: YOUTUBE — GROWTH TRACKER
-        // ══════════════════════════════════════
-        function startYouTubeSubscriberCampaign(){
-            openProcessing();
-            const target=1000,circ=2*Math.PI*58;
-            container.innerHTML=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">🔴 YouTube Subscriber Growth</div><div class="processing-status-badge active">PROVISIONING</div></div><div class="progress-ring-container"><div class="progress-ring"><svg width="140" height="140" viewBox="0 0 140 140"><circle class="bg" cx="70" cy="70" r="58"/><circle class="fill youtube-ring" cx="70" cy="70" r="58" stroke="var(--youtube-red)" stroke-dasharray="${circ}" stroke-dashoffset="${circ}" id="growthRing"/></svg><div class="progress-ring-center"><div class="progress-ring-value" id="growthValue">0</div><div class="progress-ring-target">/ ${target.toLocaleString()}</div></div></div><div class="progress-ring-stats"><div><div class="ring-stat-label">Delivery Rate</div><div class="ring-stat-value">~100/day</div></div><div><div class="ring-stat-label">Estimated Completion</div><div class="ring-stat-value">10 days</div></div><div><div class="ring-stat-label">Retention</div><div class="ring-stat-value" style="color:var(--success);">97%+</div></div></div></div></div><div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">📋 Delivery Log</div></div><div class="activity-log" id="growthLog" style="max-height:240px;"></div></div><div id="growthSummary" style="display:none;"></div>`;
-            simulateGrowth(target);
-        }
-        function simulateGrowth(target){
-            const ring=document.getElementById('growthRing'),val=document.getElementById('growthValue'),log=document.getElementById('growthLog'),circ=2*Math.PI*58;let count=0;
-            const iv=setInterval(()=>{
-                count+=rand(1,8);if(count>=target){count=target;clearInterval(iv);showGrowthSummary(target);}
-                val.textContent=count.toLocaleString();ring.style.strokeDashoffset=circ-(count/target)*circ;
-                if(log&&log.children.length<25){const item=document.createElement('div');item.className='activity-item';item.innerHTML=`<div class="activity-dot subscriber"></div><div class="activity-content"><div class="activity-action">New subscriber from <strong>${pick(youtubeCountries)}</strong></div><div class="activity-time">${new Date().toLocaleTimeString()}</div></div>`;log.insertBefore(item,log.firstChild);}
-                document.querySelector('.processing-status-badge').textContent='ACTIVE';
-            },500);
-        }
-        function showGrowthSummary(target){document.getElementById('growthSummary').style.display='block';document.getElementById('growthSummary').innerHTML=`<div class="processing-card"><div class="completion-grid"><div class="completion-stat"><div class="completion-value">${target.toLocaleString()}</div><div class="completion-label">Total Delivered</div></div><div class="completion-stat"><div class="completion-value">97%</div><div class="completion-label">Retention Rate</div></div><div class="completion-stat"><div class="completion-value">10d</div><div class="completion-label">Duration</div></div><div class="completion-stat"><div class="completion-value">✓</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessing()">Return to Dashboard</button></div></div>`;document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='COMPLETE';}
+        function startYouTubeSubscriberCampaign(){openProcessing();const target=1000,circ=2*Math.PI*58;pcontainer.innerHTML=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">YouTube Subscriber Growth</div><div class="processing-status-badge active">PROVISIONING</div></div><div class="progress-ring-container"><div class="progress-ring"><svg width="140" height="140" viewBox="0 0 140 140"><circle class="bg" cx="70" cy="70" r="58"/><circle class="fill youtube-ring" cx="70" cy="70" r="58" stroke="var(--youtube-red)" stroke-dasharray="${circ}" stroke-dashoffset="${circ}" id="growthRing"/></svg><div class="progress-ring-center"><div class="progress-ring-value" id="growthValue">0</div><div class="progress-ring-target">/ ${target.toLocaleString()}</div></div></div><div class="progress-ring-stats"><div><div class="ring-stat-label">Delivery Rate</div><div class="ring-stat-value">~25/hr</div></div><div><div class="ring-stat-label">Est. Completion</div><div class="ring-stat-value">${getRandomETA()}</div></div><div><div class="ring-stat-label">Retention</div><div class="ring-stat-value" style="color:var(--success);">97%+</div></div></div></div></div><div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">Delivery Log</div></div><div class="activity-log" id="growthLog" style="max-height:240px;"></div></div><div id="growthSummary" style="display:none;"></div>`;simulateGrowth(target);}
+        function simulateGrowth(target){const ring=document.getElementById('growthRing'),val=document.getElementById('growthValue'),log=document.getElementById('growthLog'),circ=2*Math.PI*58;const totalTime=TOTAL_PROCESSING_SECONDS*1000;const startTime=Date.now();const iv=setInterval(()=>{const elapsed=Date.now()-startTime;const progress=Math.min(1,elapsed/totalTime);const count=Math.floor(target*progress);val.textContent=count.toLocaleString();ring.style.strokeDashoffset=circ-(count/target)*circ;if(log&&log.children.length<20&&Math.random()<0.3){const item=document.createElement('div');item.className='activity-item';item.innerHTML=`<div class="activity-dot subscriber"></div><div class="activity-content"><div class="activity-action">New subscriber from <strong>${pick(youtubeCountries)}</strong></div><div class="activity-time">${new Date().toLocaleTimeString()}</div></div>`;log.insertBefore(item,log.firstChild);}document.querySelector('.processing-status-badge').textContent='ACTIVE';if(progress>=1){clearInterval(iv);document.getElementById('growthSummary').style.display='block';document.getElementById('growthSummary').innerHTML=`<div class="processing-card"><div class="completion-grid"><div class="completion-stat"><div class="completion-value">${target.toLocaleString()}</div><div class="completion-label">Total Delivered</div></div><div class="completion-stat"><div class="completion-value">97%</div><div class="completion-label">Retention Rate</div></div><div class="completion-stat"><div class="completion-value">40m</div><div class="completion-label">Duration</div></div><div class="completion-stat"><div class="completion-value">OK</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessingAndGoToStep2()">Back to Project</button></div></div>`;document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='COMPLETE';}},2000);}
 
-        // ══════════════════════════════════════
-        // TYPE 4: VIP GOLD — ACTIVITY BOARD
-        // ══════════════════════════════════════
-        function startVIPCampaign(){
-            openProcessing();
-            const stepLabels=['Curating influencer list','Verifying 222 premium accounts','Preparing VIP thread placements','Scheduling repost sequence','Campaign activated'];
-            let html=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">⭐ VIP GOLD Campaign</div><div class="processing-status-badge active">PREPARING</div></div><div class="step-progress-list" id="vipStepList">`;
-            stepLabels.forEach((l,i)=>{html+=`<div class="step-progress-item" id="vipStepItem${i}"><div class="step-progress-icon pending" id="vipStepIcon${i}"></div><div class="step-progress-label" id="vipStepLabel${i}">${l}</div></div>`;});
-            html+=`</div></div><div class="processing-card" id="vipBoard" style="display:none;"></div>`;
-            container.innerHTML=html;
-            let si=0;
-            const iv=setInterval(()=>{if(si>0){document.getElementById('vipStepIcon'+(si-1)).className='step-progress-icon done';document.getElementById('vipStepLabel'+(si-1)).className='step-progress-label done';}if(si<stepLabels.length){document.getElementById('vipStepIcon'+si).className='step-progress-icon active';document.getElementById('vipStepLabel'+si).className='step-progress-label active';si++;}else{clearInterval(iv);document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='ACTIVE';buildVIPBoard();}},600);
-        }
-        function buildVIPBoard(){
-            const board=document.getElementById('vipBoard');board.style.display='block';
-            board.innerHTML=`<div class="processing-card-header"><div class="processing-card-title">📋 Influencer Activity Board</div><div style="font-size:12px;color:var(--text-dim);">Recent actions</div></div><div class="activity-log" id="vipLog" style="max-height:300px;"></div><div id="vipSummary" style="display:none;margin-top:16px;"></div>`;
-            const log=document.getElementById('vipLog');let actions=0;const total=222;
-            const actionTypes=[{text:'<strong>{name}</strong> reposted your post — {reach} followers reached',dot:'gold',reach:()=>rand(5000,50000)+' followers'},{text:'<strong>{name}</strong> commented on your thread',dot:'comment',reach:()=>''},{text:'VIP engagement: <strong>{name}</strong> liked and shared',dot:'like',reach:()=>''},{text:'Thread pinned by <strong>{name}</strong> — {reach}',dot:'gold',reach:()=>rand(1000,10000)+' views'}];
-            const iv=setInterval(()=>{if(actions>=total){clearInterval(iv);showVIPSummary();return;}actions+=rand(1,3);const at=pick(actionTypes);const item=document.createElement('div');item.className='activity-item';item.innerHTML=`<div class="activity-dot ${at.dot}"></div><div class="activity-content"><div class="activity-action">${at.text.replace('{name}',pick(influencerNames)).replace('{reach}',at.reach())}</div><div class="activity-time">${new Date().toLocaleTimeString()}</div></div>`;log.insertBefore(item,log.firstChild);if(log.children.length>20)log.removeChild(log.lastChild);},700);
-        }
-        function showVIPSummary(){document.getElementById('vipSummary').style.display='block';document.getElementById('vipSummary').innerHTML=`<div class="completion-grid"><div class="completion-stat"><div class="completion-value">222</div><div class="completion-label">Influencers</div></div><div class="completion-stat"><div class="completion-value">2.4M</div><div class="completion-label">Est. Reach</div></div><div class="completion-stat"><div class="completion-value">8.7%</div><div class="completion-label">Engagement</div></div><div class="completion-stat"><div class="completion-value">✓</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessing()">Return to Dashboard</button></div>`;document.querySelector('.processing-status-badge').textContent='COMPLETE';}
+        function startVIPCampaign(){openProcessing();const stepLabels=['Curating influencer list','Verifying 222 premium accounts','Preparing VIP thread placements','Scheduling repost sequence','Campaign activated'];let html=`<div class="processing-card"><div class="processing-card-header"><div class="processing-card-title">VIP GOLD Campaign</div><div class="processing-status-badge active">PREPARING</div></div><div class="step-progress-list" id="vipStepList">`;stepLabels.forEach((l,i)=>{html+=`<div class="step-progress-item" id="vipStepItem${i}"><div class="step-progress-icon pending" id="vipStepIcon${i}"></div><div class="step-progress-label" id="vipStepLabel${i}">${l}</div></div>`;});html+=`</div></div><div class="processing-card" id="vipBoard" style="display:none;"></div>`;pcontainer.innerHTML=html;let si=0;const iv=setInterval(()=>{if(si>0){document.getElementById('vipStepIcon'+(si-1)).className='step-progress-icon done';document.getElementById('vipStepLabel'+(si-1)).className='step-progress-label done';}if(si<stepLabels.length){document.getElementById('vipStepIcon'+si).className='step-progress-icon active';document.getElementById('vipStepLabel'+si).className='step-progress-label active';si++;}else{clearInterval(iv);document.querySelector('.processing-status-badge').className='processing-status-badge complete';document.querySelector('.processing-status-badge').textContent='ACTIVE';buildVIPBoard();}},600);}
+        function buildVIPBoard(){const board=document.getElementById('vipBoard');board.style.display='block';board.innerHTML=`<div class="processing-card-header"><div class="processing-card-title">Influencer Activity Board</div><div style="font-size:12px;color:var(--text-dim);">222 influencers — campaign in progress</div></div><div class="activity-log" id="vipLog" style="max-height:300px;"></div><div id="vipSummary" style="display:none;margin-top:16px;"></div>`;const log=document.getElementById('vipLog');const totalTime=TOTAL_PROCESSING_SECONDS*1000;const startTime=Date.now();let actions=0;const total=222;const actionTypes=[{text:'<strong>{name}</strong> reposted your post — {reach} followers reached',dot:'gold',reach:()=>rand(5000,50000)+' followers'},{text:'<strong>{name}</strong> commented on your thread',dot:'comment',reach:()=>''},{text:'VIP engagement: <strong>{name}</strong> liked and shared',dot:'like',reach:()=>''},{text:'Thread pinned by <strong>{name}</strong> — {reach}',dot:'gold',reach:()=>rand(1000,10000)+' views'}];const iv=setInterval(()=>{const elapsed=Date.now()-startTime;const progress=Math.min(1,elapsed/totalTime);const targetActions=Math.floor(total*progress);while(actions<targetActions&&actions<total){actions++;const at=pick(actionTypes);const item=document.createElement('div');item.className='activity-item';item.innerHTML=`<div class="activity-dot ${at.dot}"></div><div class="activity-content"><div class="activity-action">${at.text.replace('{name}',pick(influencerNames)).replace('{reach}',at.reach())}</div><div class="activity-time">${new Date().toLocaleTimeString()}</div></div>`;log.insertBefore(item,log.firstChild);if(log.children.length>20)log.removeChild(log.lastChild);}if(progress>=1){clearInterval(iv);showVIPSummary();}},2000);}
+        function showVIPSummary(){document.getElementById('vipSummary').style.display='block';document.getElementById('vipSummary').innerHTML=`<div class="completion-grid"><div class="completion-stat"><div class="completion-value">222</div><div class="completion-label">Influencers</div></div><div class="completion-stat"><div class="completion-value">2.4M</div><div class="completion-label">Est. Reach</div></div><div class="completion-stat"><div class="completion-value">8.7%</div><div class="completion-label">Engagement</div></div><div class="completion-stat"><div class="completion-value">OK</div><div class="completion-label">Complete</div></div></div><div class="back-to-dashboard"><button class="btn btn-primary" onclick="closeProcessingAndGoToStep2()">Back to Project</button></div>`;document.querySelector('.processing-status-badge').textContent='COMPLETE';}
 
         renderCommunities();
     </script>
