@@ -22,10 +22,26 @@
             min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
         }
 
-        /* LOCK SCREEN */
+        /* ─── BACKGROUND LIGHTNING IMAGE ────────────────────────────────────── */
+        #bgLightning {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: url('https://i.postimg.cc/3xHKY9vG/lightning-dark-background-433905-4436.jpg') no-repeat center center;
+            background-size: cover;
+            opacity: 0.25;
+            z-index: -2;
+            pointer-events: none;
+        }
+        #bgOverlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(6,6,6,0.88) 0%, rgba(6,6,6,0.75) 50%, rgba(6,6,6,0.88) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ─── LOCK SCREEN ────────────────────────────────────────────────────── */
         #lockScreen {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: #060606; z-index: 9999;
+            background: transparent; z-index: 9999;
             overflow-y: auto; overflow-x: hidden;
         }
         #lockScreen.hidden { display: none; }
@@ -58,7 +74,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Ticker Bar */
+        /* ─── TICKER BAR ──────────────────────────────────────────────────────── */
         .ticker-bar {
             display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
             margin-bottom: 24px; width: 100%; max-width: 900px;
@@ -90,7 +106,7 @@
         .ticker-change.up { color: var(--success); }
         .ticker-change.down { color: var(--error); }
 
-        /* Stats Row */
+        /* ─── LOCK STATS ROW ──────────────────────────────────────────────────── */
         .lock-stats-row {
             display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
             width: 100%; max-width: 700px; margin-bottom: 24px;
@@ -107,27 +123,40 @@
         .lock-stat-value.pulse-stat { color: var(--success); }
         .lock-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Trending Section */
-        .trending-section { width: 100%; max-width: 900px; margin-bottom: 20px; }
-        .trending-header {
-            font-size: 12px; font-weight: 700; color: var(--text-muted);
+        /* ─── PULSEBOLT BOARD ────────────────────────────────────────────────── */
+        .pulsebolt-board { width: 100%; max-width: 900px; margin-bottom: 20px; }
+        .pulsebolt-header {
+            font-size: 12px; font-weight: 700; color: var(--blue);
             text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; text-align: center;
         }
-        .trending-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; }
-        @media (max-width: 800px) { .trending-grid { grid-template-columns: repeat(2,1fr); } }
-        .trending-card {
-            background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
-            padding: 10px; cursor: pointer; transition: all 0.3s;
+        .pulsebolt-grid {
+            display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
         }
-        .trending-card:hover { border-color: var(--blue); transform: translateY(-1px); }
-        .trending-pair { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .trending-chain { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
-        .trending-price { font-size: 12px; font-weight: 600; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
-        .trending-change { font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin-top: 2px; transition: all 0.3s; }
-        .trending-change.up { color: var(--success); }
-        .trending-change.down { color: var(--error); }
+        @media (max-width: 900px) { .pulsebolt-grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 500px) { .pulsebolt-grid { grid-template-columns: 1fr; } }
+        .pulsebolt-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+            padding: 14px; min-height: 120px;
+        }
+        .pulsebolt-card-title {
+            font-size: 10px; font-weight: 700; color: var(--blue);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px;
+        }
+        .pulsebolt-coin-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 4px 0; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .pulsebolt-coin-item:last-child { border-bottom: none; }
+        .pulsebolt-coin-icon {
+            width: 20px; height: 20px; border-radius: 50%; object-fit: cover;
+        }
+        .pulsebolt-coin-ticker { font-weight: 700; color: #fff; min-width: 40px; }
+        .pulsebolt-coin-price { color: var(--text-dim); margin-left: auto; }
+        .pulsebolt-coin-change { font-weight: 600; margin-left: 6px; }
+        .pulsebolt-coin-change.positive { color: var(--success); }
+        .pulsebolt-coin-change.negative { color: var(--error); }
 
-        /* Password Input */
+        /* ─── PASSWORD INPUT ──────────────────────────────────────────────────── */
         .lock-pass-container { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 8px; width: 100%; max-width: 400px; }
         .lock-pass-input {
             width: 100%; padding: 14px 18px; background: var(--bg-elevated);
@@ -157,7 +186,7 @@
         }
         .lock-contact a:hover { text-decoration: underline; }
 
-        /* 3D Orb Animations */
+        /* ─── 3D ORB ANIMATIONS ──────────────────────────────────────────────── */
         .orb {
             position: fixed; border-radius: 50%; filter: blur(40px); opacity: 0.3;
             animation: floatOrb 12s ease-in-out infinite; pointer-events: none; z-index: 0;
@@ -174,7 +203,7 @@
             75% { transform: translate(-50px,-15px) scale(1.1); }
         }
 
-        /* MAIN SITE */
+        /* ─── MAIN SITE ──────────────────────────────────────────────────────── */
         #mainSite { display: none; }
         #mainSite.visible { display: block; }
 
@@ -646,7 +675,7 @@
         .picker-label { font-size: 12px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         .picker-preview { font-size: 13px; color: var(--text-dim); line-height: 1.5; white-space: pre-wrap; }
 
-        /* Unlock transition */
+        /* ─── UNLOCK TRANSITION ──────────────────────────────────────────────── */
         .unlock-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: #060606; z-index: 9998; display: none;
@@ -664,7 +693,11 @@
 </head>
 <body>
 
-    <!-- LOCK SCREEN -->
+    <!-- ─── BACKGROUND LIGHTNING ────────────────────────────────────────── -->
+    <div id="bgLightning"></div>
+    <div id="bgOverlay"></div>
+
+    <!-- ─── LOCK SCREEN ──────────────────────────────────────────────────── -->
     <div id="lockScreen">
         <canvas class="lock-bg-canvas" id="lockCanvas"></canvas>
         <div class="orb orb-1"></div>
@@ -680,28 +713,23 @@
             <div class="lock-subtitle">Live Market Intelligence & Campaign Command Center</div>
 
             <!-- Ticker Bar -->
-            <div class="ticker-bar" id="tickerBar">
-                <div class="ticker-item" data-coin="SOL"><div class="ticker-dot" style="background:#9945FF;color:#9945FF;"></div><div class="ticker-info"><div class="ticker-name">Solana</div><div class="ticker-price" id="tickerSOL">$142.80</div><div class="ticker-change up" id="tickerSOLChange">+0.6%</div></div></div>
-                <div class="ticker-item" data-coin="ETH"><div class="ticker-dot" style="background:#627EEA;color:#627EEA;"></div><div class="ticker-info"><div class="ticker-name">Ethereum</div><div class="ticker-price" id="tickerETH">$3,521</div><div class="ticker-change up" id="tickerETHChange">+1.8%</div></div></div>
-                <div class="ticker-item" data-coin="BNB"><div class="ticker-dot" style="background:#F3BA2F;color:#F3BA2F;"></div><div class="ticker-info"><div class="ticker-name">BNB</div><div class="ticker-price" id="tickerBNB">$582.30</div><div class="ticker-change up" id="tickerBNBChange">+0.9%</div></div></div>
-                <div class="ticker-item" data-coin="BTC"><div class="ticker-dot" style="background:#F7931A;color:#F7931A;"></div><div class="ticker-info"><div class="ticker-name">Bitcoin</div><div class="ticker-price" id="tickerBTC">$67,452</div><div class="ticker-change up" id="tickerBTCChange">+2.4%</div></div></div>
-                <div class="ticker-item" data-coin="BASE"><div class="ticker-dot" style="background:#0052FF;color:#0052FF;"></div><div class="ticker-info"><div class="ticker-name">Base</div><div class="ticker-price" id="tickerBASE">$1.24</div><div class="ticker-change up" id="tickerBASEChange">+5.2%</div></div></div>
-                <div class="ticker-item" data-coin="MATIC"><div class="ticker-dot" style="background:#8247E5;color:#8247E5;"></div><div class="ticker-info"><div class="ticker-name">Polygon</div><div class="ticker-price" id="tickerMATIC">$0.72</div><div class="ticker-change down" id="tickerMATICChange">-1.1%</div></div></div>
-                <div class="ticker-item" data-coin="ARB"><div class="ticker-dot" style="background:#28A0F0;color:#28A0F0;"></div><div class="ticker-info"><div class="ticker-name">Arbitrum</div><div class="ticker-price" id="tickerARB">$0.89</div><div class="ticker-change up" id="tickerARBChange">+3.7%</div></div></div>
-            </div>
+            <div class="ticker-bar" id="tickerBar"></div>
 
             <!-- Stats Row -->
             <div class="lock-stats-row">
                 <div class="lock-stat-card"><div class="lock-stat-value" id="lockRevenue">$47,832</div><div class="lock-stat-label">Total Revenue</div></div>
                 <div class="lock-stat-card"><div class="lock-stat-value" id="lockCampaigns">1,247</div><div class="lock-stat-label">Campaigns Completed</div></div>
-                <div class="lock-stat-card"><div class="lock-stat-value" id="lockReach">8.4M</div><div class="lock-stat-label">Total Reach</div></div>
+                <div class="lock-stat-card"><div class="lock-stat-value" id="lockReach">2.4M</div><div class="lock-stat-label">Total Reach</div></div>
             </div>
 
-            <!-- Trending Section -->
-            <div class="trending-section">
-                <div class="trending-header">Trending — DexScreener Top 10</div>
-                <div class="trending-grid" id="trendingGrid">
-                    <div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);">Loading live data...</div>
+            <!-- PULSEBOLT BOARD -->
+            <div class="pulsebolt-board">
+                <div class="pulsebolt-header">⚡ PulseBolt Board ⚡</div>
+                <div class="pulsebolt-grid" id="pulseboltGrid">
+                    <div class="pulsebolt-card"><div class="pulsebolt-card-title">🔥 Hot</div><div id="pulseboltHot"></div></div>
+                    <div class="pulsebolt-card"><div class="pulsebolt-card-title">🆕 New</div><div id="pulseboltNew"></div></div>
+                    <div class="pulsebolt-card"><div class="pulsebolt-card-title">🚀 Top Gainers</div><div id="pulseboltGainers"></div></div>
+                    <div class="pulsebolt-card"><div class="pulsebolt-card-title">📊 Top Volume</div><div id="pulseboltVolume"></div></div>
                 </div>
             </div>
 
@@ -717,13 +745,13 @@
         </div>
     </div>
 
-    <!-- Unlock Transition Overlay -->
+    <!-- ─── UNLOCK TRANSITION OVERLAY ────────────────────────────────────── -->
     <div class="unlock-overlay" id="unlockOverlay">
         <div class="unlock-spinner"></div>
         <div class="unlock-text">Initializing PulseBolt Engine...</div>
     </div>
 
-    <!-- MAIN SITE -->
+    <!-- ─── MAIN SITE ────────────────────────────────────────────────────── -->
     <div id="mainSite">
         <div class="bg-grid"></div>
         <div class="container">
@@ -850,18 +878,18 @@ Don't miss out.</textarea></div>
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0 0 0;"><span style="font-size: 13px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Total Cost</span><span id="costTotal" style="font-size: 18px; font-weight: 800; color: var(--blue); font-family: 'JetBrains Mono', monospace;">-</span></div>
                     </div>
                     <div class="card" style="margin-bottom: 16px;"><div class="card-title" style="font-size: 14px; margin-bottom: 12px;">Projected Campaign Analytics</div><div class="analytics-grid"><div class="analytics-card"><div class="analytics-number analytics-live" id="analyticsCTR">8.4%</div><div class="analytics-label">Projected CTR</div></div><div class="analytics-card"><div class="analytics-number analytics-live" id="analyticsWallets">420</div><div class="analytics-label">Wallet Connects</div></div><div class="analytics-card"><div class="analytics-number analytics-live" id="analyticsConv">3.2%</div><div class="analytics-label">Conversion Rate</div></div><div class="analytics-card"><div class="analytics-number analytics-live" id="analyticsRev">$12.4K</div><div class="analytics-label">Est. Revenue</div></div></div></div>
-                    <div class="card" style="margin-bottom: 16px;"><div class="card-title" style="font-size: 14px; margin-bottom: 12px;">DexScreener Live Chart</div><div class="dex-wrapper"><iframe id="dexIframe" src="about:blank" allowfullscreen loading="lazy"></iframe></div></div>
+                    <div class="card" style="margin-bottom: 16px;"><div class="card-title" style="font-size: 14px; margin-bottom: 12px;">PulseBolt Live Chart</div><div class="dex-wrapper"><iframe id="dexIframe" src="about:blank" allowfullscreen loading="lazy"></iframe></div></div>
                     <div class="action-bar"><button class="btn btn-outline" onclick="goToStep(3)">Back</button><button class="btn btn-primary" onclick="handlePurchaseOrder()">PURCHASE ORDER</button></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- PROCESSING OVERLAY -->
+    <!-- ─── PROCESSING OVERLAY ────────────────────────────────────────────── -->
     <div class="processing-overlay" id="processingOverlay"><div class="processing-container" id="processingContainer"></div></div>
-    <!-- PAYMENT CONFIRMATION OVERLAY -->
     <div class="payment-confirm-overlay" id="paymentConfirmOverlay"><div class="payment-confirm-container" id="paymentConfirmContainer"></div></div>
-    <!-- Payment Modal -->
+
+    <!-- ─── PAYMENT MODAL ────────────────────────────────────────────────── -->
     <div class="modal-overlay" id="paymentModal" style="display: none;">
         <div class="modal-card">
             <div class="modal-header"><div class="modal-title">Select Payment Method</div><button class="modal-close" onclick="closePaymentModal()">x</button></div>
@@ -896,6 +924,15 @@ Don't miss out.</textarea></div>
             SOL: 'SOLUSDT', ETH: 'ETHUSDT', BNB: 'BNBUSDT', BTC: 'BTCUSDT',
             MATIC: 'MATICUSDT', ARB: 'ARBUSDT', BASE: 'BASEUSDT'
         };
+        const COIN_ICONS = {
+            SOL: 'https://cryptologos.cc/logos/solana-sol-logo.png',
+            ETH: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+            BNB: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
+            BTC: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+            MATIC: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
+            ARB: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
+            BASE: 'https://cryptologos.cc/logos/base-base-logo.png'
+        };
         let tickerPrices = {};
 
         async function fetchBinancePrices() {
@@ -919,91 +956,135 @@ Don't miss out.</textarea></div>
         }
 
         function updateTickerUI() {
+            const bar = document.getElementById('tickerBar');
+            let html = '';
             Object.keys(tickerPrices).forEach(coin => {
                 const data = tickerPrices[coin];
-                const priceEl = document.getElementById('ticker' + coin);
-                const changeEl = document.getElementById('ticker' + coin + 'Change');
-                if (priceEl) {
-                    const formatted = coin === 'BTC' ? '$' + data.price.toFixed(2) :
-                        coin === 'ETH' || coin === 'BNB' ? '$' + data.price.toFixed(2) :
-                        '$' + data.price.toFixed(4);
-                    priceEl.textContent = formatted;
-                }
-                if (changeEl) {
-                    changeEl.textContent = (data.change >= 0 ? '+' : '') + data.change.toFixed(2) + '%';
-                    changeEl.className = 'ticker-change ' + (data.change >= 0 ? 'up' : 'down');
-                }
+                if (!data) return;
+                const formatted = coin === 'BTC' ? '$' + data.price.toFixed(2) :
+                    coin === 'ETH' || coin === 'BNB' ? '$' + data.price.toFixed(2) :
+                    '$' + data.price.toFixed(4);
+                const changeClass = data.change >= 0 ? 'up' : 'down';
+                const changeText = (data.change >= 0 ? '+' : '') + data.change.toFixed(2) + '%';
+                const icon = COIN_ICONS[coin] || '';
+                html += `
+                    <div class="ticker-item" data-coin="${coin}">
+                        <img src="${icon}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="${coin}">
+                        <div class="ticker-info">
+                            <div class="ticker-name">${coin}</div>
+                            <div class="ticker-price" id="ticker${coin}">${formatted}</div>
+                            <div class="ticker-change ${changeClass}" id="ticker${coin}Change">${changeText}</div>
+                        </div>
+                    </div>
+                `;
             });
+            bar.innerHTML = html;
         }
 
-        // ─── DEXSCREENER TRENDING (via CORS proxy with fallback) ──────────────
-        async function fetchTrendingData() {
-            const proxyUrl = 'https://api.allorigins.win/raw?url=';
-            const dexscreenerUrl = 'https://api.dexscreener.com/latest/dex/search?q=trending';
-            const geckoTerminalUrl = 'https://api.geckoterminal.com/api/v2/trending_pools';
+        // ─── PULSEBOLT BOARD (Binance Overview) ──────────────────────────────
+        let pulseboltMockData = {
+            hot: [
+                { symbol: 'BTC', price: 77452, change: 1.2 },
+                { symbol: 'ETH', price: 2134, change: -0.4 },
+                { symbol: 'BNB', price: 657.50, change: 0.6 },
+                { symbol: 'SOL', price: 142.80, change: 0.8 },
+                { symbol: 'XRP', price: 0.52, change: -1.1 }
+            ],
+            new: [
+                { symbol: 'AIGENSYN', price: 0.03129, change: -9.25 },
+                { symbol: 'MEGA', price: 0.08659, change: -0.65 },
+                { symbol: 'CHIP', price: 0.04837, change: -5.67 },
+                { symbol: 'PHB', price: 0.084, change: 42.37 },
+                { symbol: 'NEAR', price: 2.19, change: 24.60 }
+            ],
+            gainers: [
+                { symbol: 'PHB', price: 0.084, change: 42.37 },
+                { symbol: 'NEAR', price: 2.19, change: 24.60 },
+                { symbol: 'PROVE', price: 0.3063, change: 22.57 },
+                { symbol: 'AIGENSYN', price: 0.03129, change: -9.25 },
+                { symbol: 'MEGA', price: 0.08659, change: -0.65 }
+            ],
+            volume: [
+                { symbol: 'BTC', price: 77452, change: -0.38 },
+                { symbol: 'ETH', price: 2134, change: -0.47 },
+                { symbol: 'SOL', price: 86.87, change: 0.24 },
+                { symbol: 'BNB', price: 657.50, change: 0.62 },
+                { symbol: 'XRP', price: 0.52, change: -1.10 }
+            ]
+        };
 
+        async function fetchPulseboltBoard() {
             try {
-                // Try DexScreener first
-                const resp = await fetch(proxyUrl + encodeURIComponent(dexscreenerUrl));
+                const resp = await fetch('https://api.binance.com/api/v3/ticker/24hr');
                 const data = await resp.json();
-                if (data && data.pairs && data.pairs.length > 0) {
-                    return data.pairs.slice(0, 10).map(p => ({
-                        pair: p.baseToken.symbol + '/' + p.quoteToken.symbol,
-                        chain: p.chainId,
-                        price: '$' + parseFloat(p.priceUsd).toFixed(4),
-                        change: (p.priceChangeH24 || 0).toFixed(2) + '%',
-                        up: (p.priceChangeH24 || 0) >= 0
-                    }));
-                }
-            } catch (e) {
-                console.warn('DexScreener failed, trying GeckoTerminal...');
-            }
+                const sorted = data.sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume)).slice(0, 50);
+                
+                const hot = sorted.filter(t => !t.symbol.includes('USDC') && !t.symbol.includes('BUSD') && !t.symbol.includes('TUSD')).slice(0, 5);
+                const newCoins = sorted.filter(t => parseFloat(t.quoteVolume) < 500000 && !t.symbol.includes('USDC')).slice(0, 5);
+                const gainers = data.filter(t => parseFloat(t.priceChangePercent) > 0).sort((a, b) => parseFloat(b.priceChangePercent) - parseFloat(a.priceChangePercent)).slice(0, 5);
+                const volume = data.sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume)).slice(0, 5);
 
-            try {
-                // Fallback to GeckoTerminal
-                const resp = await fetch(proxyUrl + encodeURIComponent(geckoTerminalUrl));
-                const data = await resp.json();
-                if (data && data.data && data.data.length > 0) {
-                    return data.data.slice(0, 10).map(p => ({
-                        pair: p.attributes.base_token_symbol + '/' + p.attributes.quote_token_symbol,
-                        chain: p.attributes.network,
-                        price: '$' + parseFloat(p.attributes.price_usd).toFixed(4),
-                        change: (p.attributes.price_change_percentage_24h || 0).toFixed(2) + '%',
-                        up: (p.attributes.price_change_percentage_24h || 0) >= 0
-                    }));
-                }
+                renderPulseboltSection('pulseboltHot', hot);
+                renderPulseboltSection('pulseboltNew', newCoins);
+                renderPulseboltSection('pulseboltGainers', gainers);
+                renderPulseboltSection('pulseboltVolume', volume);
             } catch (e) {
-                console.warn('GeckoTerminal also failed.');
+                console.warn('PulseBolt Board API failed, using mock data.');
+                renderPulseboltSection('pulseboltHot', pulseboltMockData.hot);
+                renderPulseboltSection('pulseboltNew', pulseboltMockData.new);
+                renderPulseboltSection('pulseboltGainers', pulseboltMockData.gainers);
+                renderPulseboltSection('pulseboltVolume', pulseboltMockData.volume);
             }
-
-            // Fallback: show unavailable message
-            return null;
         }
 
-        function renderTrending(pairs) {
-            const grid = document.getElementById('trendingGrid');
-            if (!pairs || pairs.length === 0) {
-                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);">Trending data unavailable — check back soon</div>`;
+        function renderPulseboltSection(elementId, coins) {
+            const container = document.getElementById(elementId);
+            if (!coins || coins.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-muted);font-size:11px;">No data</div>';
                 return;
             }
-            grid.innerHTML = pairs.map(t => `
-                <div class="trending-card">
-                    <div class="trending-pair">${t.pair}</div>
-                    <div class="trending-chain">${t.chain}</div>
-                    <div class="trending-price">${t.price}</div>
-                    <div class="trending-change ${t.up?'up':'down'}">${t.change}</div>
-                </div>
-            `).join('');
+            let html = '';
+            coins.forEach(coin => {
+                const symbol = coin.symbol ? coin.symbol.replace('USDT', '') : coin.symbol;
+                const price = coin.price || parseFloat(coin.lastPrice) || 0;
+                const change = coin.change || parseFloat(coin.priceChangePercent) || 0;
+                const changeClass = change >= 0 ? 'positive' : 'negative';
+                const changeText = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+                const icon = COIN_ICONS[symbol] || 'https://cryptologos.cc/logos/bitcoin-btc-logo.png';
+                html += `
+                    <div class="pulsebolt-coin-item">
+                        <img src="${icon}" class="pulsebolt-coin-icon" alt="${symbol}">
+                        <span class="pulsebolt-coin-ticker">${symbol}</span>
+                        <span class="pulsebolt-coin-price">$${price.toFixed(4)}</span>
+                        <span class="pulsebolt-coin-change ${changeClass}">${changeText}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
-        // ─── DEX CHART (PulseBolt branded) ─────────────────────────────────────
-        function updateDexChart() {
+        // ─── DEX CHART (GeckoTerminal with Auto-Detection) ──────────────────
+        function detectChainFromCA(ca) {
+            // Solana addresses typically start with C, D, G, H, J, L, N, S
+            const solanaPattern = /^[C-DG-HJ-LN-S][1-9A-HJ-NP-Za-km-z]{32,44}$/;
+            if (solanaPattern.test(ca)) return 'solana';
+            // Ethereum addresses start with 0x
+            if (ca.startsWith('0x')) return 'eth';
+            // Default to Ethereum
+            return 'eth';
+        }
+
+        async function updateDexChart() {
             const ca = document.getElementById('contractAddress').value.trim();
-            const chain = document.getElementById('dexChain')?.value || 'ethereum';
             const iframe = document.getElementById('dexIframe');
             if (ca && iframe) {
-                // Use TradingView widget with PulseBolt branding
-                iframe.src = `https://dexscreener.com/${chain}/${encodeURIComponent(ca)}?embed=1&theme=dark&info=0`;
+                const chain = detectChainFromCA(ca);
+                const chainMap = {
+                    'ethereum': 'eth', 'bsc': 'bsc', 'solana': 'solana', 'polygon': 'polygon',
+                    'arbitrum': 'arbitrum', 'optimism': 'optimism', 'base': 'base', 'avalanche': 'avalanche'
+                };
+                const gcChain = chainMap[chain] || 'eth';
+                iframe.src = `https://www.geckoterminal.com/${gcChain}/${ca}?embed=1&theme=dark`;
             } else if (iframe) {
                 iframe.src = 'about:blank';
             }
@@ -1073,7 +1154,6 @@ Don't miss out.</textarea></div>
         const cryptoNicknames = ["SatoshiWhale","MoonBoy_99","DegenApe","HODL_King","CryptoBull","BearSlayer","DiamondHands","PaperHands","RugPullSurvivor","FOMO_Master","AltcoinGambler","NFT_Degenerate","SolanaMaxi","ETH_Believer","BTC_Stacker","AirdropFarmer","YieldHunter","LeverageKing","Liquidated_Again","PumpChaser","DumpDumper","VitalikFan","CZ_Army","ElonMusket","MemeCoinMillionaire","ShitcoinSurfer","Web3_Wizard","DAO_Voter","GasFeeVictim"];
         const maleNames = ["James","Michael","Robert","David","William","Richard","Thomas","Daniel","Matthew","Anthony","Mark","Steven","Paul","Andrew","Joshua","Kenneth","Kevin","Brian","George","Edward","Alex","Chris","Nick","Sam","Ben","Jake","Ryan","Nathan","Ethan","Brandon"];
         const femaleNames = ["Sarah","Jessica","Ashley","Emily","Amanda","Megan","Rachel","Laura","Kimberly","Stephanie","Jennifer","Nicole","Michelle","Heather","Rebecca","Amber","Melissa","Danielle","Elizabeth","Hannah","Sophia","Olivia","Emma","Ava","Mia","Isabella","Charlotte","Amelia","Evelyn","Abigail"];
-        const communityNamesList = ["Crypto Moonshots","DeFi Alpha Leaks","NFT Whales","Solana Ecosystem","GameFi Legends","P2E Gaming Hub","Web3 Builders","Meme Coin Army","Bitcoin Maxis","Airdrop Hunters"];
         const youtubeCountries = ["United States","United Kingdom","Germany","Canada","Australia","Brazil","France","India","Japan","South Korea","Netherlands","Singapore","Sweden","UAE","Nigeria","Mexico","Italy","Spain","Poland","Turkey"];
         const influencerNames = ["CryptoMaxi","DeFiDegen","NFTWhale","SolanaKing","AlphaHunter","MoonShotChris","BlockchainBabe","Web3Wizard","TradingTitan","CoinBureau","YieldFarmer","AirdropSensei","MemeCoinLord","EthBuilder","SolSniper","P2E_Gamer","MetaVerseMike","TokenTrends","ChainAnalyst","DegenSpartan"];
         const communities = [
@@ -1121,17 +1201,46 @@ Don't miss out.</textarea></div>
         }
         function selectPlatform(el){
             document.querySelectorAll('.platform-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');
-            if(selectedPlatform!==el.dataset.platform){document.getElementById('projectLink').value='';document.getElementById('campaignName').value='';document.getElementById('messageTemplate').value='Hey {username}, check out this project.\n\n{project_link}\n\nDon\'t miss out.';document.getElementById('postLink').value='';document.getElementById('customCommunity').value='';document.getElementById('contractAddress').value='';document.getElementById('dexIframe').src='about:blank';selectedCommunities=[];customCommunities=[];activeService=null;document.querySelectorAll('.boost-package').forEach(p=>p.classList.remove('added','popular','exclusive','gold'));document.querySelectorAll('.boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added','btn-gold');});}
-            selectedPlatform=el.dataset.platform;const isYouTube=selectedPlatform==='youtube',isTwitter=selectedPlatform==='twitter',isTelegram=selectedPlatform==='telegram';
+            // Clear previous platform data
+            document.getElementById('projectLink').value = '';
+            document.getElementById('linkError').style.display = 'none';
+            document.getElementById('step2ContinueBtn').disabled = true;
+            document.getElementById('step2ContinueBtn').style.opacity = '0.5';
+            
+            if(selectedPlatform!==el.dataset.platform){
+                document.getElementById('campaignName').value='';
+                document.getElementById('messageTemplate').value='Hey {username}, check out this project.\n\n{project_link}\n\nDon\'t miss out.';
+                document.getElementById('postLink').value='';
+                document.getElementById('customCommunity').value='';
+                document.getElementById('contractAddress').value='';
+                document.getElementById('dexIframe').src='about:blank';
+                selectedCommunities=[];
+                customCommunities=[];
+                activeService=null;
+                document.querySelectorAll('.boost-package').forEach(p=>p.classList.remove('added','popular','exclusive','gold'));
+                document.querySelectorAll('.boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added','btn-gold');});
+            }
+            selectedPlatform=el.dataset.platform;
+            const isYouTube=selectedPlatform==='youtube',isTwitter=selectedPlatform==='twitter',isTelegram=selectedPlatform==='telegram';
             document.getElementById('projectLink').placeholder=(platformPrefixes[selectedPlatform]?.[0]||'https://')+'YourProject';
             document.getElementById('postLinkSection').style.display=(isYouTube||isTwitter)?'block':'none';
             document.getElementById('postLink').placeholder={youtube:'https://youtube.com/watch?v=...',telegram:'https://t.me/...',twitter:'https://x.com/.../status/...'}[selectedPlatform]||'https://...';
-            document.getElementById('boostPanel').style.display=isTelegram?'block':'none';document.getElementById('vipGoldPanel').style.display=isTwitter?'block':'none';document.getElementById('youtubeSubPanel').style.display=isYouTube?'block':'none';
-            document.getElementById('communityList').style.display=isYouTube?'none':'';document.getElementById('customCommunityRow').style.display=isYouTube?'none':'';document.getElementById('memberCountGroup').style.display=isYouTube?'none':'';
-            if(isYouTube){document.getElementById('step3desc').textContent='YouTube Subscriber Growth — select the exclusive package below.';document.getElementById('communityList').innerHTML='';}
-            else if(isTwitter)document.getElementById('step3desc').textContent='Select communities for Mass DM or choose VIP GOLD.';
-            else document.getElementById('step3desc').textContent='Select active communities for Mass DM or choose a Boost package.';
-            validateStep1();updateCostSummary();
+            document.getElementById('boostPanel').style.display=isTelegram?'block':'none';
+            document.getElementById('vipGoldPanel').style.display=isTwitter?'block':'none';
+            document.getElementById('youtubeSubPanel').style.display=isYouTube?'block':'none';
+            document.getElementById('communityList').style.display=isYouTube?'none':'';
+            document.getElementById('customCommunityRow').style.display=isYouTube?'none':'';
+            document.getElementById('memberCountGroup').style.display=isYouTube?'none':'';
+            if(isYouTube){
+                document.getElementById('step3desc').textContent='YouTube Subscriber Growth — select the exclusive package below.';
+                document.getElementById('communityList').innerHTML='';
+            } else if(isTwitter){
+                document.getElementById('step3desc').textContent='Select communities for Mass DM or choose VIP GOLD.';
+            } else {
+                document.getElementById('step3desc').textContent='Select active communities for Mass DM or choose a Boost package.';
+            }
+            validateStep1();
+            updateCostSummary();
         }
         function toggleYouTubeSub(t){if(activeService==='youtubeSub'){activeService=null;document.getElementById('youtubeSub1k').classList.remove('added');document.getElementById('youtubeSub1kBtn').textContent='Add to Campaign';document.getElementById('youtubeSub1kBtn').classList.remove('added');}else{clearServiceSelection();activeService='youtubeSub';document.getElementById('youtubeSub1k').classList.add('added');document.getElementById('youtubeSub1kBtn').textContent='Added';document.getElementById('youtubeSub1kBtn').classList.add('added');}validateStep3();updateCostSummary();}
         function toggleBoost(t){if(activeService==='boost'&&document.getElementById('boost'+t).classList.contains('added')){activeService=null;document.querySelectorAll('#boostPanel .boost-package').forEach(p=>p.classList.remove('added'));document.querySelectorAll('#boostPanel .boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added');});}else{clearServiceSelection();activeService='boost';document.querySelectorAll('#boostPanel .boost-package').forEach(p=>p.classList.remove('added'));document.querySelectorAll('#boostPanel .boost-btn').forEach(b=>{b.textContent='Add to Campaign';b.classList.remove('added');});document.getElementById('boost'+t).classList.add('added');document.getElementById('boostBtn'+t).textContent='Added';document.getElementById('boostBtn'+t).classList.add('added');}validateStep3();updateCostSummary();}
@@ -1146,14 +1255,76 @@ Don't miss out.</textarea></div>
         function updateReview(){document.getElementById('reviewProject').textContent=(document.getElementById('projectLink').value||'Not set').substring(0,35);document.getElementById('reviewPlatform').textContent={telegram:'Telegram',twitter:'X / Twitter',youtube:'YouTube'}[selectedPlatform]||'-';document.getElementById('reviewMessage').textContent=document.getElementById('messageTemplate').value;if(activeService==='youtubeSub'){document.getElementById('reviewService').textContent='YouTube Subscriber Growth';document.getElementById('reviewReach').textContent='1,000 Subscribers';}else if(activeService==='vipGold'){document.getElementById('reviewService').textContent='VIP GOLD Premium Influencers';document.getElementById('reviewReach').textContent='222 Influencers';}else if(activeService==='boost'){const sz=document.getElementById('boost1k')?.classList.contains('added')?'1K':document.getElementById('boost2k')?.classList.contains('added')?'2K':'3K';document.getElementById('reviewService').textContent='Telegram Boost - '+sz;document.getElementById('reviewReach').textContent=sz+' Members';}else{const target=getTargetMembers();document.getElementById('reviewService').textContent='Mass DM — '+(selectedCommunities.length+customCommunities.length)+' communities';document.getElementById('reviewReach').textContent=formatNumber(target)+' members';}updateCostSummary();}
         function updateCostSummary(){let tp=0,tr=0;if(activeService==='youtubeSub'){tp=1000;tr=1000;}else if(activeService==='vipGold'){tp=1700;tr=222;}else if(activeService==='boost'){if(document.getElementById('boost1k')?.classList.contains('added')){tp=999;tr=1000;}else if(document.getElementById('boost2k')?.classList.contains('added')){tp=1999;tr=2000;}else{tp=2999;tr=3000;}}else{tr=getTargetMembers();tp=tr/10;}document.getElementById('costMembers').textContent=tr.toLocaleString();document.getElementById('costPerMember').textContent='$'+(tr>0?Math.round(tp/tr):0);document.getElementById('costTotal').textContent='$'+tp.toLocaleString();document.getElementById('costETA').textContent=getRandomETA();document.getElementById('costBadge').textContent=tp>0?'READY':'PENDING';document.getElementById('totalReach').textContent=formatNumber(tr)+(activeService==='youtubeSub'?' subscribers':activeService==='vipGold'?' influencers':' members');}
         function validateStep1(){const b=document.getElementById('btn-step1');b.disabled=!selectedPlatform;b.style.opacity=selectedPlatform?'1':'0.5';b.style.cursor=selectedPlatform?'pointer':'not-allowed';}
-        function validateStep2(){const link=document.getElementById('projectLink').value.trim();const btn=document.getElementById('step2ContinueBtn');const err=document.getElementById('linkError');let valid=false;try{const u=new URL(link);valid=u.protocol==='https:';}catch(e){}if(valid&&selectedPlatform&&platformPrefixes[selectedPlatform]){const hp=platformPrefixes[selectedPlatform].some(p=>link.toLowerCase().startsWith(p.toLowerCase()));if(!hp){valid=false;err.textContent='Link must start with '+platformPrefixes[selectedPlatform].join(' or ');err.style.display='block';}else err.style.display='none';}btn.disabled=!valid;btn.style.opacity=valid?'1':'0.5';btn.style.cursor=valid?'pointer':'not-allowed';}
+        function validateStep2(){
+            const link = document.getElementById('projectLink').value.trim();
+            const btn = document.getElementById('step2ContinueBtn');
+            const err = document.getElementById('linkError');
+            let valid = false;
+            try {
+                const u = new URL(link);
+                valid = u.protocol === 'https:';
+            } catch(e) {}
+            if (valid && selectedPlatform && platformPrefixes[selectedPlatform]) {
+                const hp = platformPrefixes[selectedPlatform].some(p => link.toLowerCase().startsWith(p.toLowerCase()));
+                if (!hp) {
+                    valid = false;
+                    err.textContent = 'Link must start with ' + platformPrefixes[selectedPlatform].join(' or ');
+                    err.style.display = 'block';
+                } else {
+                    err.style.display = 'none';
+                }
+            } else if (valid && selectedPlatform === 'youtube') {
+                // YouTube can be any valid HTTPS link (channel or video)
+                err.style.display = 'none';
+            }
+            btn.disabled = !valid;
+            btn.style.opacity = valid ? '1' : '0.5';
+            btn.style.cursor = valid ? 'pointer' : 'not-allowed';
+        }
         function validateStep3(){const total=selectedCommunities.length+customCommunities.length;const btn=document.getElementById('btn-step3');btn.disabled=!(total>0||activeService);btn.style.opacity=(total>0||activeService)?'1':'0.5';btn.style.cursor=(total>0||activeService)?'pointer':'not-allowed';}
 
         // ─── PAYMENT ───────────────────────────────────────────────────────────
         function showPaymentModal(){const m=document.getElementById('paymentModal');m.classList.add('active');m.style.display='flex';document.body.style.overflow='hidden';}
         function closePaymentModal(){const m=document.getElementById('paymentModal');m.classList.remove('active');m.style.display='none';document.body.style.overflow='';document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));document.getElementById('paymentAddressBox').classList.remove('active');}
         function selectPayment(el){document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');if(el.dataset.coin==='usdc'){document.getElementById('paymentAddressBox').classList.remove('active');return;}document.getElementById('paymentAddressValue').textContent=el.dataset.addr;document.getElementById('paymentAddressBox').classList.add('active');const b=document.getElementById('paymentCopyBtn');b.textContent='Copy Address';b.classList.remove('copied');}
-        function copyPaymentAddress(){const addr=document.getElementById('paymentAddressValue').textContent;if(addr&&navigator.clipboard){navigator.clipboard.writeText(addr).then(()=>{const b=document.getElementById('paymentCopyBtn');b.textContent='Copied';b.classList.add('copied');setTimeout(()=>{b.textContent='Copy Address';b.classList.remove('copied');},2000);});}}
+        function copyPaymentAddress(){
+            const addr = document.getElementById('paymentAddressValue').textContent;
+            if (!addr) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(addr).then(() => {
+                    const b = document.getElementById('paymentCopyBtn');
+                    b.textContent = 'Copied!';
+                    b.classList.add('copied');
+                    setTimeout(() => {
+                        b.textContent = 'Copy Address';
+                        b.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => fallbackCopy(addr));
+            } else {
+                fallbackCopy(addr);
+            }
+        }
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                const b = document.getElementById('paymentCopyBtn');
+                b.textContent = 'Copied!';
+                b.classList.add('copied');
+                setTimeout(() => {
+                    b.textContent = 'Copy Address';
+                    b.classList.remove('copied');
+                }, 2000);
+            } catch (e) {
+                alert('Could not copy address. Please copy it manually.');
+            }
+            document.body.removeChild(textarea);
+        }
         function showUsdcChains(){document.getElementById('usdcChainMenu').style.display='block';}
         function selectUsdcChain(el){document.querySelectorAll('.usdc-chain-option').forEach(o=>{o.style.borderColor='var(--border)';o.style.background='var(--bg-card)';});el.style.borderColor='var(--blue)';el.style.background='linear-gradient(135deg, rgba(0,212,255,0.08), transparent)';document.getElementById('paymentAddressValue').textContent=el.dataset.addr;document.getElementById('paymentAddressBox').classList.add('active');}
         function confirmPayment(){const selected=document.querySelector('.payment-option.selected');if(!selected){alert('Please select a payment method.');return;}const addr=document.getElementById('paymentAddressValue').textContent;if(!addr||addr===''){alert('Please select a valid payment address.');return;}document.getElementById('paymentModal').classList.remove('active');document.getElementById('paymentModal').style.display='none';document.body.style.overflow='';startPaymentConfirmation();}
@@ -1171,31 +1342,52 @@ Don't miss out.</textarea></div>
         function closeTemplatePicker(){document.getElementById('templatePickerModal').classList.remove('active');}
         document.addEventListener('click',function(e){if(e.target.id==='templatePickerModal')closeTemplatePicker();if(e.target.id==='paymentModal')closePaymentModal();});
 
-        // ─── LIVE COUNTERS (every 15-20s) ──────────────────────────────────────
+        // ─── LIVE COUNTERS (every 10 seconds) ──────────────────────────────────
         let dashMessages = 47832, dashReach = 2400000, dashRate = 94.3, dashWallets = 420, dashRev = 12400, dashCTR = 8.4, dashConv = 3.2;
+        let dashActive = 12;
+
         function updateLiveCounters(){
             if(!document.getElementById('mainSite').classList.contains('visible'))return;
-            dashMessages += rand(2,8);
-            dashReach += rand(50,200);
-            dashRate = Math.min(95.5, Math.max(93.0, dashRate + (Math.random() - 0.5) * 0.35));
-            dashWallets += rand(1,3);
-            dashRev += rand(20,150);
-            dashCTR = Math.min(9.2, Math.max(7.8, dashCTR + (Math.random() - 0.5) * 0.12));
-            dashConv = Math.min(3.9, Math.max(2.7, dashConv + (Math.random() - 0.5) * 0.06));
+            
+            // Always increasing
+            dashMessages += rand(3, 12);
+            dashActive += rand(0, 1);
+            dashReach += rand(50, 1000);
+            
+            // Volatile (up and down)
+            dashWallets += rand(-2, 5);
+            if (dashWallets < 100) dashWallets = 100;
+            dashRate += (Math.random() - 0.5) * 0.6;
+            dashRate = Math.min(97.5, Math.max(90.0, dashRate));
+            
+            // Other analytics
+            dashRev += rand(10, 180);
+            dashCTR = Math.min(9.5, Math.max(7.5, dashCTR + (Math.random() - 0.5) * 0.15));
+            dashConv = Math.min(4.2, Math.max(2.5, dashConv + (Math.random() - 0.5) * 0.08));
 
+            // Update main dashboard
             document.getElementById('dashMessages').textContent = dashMessages.toLocaleString();
+            document.getElementById('dashActive').textContent = dashActive;
             document.getElementById('dashReach').textContent = formatNumber(Math.floor(dashReach));
             document.getElementById('dashRate').textContent = dashRate.toFixed(1) + '%';
+            
+            // Update analytics
             document.getElementById('analyticsWallets').textContent = Math.floor(dashWallets);
             document.getElementById('analyticsRev').textContent = '$' + (dashRev / 1000).toFixed(1) + 'K';
             document.getElementById('analyticsCTR').textContent = dashCTR.toFixed(1) + '%';
             document.getElementById('analyticsConv').textContent = dashConv.toFixed(1) + '%';
 
-            ['dashMessages','dashReach','analyticsWallets','analyticsRev','analyticsCTR','analyticsConv'].forEach(id=>{
+            // Sync lock screen stats
+            document.getElementById('lockRevenue').textContent = '$' + dashRev.toLocaleString();
+            document.getElementById('lockCampaigns').textContent = dashActive;
+            document.getElementById('lockReach').textContent = formatNumber(Math.floor(dashReach));
+
+            // Pulse animations
+            ['dashMessages','dashReach','dashActive','dashRate','analyticsWallets','analyticsRev','analyticsCTR','analyticsConv','lockRevenue','lockCampaigns','lockReach'].forEach(id=>{
                 const el = document.getElementById(id);
                 if(el){
-                    el.classList.add(id.startsWith('analytics') ? 'pulse-analytics' : 'pulse');
-                    setTimeout(() => el.classList.remove(id.startsWith('analytics') ? 'pulse-analytics' : 'pulse'), 300);
+                    el.classList.add('pulse-stat');
+                    setTimeout(() => el.classList.remove('pulse-stat'), 300);
                 }
             });
         }
@@ -1226,13 +1418,13 @@ Don't miss out.</textarea></div>
         // ─── INIT ──────────────────────────────────────────────────────────────
         renderCommunities();
         initLockCanvas();
-        setInterval(fetchBinancePrices, 15000); // Update every 15 seconds
-        setInterval(fetchTrendingData, 30000); // Update every 30 seconds
-        setInterval(updateLiveCounters, 18000); // Update every 18 seconds
+        setInterval(fetchBinancePrices, 15000); // Update prices every 15 seconds
+        setInterval(fetchPulseboltBoard, 30000); // Update PulseBolt Board every 30 seconds
+        setInterval(updateLiveCounters, 10000); // Update counters every 10 seconds
 
         // Initial fetches
         fetchBinancePrices();
-        fetchTrendingData().then(renderTrending);
+        fetchPulseboltBoard();
     </script>
 </body>
 </html>
