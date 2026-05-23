@@ -130,9 +130,8 @@
             text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; text-align: center;
         }
         .pulsebolt-grid {
-            display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
+            display: grid; grid-template-columns: repeat(2,1fr); gap: 12px;
         }
-        @media (max-width: 900px) { .pulsebolt-grid { grid-template-columns: repeat(2,1fr); } }
         @media (max-width: 500px) { .pulsebolt-grid { grid-template-columns: 1fr; } }
         .pulsebolt-card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
@@ -727,8 +726,6 @@
                 <div class="pulsebolt-header">⚡ PulseBolt Board ⚡</div>
                 <div class="pulsebolt-grid" id="pulseboltGrid">
                     <div class="pulsebolt-card"><div class="pulsebolt-card-title">🔥 Hot</div><div id="pulseboltHot"></div></div>
-                    <div class="pulsebolt-card"><div class="pulsebolt-card-title">🆕 New</div><div id="pulseboltNew"></div></div>
-                    <div class="pulsebolt-card"><div class="pulsebolt-card-title">🚀 Top Gainers</div><div id="pulseboltGainers"></div></div>
                     <div class="pulsebolt-card"><div class="pulsebolt-card-title">📊 Top Volume</div><div id="pulseboltVolume"></div></div>
                 </div>
             </div>
@@ -931,7 +928,8 @@ Don't miss out.</textarea></div>
             BTC: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
             MATIC: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
             ARB: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
-            BASE: 'https://cryptologos.cc/logos/base-base-logo.png'
+            BASE: 'https://cryptologos.cc/logos/base-base-logo.png',
+            XRP: 'https://i.postimg.cc/BbGkMtWw/OIP.webp'
         };
         let tickerPrices = {};
 
@@ -966,7 +964,7 @@ Don't miss out.</textarea></div>
                     '$' + data.price.toFixed(4);
                 const changeClass = data.change >= 0 ? 'up' : 'down';
                 const changeText = (data.change >= 0 ? '+' : '') + data.change.toFixed(2) + '%';
-                const icon = COIN_ICONS[coin] || '';
+                const icon = COIN_ICONS[coin] || 'https://cryptologos.cc/logos/bitcoin-btc-logo.png';
                 html += `
                     <div class="ticker-item" data-coin="${coin}">
                         <img src="${icon}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="${coin}">
@@ -982,27 +980,13 @@ Don't miss out.</textarea></div>
         }
 
         // ─── PULSEBOLT BOARD (Binance Overview) ──────────────────────────────
-        let pulseboltMockData = {
+        const fallbackData = {
             hot: [
                 { symbol: 'BTC', price: 77452, change: 1.2 },
                 { symbol: 'ETH', price: 2134, change: -0.4 },
                 { symbol: 'BNB', price: 657.50, change: 0.6 },
                 { symbol: 'SOL', price: 142.80, change: 0.8 },
                 { symbol: 'XRP', price: 0.52, change: -1.1 }
-            ],
-            new: [
-                { symbol: 'AIGENSYN', price: 0.03129, change: -9.25 },
-                { symbol: 'MEGA', price: 0.08659, change: -0.65 },
-                { symbol: 'CHIP', price: 0.04837, change: -5.67 },
-                { symbol: 'PHB', price: 0.084, change: 42.37 },
-                { symbol: 'NEAR', price: 2.19, change: 24.60 }
-            ],
-            gainers: [
-                { symbol: 'PHB', price: 0.084, change: 42.37 },
-                { symbol: 'NEAR', price: 2.19, change: 24.60 },
-                { symbol: 'PROVE', price: 0.3063, change: 22.57 },
-                { symbol: 'AIGENSYN', price: 0.03129, change: -9.25 },
-                { symbol: 'MEGA', price: 0.08659, change: -0.65 }
             ],
             volume: [
                 { symbol: 'BTC', price: 77452, change: -0.38 },
@@ -1020,20 +1004,14 @@ Don't miss out.</textarea></div>
                 const sorted = data.sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume)).slice(0, 50);
                 
                 const hot = sorted.filter(t => !t.symbol.includes('USDC') && !t.symbol.includes('BUSD') && !t.symbol.includes('TUSD')).slice(0, 5);
-                const newCoins = sorted.filter(t => parseFloat(t.quoteVolume) < 500000 && !t.symbol.includes('USDC')).slice(0, 5);
-                const gainers = data.filter(t => parseFloat(t.priceChangePercent) > 0).sort((a, b) => parseFloat(b.priceChangePercent) - parseFloat(a.priceChangePercent)).slice(0, 5);
                 const volume = data.sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume)).slice(0, 5);
 
                 renderPulseboltSection('pulseboltHot', hot);
-                renderPulseboltSection('pulseboltNew', newCoins);
-                renderPulseboltSection('pulseboltGainers', gainers);
                 renderPulseboltSection('pulseboltVolume', volume);
             } catch (e) {
-                console.warn('PulseBolt Board API failed, using mock data.');
-                renderPulseboltSection('pulseboltHot', pulseboltMockData.hot);
-                renderPulseboltSection('pulseboltNew', pulseboltMockData.new);
-                renderPulseboltSection('pulseboltGainers', pulseboltMockData.gainers);
-                renderPulseboltSection('pulseboltVolume', pulseboltMockData.volume);
+                console.warn('PulseBolt Board API failed, using fallback data.');
+                renderPulseboltSection('pulseboltHot', fallbackData.hot);
+                renderPulseboltSection('pulseboltVolume', fallbackData.volume);
             }
         }
 
@@ -1063,28 +1041,24 @@ Don't miss out.</textarea></div>
             container.innerHTML = html;
         }
 
-        // ─── DEX CHART (GeckoTerminal with Auto-Detection) ──────────────────
+        // ─── DEX CHART (DexScreener) ──────────────────────────────────────────
         function detectChainFromCA(ca) {
             // Solana addresses typically start with C, D, G, H, J, L, N, S
             const solanaPattern = /^[C-DG-HJ-LN-S][1-9A-HJ-NP-Za-km-z]{32,44}$/;
             if (solanaPattern.test(ca)) return 'solana';
             // Ethereum addresses start with 0x
-            if (ca.startsWith('0x')) return 'eth';
+            if (ca.startsWith('0x')) return 'ethereum';
             // Default to Ethereum
-            return 'eth';
+            return 'ethereum';
         }
 
-        async function updateDexChart() {
+        function updateDexChart() {
             const ca = document.getElementById('contractAddress').value.trim();
             const iframe = document.getElementById('dexIframe');
             if (ca && iframe) {
                 const chain = detectChainFromCA(ca);
-                const chainMap = {
-                    'ethereum': 'eth', 'bsc': 'bsc', 'solana': 'solana', 'polygon': 'polygon',
-                    'arbitrum': 'arbitrum', 'optimism': 'optimism', 'base': 'base', 'avalanche': 'avalanche'
-                };
-                const gcChain = chainMap[chain] || 'eth';
-                iframe.src = `https://www.geckoterminal.com/${gcChain}/${ca}?embed=1&theme=dark`;
+                // Use DexScreener directly — it works reliably with any valid CA
+                iframe.src = `https://dexscreener.com/${chain}/${ca}?embed=1&theme=dark&info=0`;
             } else if (iframe) {
                 iframe.src = 'about:blank';
             }
@@ -1201,7 +1175,6 @@ Don't miss out.</textarea></div>
         }
         function selectPlatform(el){
             document.querySelectorAll('.platform-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');
-            // Clear previous platform data
             document.getElementById('projectLink').value = '';
             document.getElementById('linkError').style.display = 'none';
             document.getElementById('step2ContinueBtn').disabled = true;
@@ -1274,7 +1247,6 @@ Don't miss out.</textarea></div>
                     err.style.display = 'none';
                 }
             } else if (valid && selectedPlatform === 'youtube') {
-                // YouTube can be any valid HTTPS link (channel or video)
                 err.style.display = 'none';
             }
             btn.disabled = !valid;
